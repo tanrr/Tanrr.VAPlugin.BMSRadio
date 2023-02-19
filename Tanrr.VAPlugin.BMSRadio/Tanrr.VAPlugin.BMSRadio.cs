@@ -209,10 +209,10 @@ namespace Tanrr.VAPlugin.BMSRadio
         }
 
         public static string VA_DisplayName()
-            => "Jeeves BMS Radio Plugin v0.5";  // Displayed in dropdowns and log as plugin name
+            => "Tanrr VA BMS Radio Plugin v0.5";  // Displayed in dropdowns and log as plugin name
 
         public static string VA_DisplayInfo()
-            => "Jeeves BMS Radio Plugin for VoiceAttack\r\n\r\nInitial POC.\r\n\r\n2023";  // Extended info
+            => "Tanrr BMS Radio Plugin for VoiceAttack\r\n\r\nInitial POC.\r\n\r\n2023";  // Extended info
 
         public static Guid VA_Id()
             => new Guid("{7e22363e-2cca-4b26-8aae-a292f73d2a53}");  // TANR - DONE as G1
@@ -233,7 +233,7 @@ namespace Tanrr.VAPlugin.BMSRadio
 
         public static void SetSharedVarsDefaults(dynamic vaProxy)
         {
-            vaProxy.Setbool(">JBMS_INITED", false);
+            vaProxy.SetBoolean(">JBMS_INITED", false);
             ResetMenuState(vaProxy);
         }
         public static bool VerifyMenuState(dynamic vaProxy, bool menuUp, bool noErrorsAllowed)
@@ -255,8 +255,8 @@ namespace Tanrr.VAPlugin.BMSRadio
         {
             vaProxy.WriteToLog("JeevesBMSRadio: ResetMenuState", "Purple");
 
-            vaProxy.Setbool(">JBMS_NO_SUCH_MENU", false);            // This is set by plugin if its called to load a target/menu pair that doesn't exist
-            vaProxy.Setbool(">JBMS_MENU_UP", false);                 // True only while menu is up (hopefully)
+            vaProxy.SetBoolean(">JBMS_NO_SUCH_MENU", false);            // This is set by plugin if its called to load a target/menu pair that doesn't exist
+            vaProxy.SetBoolean(">JBMS_MENU_UP", false);                 // True only while menu is up (hopefully)
             if (onlyUpAndErrors)
                 return;
 
@@ -417,7 +417,7 @@ namespace Tanrr.VAPlugin.BMSRadio
 
             vaProxy.WriteToLog("JeevesBMSRadio: OneTimeMenuDatLoad completed successfully", "Purple");
 
-            vaProxy.Setbool(">JBMS_INITED", true);
+            vaProxy.SetBoolean(">JBMS_INITED", true);
             return true;
         }
 
@@ -535,7 +535,7 @@ namespace Tanrr.VAPlugin.BMSRadio
             //vaProxy.SetText and vaProxy.GetText - access text variable values
             //vaProxy.SetInt and vaProxy.GetInt - access integer variable values
             //vaProxy.SetDecimal and vaProxy.GetDecimal - access decimal variable values
-            //vaProxy.Setbool and vaProxy.Getbool - access boolean variable values
+            //vaProxy.SetBoolean and vaProxy.GetBoolean - access boolean variable values
             //vaProxy.SetDate and vaProxy.GetDate - access date/time variable values
 
             //to indicate to VoiceAttack that you would like a variable removed, simply set it to null.  all variables set here can be used within VoiceAttack.
@@ -656,7 +656,7 @@ namespace Tanrr.VAPlugin.BMSRadio
                     string MenuShow = Menu.MenuShow;
                     ExecuteCmdOrKeys(vaProxy, MenuShow, /* waitForReturn */ true);
                     // Assume Success
-                    vaProxy.Setbool(">JBMS_MENU_UP", true);
+                    vaProxy.SetBoolean(">JBMS_MENU_UP", true);
 
                     // Async non-blocking wait & listen for phrases that match menu item choices (with timeout)
                     // Plugin invoked with "JBMS_HANDLE_MENU_RESPONSE" if matching response heard
