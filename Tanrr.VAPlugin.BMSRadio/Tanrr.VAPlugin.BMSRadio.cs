@@ -220,7 +220,7 @@ namespace Tanrr.VAPlugin.BMSRadio
         //this function is called from VoiceAttack when the 'stop all commands' button is pressed or a, 'stop all commands' action is called.  this will help you know if processing needs to stop if you have long-running code
         public static void VA_StopCommand()  
         {
-            // TODO
+            // TODO - Do Something Here??
         }
 
         public static bool GetNonNullBool(dynamic vaProxy, string propName)
@@ -228,7 +228,7 @@ namespace Tanrr.VAPlugin.BMSRadio
             if (string.IsNullOrEmpty(propName))
                 return false;
 
-            return vaProxy.Getbool(propName) ?? false;
+            return vaProxy.GetBoolean(propName) ?? false;
         }
 
         public static void SetSharedVarsDefaults(dynamic vaProxy)
