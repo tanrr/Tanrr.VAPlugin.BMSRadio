@@ -5,10 +5,35 @@ using System.Linq;
 using System.Management.Instrumentation;
 using System.Security.Cryptography;
 using System.Text;
-
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Tanrr.VAPlugin.BMSRadio
 {
+
+    // JSON TEST STUFF
+    public class Account
+    {
+        public string Name { get; set; }
+        public string Email { get; set; }
+        public DateTime DOB { get; set; }
+    }
+
+    public static class JsonExample
+    {
+        public static string DoJsonExample()
+        {
+            Account account = new Account
+            {
+                Name = "John Doe",
+                Email = "john@microsoft.com",
+                DOB = new DateTime(1980, 2, 20, 0, 0, 0, DateTimeKind.Utc),
+            };
+            return JsonConvert.SerializeObject(account, Formatting.Indented);
+        }
+    }
+
+
     public static class DebugLogger
     {
         static private bool s_debugLogging = false;
@@ -301,6 +326,9 @@ namespace Tanrr.VAPlugin.BMSRadio
 
         public static bool OneTimeMenuDataLoad(dynamic vaProxy)
         {
+            // TEMP
+            vaProxy.WriteToLog("JSON TEST: " + JsonExample.DoJsonExample());
+
             vaProxy.WriteToLog("JeevesBMSRadio: OneTimeMenuDataLoad()", "Purple");
 
             if (GetNonNullBool(vaProxy, ">JBMS_INITED"))

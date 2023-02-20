@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("VATestPlugin")]
+[assembly: AssemblyTitle("Tanrr.VAPlugin.BMSRadio")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("VATestPlugin")]
+[assembly: AssemblyProduct("Tanrr.VAPlugin.BMSRadio")]
 [assembly: AssemblyCopyright("Copyright ©  2022")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("c8fd4254-b088-4edc-b311-7354cad32629")]
+[assembly: Guid("7e22363e-2cca-4b26-8aae-a292f73d2a53")]
 
 // Version information for an assembly consists of the following four values:
 //
