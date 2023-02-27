@@ -1,0 +1,44 @@
+	[
+		{
+			"menuTarget": "Element",
+			"targetPhrases": "Element;3",
+			"menuName": "Combat 2",
+			"menuNamePhrases": "Combat [Management;] 2",
+			"menuShow": "EE",
+
+			"menuItems": [
+				[ "Weapons Free [Air;A A;]", "4" ],
+				[ "Check My 6;Where Is He", "5", "EC2-HELP" ],
+				[ "All together Now;Do It", "A" ],
+				[ "Jettison Stores", "JJ" ]
+			]
+		},
+		{
+			"menuTarget": "Wingman",
+			"targetPhrases": "Wingman;2",
+			"menuName": "Combat 1",
+			"menuNamePhrases": "Combat [Management;] 1",
+			"menuShow": "W",
+
+			"menuItems": [
+				[ "Weapons Free [Air;A A;]", "4" ],
+				[ "Check My 6;Where Is He", "5", "WC2-HELP" ],
+				[ "All together Now;Do It", "A" ],
+				[ "Jettison Stores", "JJ" ]
+			]
+		},
+		{
+			"menuTarget": "Wingman",
+			"targetPhrases": "Wingman;2",
+			"menuName": "Combat 2",
+			"menuNamePhrases": "Combat [Management;] 2",
+			"menuShow": "WW",
+
+			"menuItems": [
+				[ "Weapons Free [Air;A A;]", "4" ],
+				[ "Check My 6;Where Is He", "5", "WC2-HELP" ],
+				[ "All together Now;Do It", "A" ],
+				[ "Jettison Stores", "JJ" ]
+			]
+		}
+	]
