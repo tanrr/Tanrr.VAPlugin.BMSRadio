@@ -5,8 +5,11 @@ using System.Linq;
 using System.Management.Instrumentation;
 using System.Security.Cryptography;
 using System.Text;
+using System.IO;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Runtime.CompilerServices;
+
 
 namespace Tanrr.VAPlugin.BMSRadio
 {
@@ -53,7 +56,7 @@ namespace Tanrr.VAPlugin.BMSRadio
         public string MenuItemExecute { get; set; }              // Having Command as string instead of number means it could be any char (or a combo of chars)
         public string[] ExtractedMenuItemPhrases { get; set; }   // Array of each of all possible versions of the phrases, extracted separately 
 
-        public MenuItemBMS(dynamic vaProxy, string itemPhrases, string itemExec)
+        public MenuItemBMS(dynamic vaProxy, string itemPhrases, string itemExec, string directCmd = null )
         {
 
             if (itemPhrases == null || itemExec == null)
@@ -324,13 +327,29 @@ namespace Tanrr.VAPlugin.BMSRadio
             }
         }
 
+        public static bool ReadFileIntoString(dynamic vaProxy, string pathFile, out string stringFromFile)
+        {
+            stringFromFile = string.Empty;
+            try
+            {
+                stringFromFile = File.ReadAllText(pathFile);
+            }
+            catch
+            {
+                vaProxy.WriteToLog("JeevesBMSRadio: Cannot read file " + pathFile, "Red");
+                return false;
+            }
+            if (String.IsNullOrEmpty(stringFromFile))
+            {
+                vaProxy.WriteToLog("JeevesBMSRadio: No data read from " + pathFile, "Red");
+                return false;
+            }
+
+            return true;
+        }
+
         public static bool OneTimeMenuDataLoad(dynamic vaProxy)
         {
-            // TEMP
-            vaProxy.WriteToLog("JSON TEST: " + JsonExample.DoJsonExample());
-
-            vaProxy.WriteToLog("JeevesBMSRadio: OneTimeMenuDataLoad()", "Purple");
-
             if (GetNonNullBool(vaProxy, ">JBMS_INITED"))
             {
                 // Already initialized
@@ -338,6 +357,136 @@ namespace Tanrr.VAPlugin.BMSRadio
                 // Don't try to reinitialize - just return success quietly since we should already be configured
                 return true;
             }
+
+            vaProxy.WriteToLog("JeevesBMSRadio: OneTimeMenuDataLoad()", "Purple");
+
+            // Look for our menu info json file and schema and load each into a string
+            string appsDir = vaProxy.AppsDir;
+            if (String.IsNullOrEmpty(appsDir))
+            {
+                vaProxy.WriteToLog("JeevesBMSRadio: Invalid AppsDir - Cannot load menu info", "Red");
+                return false;
+            }
+            string menuJsonPath = appsDir + "\\Tanrr.VAPlugin.BMSRadio\\Tanrr.VAPlugin.Radio.Menus.json";
+            string menuJsonSchemaPath = appsDir + "\\Tanrr.VAPlugin.BMSRadio\\Tanrr.VAPlugin.Radio.Schema.json";
+
+            string menusJsonRead = string.Empty;
+            string menuSchemaRead = string.Empty;
+            if (!ReadFileIntoString(vaProxy, menuJsonPath, out menusJsonRead))
+            {
+                vaProxy.WriteToLog("JeevesBMSRadio: No json data read from " + menuJsonPath, "Red");
+                return false;
+            }
+            if (!ReadFileIntoString(vaProxy, menuJsonSchemaPath, out menuSchemaRead))
+            {
+                vaProxy.WriteToLog("JeevesBMSRadio: No schema data read from " + menuJsonSchemaPath, "Red");
+                return false;
+            }
+
+            // JToken jsonToValidate = JToken.Parse(menusJsonRead);
+            // JsonSchema schema = JsonSchema.Parse(menuSchemaRead);
+            // schema.Validate() no longer exists...
+
+
+            // Parse schema
+            /* // SCHEMA 
+            JSchema menuSchemaDeserialized = new JSchema();
+            try
+            {
+                menuSchemaDeserialized = JSchema.Parse(menuSchemaRead);
+            }
+            catch
+            {
+                vaProxy.WriteToLog("JeevesBMSRadio: Failed to parse schema " + menuJsonSchemaPath, "Red");
+                return false;
+            }
+            if (Object.ReferenceEquals(menusDeserialized, null))
+            {
+                vaProxy.WriteToLog("JeevesBMSRadio: Failed to parse schema " + menuJsonSchemaPath, "Red");
+                return false;
+            }
+
+            IList<string> errorMsgs= new List<string>();
+            if (!menusDeserialized.IsValid(menuSchemaDeserialized, out errorMsgs))
+            {
+                vaProxy.WriteToLog("JeevesBMSRadio: " + menuJsonPath + " failed schema validation against " + menuJsonSchemaPath, "Red");
+                if (errorMsgs != null)
+                {
+                    foreach( string msg in errorMsgs)
+                    {
+                        vaProxy.WriteToLog("JeevesBMSRadio: Schema Error: " + msg, "Red");
+                    }
+                }
+                return false;
+            }
+            */
+
+            // Parse top level menu as array            
+            JArray menusDeserialized = new JArray();
+            try
+            {
+                //menusDeserialized = JsonConvert.DeserializeObject<dynamic>(menuJsonRead);
+                // menusTest = JsonConvert.DeserializeObject<JArray>(menuJsonRead);
+                menusDeserialized = JArray.Parse(menusJsonRead);
+            }
+            catch
+            {
+                vaProxy.WriteToLog("JeevesBMSRadio: Failed to parse json " + menuJsonPath + " to JArray", "Red");
+                return false;
+            }
+            if (Object.ReferenceEquals(menusDeserialized, null))
+            {
+                vaProxy.WriteToLog("JeevesBMSRadio: Failed to parse json " + menuJsonPath + " to JArray", "Red");
+                return false;
+            }
+
+
+            // Read through each menu and add details to our list
+            s_menusBMS = new List<MenuBMS>();
+            int indexMenu = 0;
+            foreach (JObject menuJson in menusDeserialized) // <-- Note that here we used JObject instead of usual JProperty
+            {
+                JArray menuItems = (JArray)menuJson["menuItems"];
+                int countMenuItems = menuItems.Count;
+                MenuItemBMS[] menuItemsBMS = new MenuItemBMS[countMenuItems];
+                // int i = 0;
+                // foreach (JObject menuItem in menuItems)
+                for (int i = 0; i < countMenuItems; i++)
+                {
+                    JArray menuItemArray = (JArray)menuItems[i];
+                    int countMenuArray = menuItemArray.Count;
+                    if (countMenuArray < 2 || countMenuArray > 3)
+                    {
+                        vaProxy.WriteToLog("JeevesBMSRadio: Invalid number of items for a line-item menu", "Red");
+                        return false;
+                    }
+                    MenuItemBMS menuItemBMS = new MenuItemBMS(vaProxy, (string)menuItemArray[0], (string)menuItemArray[1], countMenuArray == 3 ? (string)menuItemArray[2] : null);
+                    menuItemsBMS[i] = menuItemBMS;
+                }
+
+                MenuBMS menuBMS = new MenuBMS
+                (vaProxy, (string)menuJson["menuTarget"], (string)menuJson["targetPhrases"], (string)menuJson["menuName"], (string)menuJson["menuNamePhrases"], (string)menuJson["menuShow"], menuItemsBMS);
+
+                // Store the index to this menu for quicker access later
+                try
+                {
+                    s_menusBMS.Add(menuBMS);
+                    vaProxy.SessionState.Add(menuBMS.MenuFullID, indexMenu++);
+                }
+                catch (System.ArgumentException e)
+                {
+                    vaProxy.WriteToLog("JeevesBMSRadio: Failed to add a menu with menuTarget_menuName of " + menuBMS.MenuFullID, "Red");
+                    vaProxy.WriteToLog(e.Message, "Red");
+                    return false;
+                }
+            }
+
+            vaProxy.WriteToLog("JeevesBMSRadio: OneTimeMenuDatLoad completed successfully", "Purple");
+
+            vaProxy.SetBoolean(">JBMS_INITED", true);
+            return true;
+
+            // Yes, know TODO
 
             s_menusBMS = new List<MenuBMS>();
 
@@ -597,6 +746,32 @@ namespace Tanrr.VAPlugin.BMSRadio
                     // Should only be called when ESC has been pressed so current menu has already been closed
                     vaProxy.WriteToLog("JeevesBMSRadio: JBMS_RESET_MENU_STATE - ESC should have been pressed already", "Purple");
                     ResetMenuState(vaProxy);
+                    break;
+
+                case "JBMS_DIRECT_MENU_CMD":
+                    /*
+                    "WC1-ATTACK-TGT"  = "2, Attack My Target"
+                    - W 1
+
+                    "FC1-WEAPONS-FREE-AA" = "Flight, Weapons Free [Air;]"
+                    - R 4
+
+                    "FX1-FENCE-IN" = "Flight, Fence In/Out"
+                    RRRRRRR 1
+                    "JBMS-FX1-FENCE-OUT"
+                    RRRRRRR 2
+
+                    "TT-REPORT-OHB" = "* [Tower;Traffic] * [Report;] [Overhead;Left;Right;In The] Break"
+                    TT 5
+
+                    "AWACS-VECT-BOGEY-DOPE" = "[Wizard;Overlord;Magic;] [Request;] Bogey Dope"
+                    - QQ 1
+
+                    Dict of quick phrases.
+                    Map "AWACS-VECT-BOGEY-DOPE" to QQ1 based off the specific menu and menu item,
+                    VA calls into plugin with vaProxy.Context of "JBMS_DIRECT_MENU_CMD"
+                      - Look in ">JBMS_DIRECT_MENU_CMD" to see the command and execute (bypass menu requirements) 
+                    */
                     break;
 
                 case "JBMS_HANDLE_MENU_RESPONSE":
