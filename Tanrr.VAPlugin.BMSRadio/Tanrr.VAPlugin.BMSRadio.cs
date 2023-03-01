@@ -14,42 +14,76 @@ using System.Runtime.CompilerServices;
 namespace Tanrr.VAPlugin.BMSRadio
 {
 
-    // JSON TEST STUFF
-    public class Account
+    public static class Logger
     {
-        public string Name { get; set; }
-        public string Email { get; set; }
-        public DateTime DOB { get; set; }
-    }
+        static private bool s_Json = false;
+        static private bool s_Structures = false;
+        static private bool s_Verbose = false;
 
-    public static class JsonExample
-    {
-        public static string DoJsonExample()
+        static public bool Json
         {
-            Account account = new Account
+            get => s_Json;
+            set => s_Json = value;
+        }
+
+        static public bool Structures
+        {
+            get => s_Structures;
+            set => s_Structures = value;
+        }
+
+        static public bool Verbose
+        {
+            get => s_Verbose;
+            set => s_Verbose = value;
+        }
+
+        // Default logging we always do
+        public static void Write(dynamic vaProxy, string msg)
+        {
+            vaProxy.WriteToLog("JeevesBMSRadio: " + msg, "Purple");
+        }
+
+        // Logging only if s_Json, but ALSO do if s_Verbose
+        public static void JsonWrite(dynamic vaProxy, string msg)
+        {
+            if (s_Json || s_Verbose)
             {
-                Name = "John Doe",
-                Email = "john@microsoft.com",
-                DOB = new DateTime(1980, 2, 20, 0, 0, 0, DateTimeKind.Utc),
-            };
-            return JsonConvert.SerializeObject(account, Formatting.Indented);
+                vaProxy.WriteToLog("JeevesBMSRadio JSON: " + msg, "Blue");
+            }
         }
-    }
 
-
-    public static class DebugLogger
-    {
-        static private bool s_debugLogging = false;
-
-        public static void EnableDebugLog(bool enable)
-        { s_debugLogging = enable; }
-
-        public static void Write(dynamic vaProxy, string msg, string color)
+        // Logging only if s_Strucutres
+        public static void StructuresWrite(dynamic vaProxy, string msg)
         {
-            if (s_debugLogging)
-                vaProxy.WriteToLog("JeevesBMSRadio DEBUG: " + msg, color);
+            if (s_Structures)
+            {
+                vaProxy.WriteToLog("JeevesBMSRadio: " + msg, "Gray");
+            }
+        }
+
+        // Logging only if s_Verbose
+        public static void VerboseWrite(dynamic vaProxy, string msg)
+        {
+            if (s_Verbose)
+            {
+                vaProxy.WriteToLog("JeevesBMSRadio: " + msg, "Gray");
+            }
+        }
+
+        // Warning Logging
+        public static void Warning(dynamic vaProxy, string msg)
+        {
+            vaProxy.WriteToLog("JeevesBMSRadio WARNING: " + msg, "Orange");
+        }
+
+        // Error Logging
+        public static void Error(dynamic vaProxy, string msg)
+        {
+            vaProxy.WriteToLog("JeevesBMSRadio ERROR: " + msg, "Red");
         }
     }
+
     public class MenuItemBMS
     {
         public string MenuItemPhrases { get; set; }              // Possibly multiple phrases
