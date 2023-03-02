@@ -8,262 +8,35 @@ using System.Text;
 using System.IO;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Schema;
 using System.Runtime.CompilerServices;
 
 
 namespace Tanrr.VAPlugin.BMSRadio
 {
-
-    public static class Logger
-    {
-        static private bool s_Json = false;
-        static private bool s_Structures = false;
-        static private bool s_Verbose = false;
-
-        static public bool Json
-        {
-            get => s_Json;
-            set => s_Json = value;
-        }
-
-        static public bool Structures
-        {
-            get => s_Structures;
-            set => s_Structures = value;
-        }
-
-        static public bool Verbose
-        {
-            get => s_Verbose;
-            set => s_Verbose = value;
-        }
-
-        // Default logging we always do
-        public static void Write(dynamic vaProxy, string msg)
-        {
-            vaProxy.WriteToLog("JeevesBMSRadio: " + msg, "Purple");
-        }
-
-        // Logging only if s_Json, but ALSO do if s_Verbose
-        public static void JsonWrite(dynamic vaProxy, string msg)
-        {
-            if (s_Json || s_Verbose)
-            {
-                vaProxy.WriteToLog("JeevesBMSRadio JSON: " + msg, "Blue");
-            }
-        }
-
-        // Logging only if s_Strucutres
-        public static void StructuresWrite(dynamic vaProxy, string msg)
-        {
-            if (s_Structures)
-            {
-                vaProxy.WriteToLog("JeevesBMSRadio: " + msg, "Gray");
-            }
-        }
-
-        // Logging only if s_Verbose
-        public static void VerboseWrite(dynamic vaProxy, string msg)
-        {
-            if (s_Verbose)
-            {
-                vaProxy.WriteToLog("JeevesBMSRadio: " + msg, "Gray");
-            }
-        }
-
-        // Warning Logging
-        public static void Warning(dynamic vaProxy, string msg)
-        {
-            vaProxy.WriteToLog("JeevesBMSRadio WARNING: " + msg, "Orange");
-        }
-
-        // Error Logging
-        public static void Error(dynamic vaProxy, string msg)
-        {
-            vaProxy.WriteToLog("JeevesBMSRadio ERROR: " + msg, "Red");
-        }
-    }
-
-    public class MenuItemBMS
-    {
-        public string MenuItemPhrases { get; set; }              // Possibly multiple phrases
-        public string MenuItemExecute { get; set; }              // Having Command as string instead of number means it could be any char (or a combo of chars)
-        public string[] ExtractedMenuItemPhrases { get; set; }   // Array of each of all possible versions of the phrases, extracted separately 
-
-        public MenuItemBMS(dynamic vaProxy, string itemPhrases, string itemExec, string directCmd = null )
-        {
-
-            if (itemPhrases == null || itemExec == null)
-            {
-                SetEmpty();
-                return;
-            }
-
-            MenuItemPhrases = RemoveEmptyMatches( itemPhrases.ToLower() );
-            MenuItemExecute = itemExec;
-            if ( MenuItemPhrases.Length == 0 || MenuItemExecute.Length == 0 )
-            {
-                SetEmpty();
-                return;
-            }
-
-            ExtractedMenuItemPhrases = vaProxy.Utility.ExtractPhrases(MenuItemPhrases);
-            if ( ExtractedMenuItemPhrases.Length == 0 )
-            {
-                SetEmpty();
-                return;
-            }
-        }
-
-        void SetEmpty()
-        {
-            // TODO: Cleanup first if non-null
-                
-            MenuItemPhrases = string.Empty;
-            MenuItemExecute = string.Empty;
-            ExtractedMenuItemPhrases = new string[] { string.Empty };
-        }
-
-        // Clear out starting, ending, or double ";" in strings - needed to avoid empty matches
-        // Note that we DO allow internal null matches, but not for a full match - "Attack [Air;AA;];Get Them" is fine, but "Hello ;; Attack [Air;AA;];Get Them;" is not
-        private string RemoveEmptyMatches(string phrases) 
-        {
-            if (phrases == null) return string.Empty;
-
-            phrases = phrases.Trim(';');  // Remove leading or trailing ; so that phrases can't match "" which matches all
-
-            if (phrases.Length == 0) return string.Empty;
-
-            return phrases.Replace(";;", ";");
-        }
-    }
-    public class MenuBMS
-    {
-        protected Dictionary<string, string> _extractedMenuItems;
-        public string MenuFullID { get; set; }        // MenuTarget_MenuName for easy ident, generated on creation
-        public string MenuTarget { get; set; }        // "Wingman"   // Caller must pass THIS string when trying to bring up a menu, not whatever user said
-        public string TargetPhrases { get; set; }     // "2;Wingman;Heya"
-        public string MenuName { get; set; }          // "Combat 3"  // Caller must pass THIS string when trying to bring up a menu, not whatever user said
-        public string MenuNamePhrases { get; set; }   // "Combat 3;Combat Management 3"
-        public string MenuShow { get; set; }          // If this matches a VA phrase in the profile, execute that command, else presses chars passed
-
-        public MenuItemBMS[] MenuItemsBMS;
-        public string AllMenuItemPhrases;
-
-        static public string MakeFullID(string menuTarget, string menuName)
-        {
-            if (string.IsNullOrEmpty(menuTarget) || string.IsNullOrEmpty(menuName) )
-                return string.Empty;
-            return menuTarget + "_" + menuName;
-        }
-
-        public string MenuItemExecuteFromPhrase(dynamic vaProxy, string simplePhrase)
-        {
-            if (string.IsNullOrEmpty(simplePhrase)) 
-                return null;    
-
-            if (_extractedMenuItems.ContainsKey(simplePhrase))
-                return _extractedMenuItems[simplePhrase];
-            else
-                return null;
-        }
-
-        public MenuBMS(dynamic vaProxy, string tgt, string tgtPhrases, string name, string namePhrases, string show, MenuItemBMS[] items  ) 
-        {
-            // vaProxy.WriteToLog("JeevesBMSRadio: In MenuBMS Constructor", "Purple");
-
-            _extractedMenuItems = new Dictionary<string, string>();
-
-            MenuTarget = tgt;
-            TargetPhrases = tgtPhrases;
-            MenuName = name;
-            MenuNamePhrases= namePhrases;
-            MenuShow = show;
-
-            MenuItemsBMS = items;
-
-            MenuFullID = string.Empty; // Starts empty
-            AllMenuItemPhrases = string.Empty;
-
-            // MakeFullID has its own error checks and will return string.Empty on error
-            if ( string.IsNullOrEmpty(MenuTarget) || string.IsNullOrEmpty(TargetPhrases) 
-                || string.IsNullOrEmpty(MenuName) || string.IsNullOrEmpty(MenuNamePhrases) 
-                || string.IsNullOrEmpty(MenuShow) 
-                || items == null || items.Length == 0)
-            {
-                vaProxy.WriteToLog("JeevesBMSRadio: Unexpected failure creating MenuBMS - Invalid Parameters passed to constructor", "Red");
-                return;
-            }
-
-            // DebugLogger.Write(vaProxy, "In MenuBMS Constructor", "Purple");
-
-            // Make MenuFullID out of MenuTarget and MenuName
-            MenuFullID = MakeFullID(MenuTarget, MenuName);
-            if ( string.IsNullOrEmpty(MenuFullID) )
-            { 
-                MenuFullID = string.Empty;
-                // error
-                vaProxy.WriteToLog("JeevesBMSRadio: Unexpected failure creating MenuBMS MenuFullID", "Red");
-                return;
-            }
-
-            // DebugLogger.Write(vaProxy, "MenuBMS MakeFullID Finished", "Purple");
-
-            // Create a string with all commands, ; delimeted, to pass to Get User Input - Wait for Spoken Response 
-            // AND Fill in _extractedMenuItems dictionary with all possble phrases, mapped to their MenuItemExecute values
-            // ie "Weapons Free [Air;A A;]" separated into "Weapons Free Air", "Weapons Free A A" and "Weapons Free"
-            foreach (MenuItemBMS menuItem in MenuItemsBMS)
-            {
-                // DebugLogger.Write(vaProxy, "menuItem " + menuItem.MenuItemPhrases + " : " + menuItem.MenuItemExecute, "Purple");
-
-                AllMenuItemPhrases = AllMenuItemPhrases.Insert(AllMenuItemPhrases.Length, menuItem.MenuItemPhrases + ";");
-                string[] MenuItemPhrases = menuItem.ExtractedMenuItemPhrases;
-                string MenuItemExecute = menuItem.MenuItemExecute;
-
-                // DebugLogger.Write(vaProxy, "    Set MenuItemPhrases array of extracted phrases and MenuItemExecute", "Purple");
-
-                foreach (string MenuItemPhrase in MenuItemPhrases)
-                {
-                    if (_extractedMenuItems.ContainsKey(MenuItemPhrase))
-                    {
-                        // This is a duplicate - skip it, but log
-                        string DupedExecute = _extractedMenuItems[MenuItemPhrase];
-                        string AddWarningMessage = "JeevesBMSRadio: Duplicate Extracted Phrase " + MenuItemPhrase + " in Menu " + MenuName + "\n Leaving version with Menu Item Key " + DupedExecute + "\n Dropping version with Menu Item Key " + MenuItemExecute;
-                        vaProxy.WriteToLog(AddWarningMessage, "Red");
-                        continue;
-                    }
-                    else 
-                    { 
-                        try
-                        {
-                            _extractedMenuItems.Add(MenuItemPhrase, MenuItemExecute);
-                        }
-                        catch (ArgumentException)
-                        {
-                            vaProxy.WriteToLog("JeevesBMSRadio: Unexpected failure to add an extracted menu item phrase to dictionary.", "Red");
-                            string AddErrorMessage = " MenuItemPhrase = " + MenuItemPhrase + "\n MenuItemExecute = " + MenuItemExecute;
-                            vaProxy.WriteToLog(AddErrorMessage, "Red");
-                            // Letting the loop continue here, in case this was just a duplicate we failed to catch
-                        }
-                    }
-                }
-            }
-            // Get rid of that last ";" so we don't match an empty string
-            AllMenuItemPhrases = AllMenuItemPhrases.TrimEnd(';');
-        }
-
-    };
-
     // JBMS Generated GUIDS:
     // G1 7e22363e-2cca-4b26-8aae-a292f73d2a53
     // G2 16223078-853e-41fb-a741-3e9cacfe94d9
     // G3 da2b13d9-f5fd-47e3-93af-b5c9e089b5a8
 
+    public struct DirCmdIndexes
+    {
+        public int IndexMenu { get; }
+        public int IndexMenuItem { get; }
+        public DirCmdIndexes(int indexMenu, int indexMenuItem)
+        {
+            this.IndexMenu = indexMenu; 
+            this.IndexMenuItem = indexMenuItem;
+        }
+    };
+
     public class Jeeves_BMS_Radio_Plugin 
     {
         protected static List<MenuBMS> s_menusBMS = null;
         protected static MenuBMS s_curMenuBMS = null;
-        
+
+        protected static Dictionary<string, DirCmdIndexes> s_DirCmdMap = new Dictionary<string, DirCmdIndexes>();
+       
         public static MenuBMS CurMenuBMS 
         { 
             get => s_curMenuBMS;
@@ -315,7 +88,7 @@ namespace Tanrr.VAPlugin.BMSRadio
 
         public static void ResetMenuState(dynamic vaProxy, bool onlyUpAndErrors = false)
         {
-            vaProxy.WriteToLog("JeevesBMSRadio: ResetMenuState", "Purple");
+            Logger.Write(vaProxy, "ResetMenuState");
 
             vaProxy.SetBoolean(">JBMS_NO_SUCH_MENU", false);            // This is set by plugin if its called to load a target/menu pair that doesn't exist
             vaProxy.SetBoolean(">JBMS_MENU_UP", false);                 // True only while menu is up (hopefully)
@@ -370,12 +143,12 @@ namespace Tanrr.VAPlugin.BMSRadio
             }
             catch
             {
-                vaProxy.WriteToLog("JeevesBMSRadio: Cannot read file " + pathFile, "Red");
+                Logger.Error(vaProxy, "Cannot read file " + pathFile);
                 return false;
             }
             if (String.IsNullOrEmpty(stringFromFile))
             {
-                vaProxy.WriteToLog("JeevesBMSRadio: No data read from " + pathFile, "Red");
+                Logger.Error(vaProxy, "No data read from " + pathFile);
                 return false;
             }
 
@@ -387,18 +160,18 @@ namespace Tanrr.VAPlugin.BMSRadio
             if (GetNonNullBool(vaProxy, ">JBMS_INITED"))
             {
                 // Already initialized
-                vaProxy.WriteToLog("JeevesBMSRadio: OneTimeMenuDataLoad() called more than once - possible when switching betweeen profiles.", "Red");
+                Logger.Warning(vaProxy, "OneTimeMenuDataLoad() called more than once - possible when switching betweeen profiles.");
                 // Don't try to reinitialize - just return success quietly since we should already be configured
                 return true;
             }
 
-            vaProxy.WriteToLog("JeevesBMSRadio: OneTimeMenuDataLoad()", "Purple");
+            Logger.Write(vaProxy, "OneTimeMenuDataLoad()");
 
             // Look for our menu info json file and schema and load each into a string
             string appsDir = vaProxy.AppsDir;
             if (String.IsNullOrEmpty(appsDir))
             {
-                vaProxy.WriteToLog("JeevesBMSRadio: Invalid AppsDir - Cannot load menu info", "Red");
+                Logger.Error(vaProxy, "Invalid AppsDir - Cannot load menu info");
                 return false;
             }
             string menuJsonPath = appsDir + "\\Tanrr.VAPlugin.BMSRadio\\Tanrr.VAPlugin.Radio.Menus.json";
@@ -408,52 +181,14 @@ namespace Tanrr.VAPlugin.BMSRadio
             string menuSchemaRead = string.Empty;
             if (!ReadFileIntoString(vaProxy, menuJsonPath, out menusJsonRead))
             {
-                vaProxy.WriteToLog("JeevesBMSRadio: No json data read from " + menuJsonPath, "Red");
+                Logger.Error(vaProxy, "No json data read from " + menuJsonPath);
                 return false;
             }
             if (!ReadFileIntoString(vaProxy, menuJsonSchemaPath, out menuSchemaRead))
             {
-                vaProxy.WriteToLog("JeevesBMSRadio: No schema data read from " + menuJsonSchemaPath, "Red");
+                Logger.Error(vaProxy, "No schema data read from " + menuJsonSchemaPath);
                 return false;
             }
-
-            // JToken jsonToValidate = JToken.Parse(menusJsonRead);
-            // JsonSchema schema = JsonSchema.Parse(menuSchemaRead);
-            // schema.Validate() no longer exists...
-
-
-            // Parse schema
-            /* // SCHEMA 
-            JSchema menuSchemaDeserialized = new JSchema();
-            try
-            {
-                menuSchemaDeserialized = JSchema.Parse(menuSchemaRead);
-            }
-            catch
-            {
-                vaProxy.WriteToLog("JeevesBMSRadio: Failed to parse schema " + menuJsonSchemaPath, "Red");
-                return false;
-            }
-            if (Object.ReferenceEquals(menusDeserialized, null))
-            {
-                vaProxy.WriteToLog("JeevesBMSRadio: Failed to parse schema " + menuJsonSchemaPath, "Red");
-                return false;
-            }
-
-            IList<string> errorMsgs= new List<string>();
-            if (!menusDeserialized.IsValid(menuSchemaDeserialized, out errorMsgs))
-            {
-                vaProxy.WriteToLog("JeevesBMSRadio: " + menuJsonPath + " failed schema validation against " + menuJsonSchemaPath, "Red");
-                if (errorMsgs != null)
-                {
-                    foreach( string msg in errorMsgs)
-                    {
-                        vaProxy.WriteToLog("JeevesBMSRadio: Schema Error: " + msg, "Red");
-                    }
-                }
-                return false;
-            }
-            */
 
             // Parse top level menu as array            
             JArray menusDeserialized = new JArray();
@@ -465,14 +200,51 @@ namespace Tanrr.VAPlugin.BMSRadio
             }
             catch
             {
-                vaProxy.WriteToLog("JeevesBMSRadio: Failed to parse json " + menuJsonPath + " to JArray", "Red");
+                Logger.Error(vaProxy, "Failed to parse json " + menuJsonPath + " to JArray");
                 return false;
             }
             if (Object.ReferenceEquals(menusDeserialized, null))
             {
-                vaProxy.WriteToLog("JeevesBMSRadio: Failed to parse json " + menuJsonPath + " to JArray", "Red");
+                Logger.Error(vaProxy, "Failed to parse json " + menuJsonPath + " to JArray");
                 return false;
             }
+
+
+            
+            // SCHEMA SCHEMA SCHEMA
+            // Parse schema & verify menu json
+            JSchema menuSchemaDeserialized = new JSchema();
+            try
+            {
+                menuSchemaDeserialized = JSchema.Parse(menuSchemaRead);
+            }
+            catch
+            {
+                Logger.Error(vaProxy, "Failed to parse schema " + menuJsonSchemaPath);
+                return false;
+            }
+            if (Object.ReferenceEquals(menusDeserialized, null))
+            {
+                Logger.Error(vaProxy, "Failed to parse schema " + menuJsonSchemaPath);
+                return false;
+            }
+
+            IList<string> errorMsgs = new List<string>();
+            if (!menusDeserialized.IsValid(menuSchemaDeserialized, out errorMsgs))
+            {
+                Logger.Error(vaProxy, "" + menuJsonPath + " failed schema validation against " + menuJsonSchemaPath);
+                if (errorMsgs != null)
+                {
+                    foreach (string msg in errorMsgs)
+                    {
+                        Logger.Error(vaProxy, "Schema Error: " + msg);
+                    }
+                }
+                return false;
+            }
+            // SCHEMA SCHEMA SCHEMA
+            
+
 
 
             // Read through each menu and add details to our list
@@ -483,15 +255,13 @@ namespace Tanrr.VAPlugin.BMSRadio
                 JArray menuItems = (JArray)menuJson["menuItems"];
                 int countMenuItems = menuItems.Count;
                 MenuItemBMS[] menuItemsBMS = new MenuItemBMS[countMenuItems];
-                // int i = 0;
-                // foreach (JObject menuItem in menuItems)
                 for (int i = 0; i < countMenuItems; i++)
                 {
                     JArray menuItemArray = (JArray)menuItems[i];
                     int countMenuArray = menuItemArray.Count;
                     if (countMenuArray < 2 || countMenuArray > 3)
                     {
-                        vaProxy.WriteToLog("JeevesBMSRadio: Invalid number of items for a line-item menu", "Red");
+                        Logger.Error(vaProxy, "Invalid number of items for a line-item menu");
                         return false;
                     }
                     MenuItemBMS menuItemBMS = new MenuItemBMS(vaProxy, (string)menuItemArray[0], (string)menuItemArray[1], countMenuArray == 3 ? (string)menuItemArray[2] : null);
@@ -505,138 +275,54 @@ namespace Tanrr.VAPlugin.BMSRadio
                 try
                 {
                     s_menusBMS.Add(menuBMS);
-                    vaProxy.SessionState.Add(menuBMS.MenuFullID, indexMenu++);
+                    // Don't increase the index yet as we refer to it when caching info for menuItem directCommands
+                    vaProxy.SessionState.Add(menuBMS.MenuFullID, indexMenu);
                 }
                 catch (System.ArgumentException e)
                 {
-                    vaProxy.WriteToLog("JeevesBMSRadio: Failed to add a menu with menuTarget_menuName of " + menuBMS.MenuFullID, "Red");
-                    vaProxy.WriteToLog(e.Message, "Red");
+                    Logger.Error(vaProxy, "Failed to add a menu with menuTarget_menuName of " + menuBMS.MenuFullID);
+                    Logger.Error(vaProxy, e.Message);
                     return false;
                 }
+
+                // For each menu fully added, add any of it's direct commands to a dictionary mapping to the specific menu and menuitem
+                // We're repeating the for loop, but couldn't do this safely before in case creation and adding the full menu failed
+                // TODO: Move this into a container for the list of menus
+                for (int i = 0; i < countMenuItems; i++)
+                {
+                    if (menuItemsBMS[i].HasDirectCmd())
+                    {
+                        // Cache the string in case we need to show it in the fail message
+                        string dirCmd = menuItemsBMS[i].MenuItemDirectCmd;
+                        // Save dictionary entry of DirCmd to this specific menu index and menu item index
+                        try
+                        {
+                            s_DirCmdMap.Add(dirCmd, new DirCmdIndexes(indexMenu, i));
+                        }
+                        catch (System.ArgumentException e)
+                        {
+                            Logger.Warning(vaProxy, "Failed to add Direct Menu Cmd \"" + dirCmd + "\" probably due to duplicates");
+                            Logger.Warning(vaProxy, e.Message);
+                            // Don't fail for this - rest of system should be working
+                        }
+                    }
+                }
+
+                indexMenu++;
             }
 
-            vaProxy.WriteToLog("JeevesBMSRadio: OneTimeMenuDatLoad completed successfully", "Purple");
+            Logger.Write(vaProxy, "OneTimeMenuDataLoad completed successfully");
 
             vaProxy.SetBoolean(">JBMS_INITED", true);
             return true;
 
-            // Yes, know TODO
-
-            s_menusBMS = new List<MenuBMS>();
-
-            // Combat 1 menu items same for Flight, Element, and Wingman Menu Targets
-            MenuItemBMS[] menuItemsREWC1 = new MenuItemBMS[9]
-                {
-                    /*                        *Target Phrases*          *MenuItemExecute* */
-                    new MenuItemBMS( vaProxy, "Attack My Target",             "1" ),
-                    new MenuItemBMS( vaProxy, "Buddy Spike",                  "2" ),
-                    new MenuItemBMS( vaProxy, "Ray Gun;Raygun",               "3" ),
-                    new MenuItemBMS( vaProxy, "Weapons Free [Air;A A]",       "4" ),
-                    new MenuItemBMS( vaProxy, "Weapons Free [Ground;A G]",    "5" ),
-                    new MenuItemBMS( vaProxy, "Weapons Hold",                 "6" ),
-                    new MenuItemBMS( vaProxy, "Check Your Six",               "7" ),
-                    new MenuItemBMS( vaProxy, "Check My Six;Watch My Six",    "8" ),
-                    new MenuItemBMS( vaProxy, "Attack Targets",               "9" )
-                };
-
-            // Combat 2 menu items for Wingman Menu Target
-            MenuItemBMS[] menuItemsWC2 = new MenuItemBMS[7]
-                {
-                    /*                        *Target Phrases*          *MenuItemExecute* */
-                    new MenuItemBMS( vaProxy, "Rejoin",                         "1" ),
-                    new MenuItemBMS( vaProxy, "Split Wing",                     "2" ),
-                    new MenuItemBMS( vaProxy, "Glue Wing",                      "3" ),
-                    new MenuItemBMS( vaProxy, "Drop Stores;Jettison Stores;Emergency Jettison",       "4" ),
-                    new MenuItemBMS( vaProxy, "Datalink [Ground;] Target",      "5" ),
-                    new MenuItemBMS( vaProxy, "Go Shooter",                     "6" ),
-                    new MenuItemBMS( vaProxy, "Go Cover",                       "7" )
-                };
-
-            // Combat 2 menu items for Flight and Element Menu Targets are the same
-            MenuItemBMS[] menuItemsREC2 = new MenuItemBMS[3]
-                {
-                    /*                        *Target Phrases*          *MenuItemExecute* */
-                    new MenuItemBMS( vaProxy, "Rejoin",                         "1" ),
-                    new MenuItemBMS( vaProxy, "Drop Stores;Jettison Stores;Emergency Jettison",       "2" ),
-                    new MenuItemBMS( vaProxy, "Datalink [Ground;] Target",      "3" )
-                };
-
-            // Combat 3 menu only for Element, and Wingman Menu Targets
-            MenuItemBMS[] menuItemsEWC3 = new MenuItemBMS[8]
-                {
-                    /*                        *Target Phrases*          *MenuItemExecute* */
-                    new MenuItemBMS( vaProxy, "Offensive Pursuit",              "1" ),
-                    new MenuItemBMS( vaProxy, "Offensive Split",                "2" ),
-                    new MenuItemBMS( vaProxy, "Beam Deploy",                    "3" ),
-                    new MenuItemBMS( vaProxy, "Grinder",                        "4" ),
-                    new MenuItemBMS( vaProxy, "Wide Azimuth]",                  "5" ),
-                    new MenuItemBMS( vaProxy, "Short Azimuth",                  "6" ),
-                    new MenuItemBMS( vaProxy, "Sweep",                          "7" ),
-                    new MenuItemBMS( vaProxy, "Defensive",                      "8" )
-                };
-
-            // vaProxy.WriteToLog("JeevesBMSRadio: MenuItemBMS Arrays Created", "Purple");
-
-            MenuBMS menuWC1 = new MenuBMS
-            ( vaProxy,  "Wingman", "Wingman;2",     "Combat 1", "Combat [Management;] 1",   "W",    menuItemsREWC1 );
-            // Store the index to this menu for quicker access later
-            s_menusBMS.Add(menuWC1);
-            vaProxy.SessionState.Add(menuWC1.MenuFullID, 0);
-
-            MenuBMS menuEC1 = new MenuBMS
-            ( vaProxy,  "Element", "Element;3",     "Combat 1", "Combat [Management;] 1",   "E",  menuItemsREWC1 );
-            // Store the index to this menu for quicker access later
-            s_menusBMS.Add(menuEC1);
-            vaProxy.SessionState.Add(menuEC1.MenuFullID, 1);
-
-            MenuBMS menuRC1 = new MenuBMS
-            ( vaProxy,  "Flight", "Flight",     "Combat 1", "Combat [Management;] 1",   "R",    menuItemsREWC1 );
-            // Store the index to this menu for quicker access later
-            s_menusBMS.Add(menuRC1);
-            vaProxy.SessionState.Add(menuRC1.MenuFullID, 2);
-
-            MenuBMS menuWC2 = new MenuBMS
-            (vaProxy, "Wingman", "Wingman;2", "Combat 2", "Combat [Management;] 2", "WW", menuItemsWC2);
-            // Store the index to this menu for quicker access later
-            s_menusBMS.Add(menuWC2);
-            vaProxy.SessionState.Add(menuWC2.MenuFullID, 3);
-
-            MenuBMS menuEC2 = new MenuBMS
-            (vaProxy, "Element", "Element;3", "Combat 2", "Combat [Management;] 2", "EE", menuItemsREC2);
-            // Store the index to this menu for quicker access later
-            s_menusBMS.Add(menuEC2);
-            vaProxy.SessionState.Add(menuEC2.MenuFullID, 4);
-
-            MenuBMS menuRC2 = new MenuBMS
-            (vaProxy, "Flight", "Flight", "Combat 2", "Combat [Management;] 2", "RR", menuItemsREC2);
-            // Store the index to this menu for quicker access later
-            s_menusBMS.Add(menuRC2);
-            vaProxy.SessionState.Add(menuRC2.MenuFullID, 5);
-
-            MenuBMS menuWC3 = new MenuBMS
-            (vaProxy, "Wingman", "Wingman;2", "Combat 3", "Combat [Management;] 3", "WWW", menuItemsEWC3);
-            // Store the index to this menu for quicker access later
-            s_menusBMS.Add(menuWC3);
-            vaProxy.SessionState.Add(menuWC3.MenuFullID, 6);
-
-            MenuBMS menuEC3 = new MenuBMS
-            (vaProxy, "Element", "Element;3", "Combat 3", "Combat [Management;] 3", "EEE", menuItemsEWC3);
-            // Store the index to this menu for quicker access later
-            s_menusBMS.Add(menuEC3);
-            vaProxy.SessionState.Add(menuEC3.MenuFullID, 7);
-
-
-            vaProxy.WriteToLog("JeevesBMSRadio: OneTimeMenuDatLoad completed successfully", "Purple");
-
-            vaProxy.SetBoolean(">JBMS_INITED", true);
-            return true;
-        }
+         }
 
         public static MenuBMS GetMenuBMS(dynamic vaProxy, string menuFullID)
         {
             if (string.IsNullOrEmpty(menuFullID))
             {
-                vaProxy.WriteToLog("Invalid menuFullID passed to GetMenuBMS", "Red");
+                Logger.Error(vaProxy, "Invalid menuFullID passed to GetMenuBMS");
                 return null;
             }
 
@@ -655,7 +341,7 @@ namespace Tanrr.VAPlugin.BMSRadio
         {
             if (string.IsNullOrEmpty(menuFullID))
             {
-                vaProxy.WriteToLog("Invalid menuFullID passed to GetSetCurMenuBMS", "Red");
+                Logger.Error(vaProxy, "Invalid menuFullID passed to GetSetCurMenuBMS");
                 return null;
             }
 
@@ -673,7 +359,7 @@ namespace Tanrr.VAPlugin.BMSRadio
         {
             if (string.IsNullOrEmpty(MenuTarget) || string.IsNullOrEmpty(MenuName))
             {
-                vaProxy.WriteToLog("Invalid MenuTarget or MenuName passed to GetSetCurMenuBMS", "Red");
+                Logger.Error(vaProxy, "Invalid MenuTarget or MenuName passed to GetSetCurMenuBMS");
                 return null;
             }
             return GetSetCurMenuBMS(vaProxy, MenuBMS.MakeFullID(MenuTarget, MenuName));
@@ -685,7 +371,7 @@ namespace Tanrr.VAPlugin.BMSRadio
             string MenuName = vaProxy.GetText(">JBMS_MENU_NAME");
             if (string.IsNullOrEmpty(MenuTarget) || string.IsNullOrEmpty(MenuName))
             {
-                vaProxy.WriteToLog("JeevesBMSRadio: GetSetCurMenuBMS without valid >JBMS_MENU_TGT or >JBMS_MENU_NAME", "Red");
+                Logger.Error(vaProxy, "GetSetCurMenuBMS without valid >JBMS_MENU_TGT or >JBMS_MENU_NAME");
                 return null;
             }
             return GetSetCurMenuBMS(vaProxy, MenuTarget, MenuName);
@@ -728,38 +414,23 @@ namespace Tanrr.VAPlugin.BMSRadio
             }
         }
 
-    public static void VA_Invoke1(dynamic vaProxy)
+        public static void VA_Invoke1(dynamic vaProxy)
         {
-            //This function is where you will do all of your work.  When VoiceAttack encounters an, 'Execute External Plugin Function' action, the plugin indicated will be called.
-            //in previous versions, you were presented with a long list of parameters you could use.  The parameters have been consolidated in to one dynamic, 'vaProxy' parameter.
+            // Configure logger
+            Logger.Prefix = "JeevesBMSRadio: ";
+            Logger.WarningPrefix = "JeevesBMSRadio: WARNING: ";
+            Logger.ErrorPrefix = "JeevesBMSRadio: ERROR: ";
+            Logger.Json = GetNonNullBool(vaProxy, ">JBMS_JSON_LOGGING");
+            Logger.Structures = GetNonNullBool(vaProxy, ">JBMS_STRUCTURES_LOGGING");
+            Logger.Verbose = GetNonNullBool(vaProxy, ">JBMS_VERBOSE_LOGGING");
 
-            //vaProxy.Context - a string that can be anything you want it to be.  this is passed in from the command action.  this was added to allow you to just pass a value into the plugin in a simple fashion (without having to set conditions/text values beforehand).  Convert the string to whatever type you need to.
+            // DEVELOPMENT TEMP - HARDCODED:
+            Logger.Verbose = false;
+            Logger.Json = false;
+            Logger.Structures = false;
 
-            //vaProxy.SessionState - all values from the state maintained by VoiceAttack for this plugin.  the state allows you to maintain kind of a, 'session' within VoiceAttack.  this value is not persisted to disk and will be erased on restart. other plugins do not have access to this state (private to the plugin)
-
-            //the SessionState dictionary is the complete state.  you can manipulate it however you want, the whole thing will be copied back and replace what VoiceAttack is holding on to
-
-
-            //the following get and set the various types of variables in VoiceAttack.  note that any of these are nullable (can be null and can be set to null).  in previous versions of this interface, these were represented by a series of dictionaries
-
-            //vaProxy.SetSmallInt and vaProxy.GetSmallInt - use to access short integer values (used to be called, 'conditions')
-            //vaProxy.SetText and vaProxy.GetText - access text variable values
-            //vaProxy.SetInt and vaProxy.GetInt - access integer variable values
-            //vaProxy.SetDecimal and vaProxy.GetDecimal - access decimal variable values
-            //vaProxy.SetBoolean and vaProxy.GetBoolean - access boolean variable values
-            //vaProxy.SetDate and vaProxy.GetDate - access date/time variable values
-
-            //to indicate to VoiceAttack that you would like a variable removed, simply set it to null.  all variables set here can be used within VoiceAttack.
-            //note that the variables are global (for now) and can be accessed by anyone, so be mindful of that while naming
-
-            //if the, 'Execute External Plugin Function' command action has the, 'wait for return' flag set, VoiceAttack will wait until this function completes so that you may check condition values and
-            //have VoiceAttack react accordingly.  otherwise, VoiceAttack fires and forgets and doesn't hang out for extra processing.
-
-            // Debug Logging on by default for now
-            DebugLogger.EnableDebugLog(true);
-
-            string StartMessage = "JeevesBMSRadio: Invoked with context " + vaProxy.Context;
-            vaProxy.WriteToLog(StartMessage, "Purple");
+            string StartMessage = "Invoked with context " + vaProxy.Context;
+            Logger.VerboseWrite(vaProxy, StartMessage);
 
             // Init if this is our first call
             if (!GetNonNullBool(vaProxy, ">JBMS_INITED"))
@@ -770,6 +441,8 @@ namespace Tanrr.VAPlugin.BMSRadio
                     return;
             }
 
+            bool MenuUp = GetNonNullBool(vaProxy, ">JBMS_MENU_UP");
+
             switch (vaProxy.Context)
             {
                 case "JBMS_DO_INIT":
@@ -778,48 +451,78 @@ namespace Tanrr.VAPlugin.BMSRadio
 
                 case "JBMS_RESET_MENU_STATE":
                     // Should only be called when ESC has been pressed so current menu has already been closed
-                    vaProxy.WriteToLog("JeevesBMSRadio: JBMS_RESET_MENU_STATE - ESC should have been pressed already", "Purple");
+                    Logger.VerboseWrite(vaProxy, "JBMS_RESET_MENU_STATE - ESC should have been pressed already");
                     ResetMenuState(vaProxy);
                     break;
 
-                case "JBMS_DIRECT_MENU_CMD":
-                    /*
-                    "WC1-ATTACK-TGT"  = "2, Attack My Target"
-                    - W 1
+                case "JBMS_DIRECT_CMD":
+                    string dirCmd = vaProxy.GetText(">JBMS_DIRECT_CMD");
+                    vaProxy.SetText(">JBMS_DIRECT_CMD", string.Empty);
+                    if (string.IsNullOrEmpty(dirCmd))
+                    {
+                        Logger.Error(vaProxy, "JBMS_DIRECT_CMD received with empty >JBMS_DIRECT_CMD variable");
+                        break;
+                    }
 
-                    "FC1-WEAPONS-FREE-AA" = "Flight, Weapons Free [Air;]"
-                    - R 4
+                    Logger.VerboseWrite(vaProxy, "JBMS_DIRECT_CMD received for \"" + dirCmd + "\"");
+                    if (MenuUp)
+                    {
+                        Logger.Write(vaProxy, "JBMS_DIRECT_CMD received for \"" + dirCmd + "\" while radio menu was up, discarding since menu choices have priority");
+                        break;
+                    }
+                    try
+                    {
+                        DirCmdIndexes dirCmdIndexes = s_DirCmdMap[dirCmd];
+                        if (dirCmdIndexes.IndexMenu < 0 || dirCmdIndexes.IndexMenu > s_menusBMS.Count)
+                        {
+                            Logger.Error(vaProxy, "JBMS_DIRECT_CMD received for \"" + dirCmd + "\" but no such direct command found in DirCmdMap");
+                            break;
+                        }
+                        MenuBMS menuForDC = s_menusBMS[dirCmdIndexes.IndexMenu];
+                        MenuItemBMS[] menuItemsForDC = menuForDC.MenuItemsBMS;
+                        if (dirCmdIndexes.IndexMenuItem < 0 || dirCmdIndexes.IndexMenuItem >= menuItemsForDC.Length )
+                        {
+                            Logger.Error(vaProxy, "JBMS_DIRECT_CMD received for \"" + dirCmd + "\" but invalid menu item index stored in DirCmdMap");
+                            break;
+                        }
+                        MenuItemBMS menuItemForDC = menuItemsForDC[dirCmdIndexes.IndexMenuItem];
 
-                    "FX1-FENCE-IN" = "Flight, Fence In/Out"
-                    RRRRRRR 1
-                    "JBMS-FX1-FENCE-OUT"
-                    RRRRRRR 2
+                        bool ExecOK = false;
+                        // Now we know the specific menu and which menu item, so we can bring up the menu 
+                        ExecOK = ExecuteCmdOrKeys(vaProxy, menuForDC.MenuShow, /* waitForReturn */ true);
+                        if (!ExecOK) 
+                        {
+                            Logger.Error(vaProxy, "JBMS_DIRECT_CMD for \"" + dirCmd + "\" failed to bring up associated menu");
+                            break;
+                        }
+                        // Don't set menu up state since we immediately run the menu item which should bring the menu down
+                        ExecOK = ExecuteCmdOrKeys(vaProxy, menuItemForDC.MenuItemExecute, /* waitForReturn */ false);
+                        if (!ExecOK)
+                        {
+                            Logger.Error(vaProxy, "JBMS_DIRECT_CMD for \"" + dirCmd + "\" brought up menu, but failed to execute menu item command");
+                            break;
+                        }
+                    }
+                    catch (KeyNotFoundException e) 
+                    {
+                        Logger.Warning(vaProxy, "JBMS_DIRECT_CMD received for \"" + dirCmd + "\" but no such direct command found in DirCmdMap");
+                        Logger.Warning(vaProxy, "Exception " + e.Message);
+                        break;
+                    }
 
-                    "TT-REPORT-OHB" = "* [Tower;Traffic] * [Report;] [Overhead;Left;Right;In The] Break"
-                    TT 5
-
-                    "AWACS-VECT-BOGEY-DOPE" = "[Wizard;Overlord;Magic;] [Request;] Bogey Dope"
-                    - QQ 1
-
-                    Dict of quick phrases.
-                    Map "AWACS-VECT-BOGEY-DOPE" to QQ1 based off the specific menu and menu item,
-                    VA calls into plugin with vaProxy.Context of "JBMS_DIRECT_MENU_CMD"
-                      - Look in ">JBMS_DIRECT_MENU_CMD" to see the command and execute (bypass menu requirements) 
-                    */
                     break;
 
                 case "JBMS_HANDLE_MENU_RESPONSE":
-                    bool MenuUp = GetNonNullBool(vaProxy, ">JBMS_MENU_UP");
                     string MenuResponse = vaProxy.GetText(">JBMS_MENU_RESPONSE");
                     if ( MenuUp && (s_curMenuBMS != null) )
                     {
                         if (string.IsNullOrEmpty(MenuResponse))
                         {
-                            vaProxy.WriteToLog("JeevesBMSRadio: JBMS_HANDLE_MENU_RESPONSE received empty MenuResponse", "Purple");
+                            Logger.VerboseWrite(vaProxy, "JBMS_HANDLE_MENU_RESPONSE received empty MenuResponse");
                         }
                         else if (MenuResponse == "_JBMS_MENU_TIMEOUT")
                         {
-                            vaProxy.WriteToLog("JeevesBMSRadio: JBMS_HANDLE_MENU_RESPONSE received _JBMS_MENU_TIMEOUT", "Purple");
+                            Logger.VerboseWrite(vaProxy, "JBMS_HANDLE_MENU_RESPONSE received _JBMS_MENU_TIMEOUT");
                             // Note that Menu is still up - it will get closed at the end of this handler
                         }
                         else
@@ -828,27 +531,30 @@ namespace Tanrr.VAPlugin.BMSRadio
                             string MenuItemExecute = s_curMenuBMS.MenuItemExecuteFromPhrase(vaProxy, MenuResponse);
                             if (!string.IsNullOrEmpty(MenuItemExecute))
                             {
-                                vaProxy.WriteToLog($"JeevesBMSRadio: JBMS_HANDLE_MENU_RESPONSE with Menu: \"{MenuName}\"; Phrase: \"{MenuResponse}\"; Execute: \"{MenuItemExecute}\"", "Purple");
+                                Logger.VerboseWrite(vaProxy, $"JBMS_HANDLE_MENU_RESPONSE with Menu: \"{MenuName}\"; Phrase: \"{MenuResponse}\"; Execute: \"{MenuItemExecute}\"");
+
+                                // DOCUMENTATION: Any non-menu closing keystrokes (a VA command phrase) NEEDS TO CLOSE THE RADIO MENU ITSELF NOW (*NOT* by calling back into plugin, but with an "ESC" key if that's what does it
                                 ExecuteCmdOrKeys(vaProxy, MenuItemExecute, /* waitForReturn */ true);
+
                                 // Passing key/cmd should have brought down menu, so only reset our menu state - don't press escape
                                 ResetMenuState(vaProxy);
                                 MenuUp = false;
                             }
                             else
                             {
-                                vaProxy.WriteToLog("JeevesBMSRadio: JBMS_HANDLE_MENU_RESPONSE found no match for MenuResponse \"" + MenuResponse + "\"", "Purple");
+                                Logger.Write(vaProxy, "JBMS_HANDLE_MENU_RESPONSE found no match for MenuResponse \"" + MenuResponse + "\"");
                             }
                         }
                     }
                     else 
                     {
                         string MenuResponseSafe = string.IsNullOrEmpty(MenuResponse) ? string.Empty : MenuResponse;
-                        vaProxy.WriteToLog($"JeevesBMSRadio: JBMS_HANDLE_MENU_RESPONSE recieved response \"{MenuResponseSafe}\" but no menu was still up", "Purple");
+                        Logger.Write(vaProxy, $"JBMS_HANDLE_MENU_RESPONSE recieved response \"{MenuResponseSafe}\" but no menu was still up");
                     }
 
                     if (MenuUp)
                     {
-                        vaProxy.WriteToLog("JeevesBMSRadio: Closing menu after JBMS_HANDLE_MENU_RESPONSE without a match", "Purple");
+                        Logger.Write(vaProxy, "Closing menu after JBMS_HANDLE_MENU_RESPONSE without a match");
                         CloseMenu(vaProxy);
                     }
                     else
@@ -856,7 +562,7 @@ namespace Tanrr.VAPlugin.BMSRadio
                         // Sanity check that our menu state is reset and we don't need to call ResetMenuState(vaProxy);
                         if (!VerifyMenuState(vaProxy, menuUp: false, noErrorsAllowed: true))
                         {
-                            vaProxy.WriteToLog("JeevesBMSRadio: ERROR: Expected menu to be in non-error closed state after JBMS_HANDLE_MENU_RESPONSE", "Red");
+                            Logger.Warning(vaProxy, "ERROR: Expected menu to be in non-error closed state after JBMS_HANDLE_MENU_RESPONSE");
                             ResetMenuState(vaProxy);
                         }
                     }
@@ -867,25 +573,25 @@ namespace Tanrr.VAPlugin.BMSRadio
                     MenuBMS Menu = GetSetCurMenuBMS(vaProxy);
                     if ( Menu == null)
                     {
-                        vaProxy.WriteToLog("JeevesBMSRadio: JBMS_SHOW_MENU called without valid MenuTarget or MenuName", "Red");
+                        Logger.Error(vaProxy, "JBMS_SHOW_MENU called without valid MenuTarget or MenuName");
                         // TODO - SET ERROR VALUE?
                         return;
                     }
 
-                    if (GetNonNullBool(vaProxy, ">JBMS_MENU_UP"))
+                    if (MenuUp)
                     {
                         // If we currently have a menu up, bring it down
                         if (vaProxy.CommandExists("JBMS Close Menu"))
                         {
                             // Tell VA to execute close them menu with ESC, but NOT call back plugin with "JBMS_RESET_MENU_STATE"
-                            vaProxy.WriteToLog("JeevesBMSRadio: JBMS_SHOW_MENU called when menu already up, closing current menu", "Purple");
+                            Logger.Write(vaProxy, "JBMS_SHOW_MENU called when menu already up, closing current menu");
                             vaProxy.Command.Execute("JBMS Close Menu", WaitForReturn: true);
                             // Reset just the menu state related to it being up or having errors
                             ResetMenuState(vaProxy, onlyUpAndErrors: true);
                         }
                         else
                         {
-                            vaProxy.WriteToLog("JeevesBMSRadio: JBMS_SHOW_MENU called when menu already up, but couldn't execute \"JBMS Close Menu\"", "Red");
+                            Logger.Write(vaProxy, "JBMS_SHOW_MENU called when menu already up, but couldn't execute \"JBMS Close Menu\"");
                             return;
                         }
                     }
@@ -903,7 +609,7 @@ namespace Tanrr.VAPlugin.BMSRadio
                     break;
 
                 default:
-                    vaProxy.WriteToLog( "Called with unknown Context: " + vaProxy.Context, "Red");
+                    Logger.Error(vaProxy, "Called with unknown Context: " + vaProxy.Context);
                     throw new ArgumentException("", "context");
             }
         }
