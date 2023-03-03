@@ -14,7 +14,7 @@
 			[ "Weapons Free [Ground;A Gee]", "5" ],
 			[ "Weapons Hold", "6" ],
 			[ "Check Your Six", "7" ],
-			[ "[Clear;Check] My Six", "8", "JBMS-WC1-CHECK-MY-SIX" ],
+			[ "[Clear;Check] My Six", "8" ],
 			[ "Attack Targets", "9" ]
 		]
 	},
@@ -343,8 +343,8 @@
 			[ "Music Off", "5" ],
 			[ "[Turn;] Smoke On", "6" ],
 			[ "[Turn;] Smoke Off", "7" ],
-			[ "[Switch;Push] Flight Uniform", "8" ],
-			[ "[Switch;Push] Flight Victor", "9" ],
+			[ "[Switch;Push] [Flight;] Uniform", "8" ],
+			[ "[Switch;Push] [Flight;] Victor", "9" ],
 			[ "Set Bingo", "0" ]
 		]
 	},
@@ -363,8 +363,8 @@
 			[ "Music Off", "5" ],
 			[ "[Turn;] Smoke On", "6" ],
 			[ "[Turn;] Smoke Off", "7" ],
-			[ "[Switch;Push] Flight Uniform", "8" ],
-			[ "[Switch;Push] Flight Victor", "9" ],
+			[ "[Switch;Push] [Flight;] Uniform", "8" ],
+			[ "[Switch;Push] [Flight;] Victor", "9" ],
 			[ "Set Bingo", "0" ]
 		]
 	},
@@ -377,14 +377,14 @@
 
 		"menuItems": [
 			[ "Fence In", "1", "JBMS-FX1-FENCE-IN" ],
-			[ "Fence Out", "2", "JBMS-FX1-FENCE-OUT" ],
+			[ "Fence Out", "2" ],
 			[ "Lights [S O P;Ess Oh Pea]", "3" ],
 			[ "Music On", "4" ],
 			[ "Music Off", "5" ],
 			[ "[Turn;] Smoke On", "6" ],
 			[ "[Turn;] Smoke Off", "7" ],
-			[ "[Switch;Push] Flight Uniform", "8" ],
-			[ "[Switch;Push] Flight Victor", "9" ],
+			[ "[Switch;Push] [Flight;] Uniform", "DC Push Flight Uniform" ],
+			[ "[Switch;Push] [Flight;] Victor", "9" ],
 			[ "Set Bingo", "0" ]
 		]
 	},
@@ -535,7 +535,7 @@
 
 		"menuItems": [
 			[ "Request Picture", "1" ],
-			[ "Declare", "2" ],
+			[ "Declare", "2", "JBMS-QT1-DECLARE" ],
 			[ "Request Help", "3" ],
 			[ "Wilco", "4" ],
 			[ "Unable", "5" ],
@@ -553,7 +553,7 @@
 		"menuShow": "QQ",
 
 		"menuItems": [
-			[ "Bogey Dope;[Request;] Vector to Nearest Air Threat", "1", "JBMS-AWACS-VECT-BOGEY-DOPE" ],
+			[ "Bogey Dope;[Request;] Vector to Nearest Air Threat", "1", "JBMS-QV1-BOGEY-DOPE" ],
 			[ "[Request;] Vector to Target", "2" ],
 			[ "[Request;] Vector to Package", "3" ],
 			[ "[Request;] Vector to Tanker", "4" ],
