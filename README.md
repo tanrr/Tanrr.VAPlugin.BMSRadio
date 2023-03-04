@@ -27,6 +27,8 @@ The system is designed for flexibility while remaining reasonably simple.  It is
 
 ## **INSTALLATION**:
 
+*This plugin uses Newtonsoft.Json.dll version 13.0.2, and Newtonsoft.Json.Schema.dll version 3.0.14.  They are included, or you can download your own versions. Note that STEP 3 copies the Newtonsoft.Json.dll file to a different directory.*
+
 1. Make sure that *"Enable Plugin Support"* is enabled (VoiceAttack Settings (Wrench icon) under "General"), then shut down VoiceAttack
 2. Move the **Tanrr.VAPlugin.BMSRadio** folder into the folder **..\VoiceAttack\Apps**.  This should leave the dlls and related files under **..\VoiceAttack\Apps\Tanrr.VAPlugin.BMSRadio**.
 3. **IMPORTANT**: From the **Tanrr.VAPlugin.BMSRadio** folder, *copy* the **Newtonsoft.Json.dll** file into the **..\VoiceAttack\Shared\Assemblies** folder.
