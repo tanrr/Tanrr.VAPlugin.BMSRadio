@@ -105,17 +105,17 @@ The JSON menu file **Tanrr.VAPlugin.Radio.Menus.json** is a top level array of m
 	},
 
 **REQUIRED:**
-- All values are text strings
+- All values are text strings in *"Quotes"*
 - The combination of menuTarget+menuName must be unique for all menus in the JSON
 - The menuShow text/command must be unique for all menus in the JSON
 - All named items must be non-empty
 - menuItems Array line includes multiple menuItem arrays:
-  - First string: menuItemPhrase to match
-  - Second string: menuItemExecute keys/command to execute for that menu item
-  - Optional third string: menuItemDirectCmd identifier for the menu item so a VA command can call it directly
+  - First string: *menuItemPhrases* to match that menu item
+  - Second string: *menuItemExecute* keys/command to execute for that menu item
+  - Optional third string: *menuItemDirectCmd* identifier for the menu item so a VA command can call it directly
   
 **NOTES:**
-  - targetPhrases and menuNamePhrases are not currently used, but should match the VA profile's prefix & suffix phrases for this menu as they are planned to be used later.  If you update the phrases in the VoiceAttack profile, please update the phrases in the JSON as well.
+  - *targetPhrases* and *menuNamePhrases* are not currently used, but should match the VA profile's prefix & suffix phrases for this menu as they are planned to be used later.  If you update the phrases in the VoiceAttack profile, please update the phrases in the JSON as well.
 
 **WORKING WITH MENU JSON and VOICEATTACK PROFILE:**
 
@@ -125,6 +125,18 @@ You can use an online JSON schema validator, like https://jsonmate.com/ to valid
 Menu JSON: **Tanrr.VAPlugin.Radio.Menus.json**
 
 Schema JSON: **Tanrr.VAPlugin.Radio.Schema.json**
+
+PHRASES TO SELECT MENU ITEMS:
+
+*MenuItemPhrases* (1st text field in each array within *menuItems*) are the VoiceAttack command phrases the plugin will listen for while this menu is up.  They are the same format as VoiceAttack commands: multiple options, seprated by semi-colons, sub-sections specified by \[brackets\].  Note that sub-sections can match to nothing as well by having a ; with nothing after it.
+
+For example: *"\[Switch;Push\] \[Flight;\] Uniform"* matches all of the following phrases:
+- "Switch Flight Uniform"
+- "Push Flight Uniform"
+- "Switch Uniform"
+- "Push Uniform"
+
+Though you can add the menu number as part of the recognition phrases, it isn't recommended, especially since *"2"* and *"3"* will be getting used a lot.  If you want to add it, I would recommend adding an additional identifier, such as *"Press 2"*.
 
 KEYSTROKES FOR MENU ITEMS:
 
