@@ -44,7 +44,7 @@ namespace Tanrr.VAPlugin.BMSRadio
         }
 
         public static string VA_DisplayName()
-            => "Tanrr VA BMS Radio Plugin v0.5";  // Displayed in dropdowns and log as plugin name
+            => "Tanrr VA BMS Radio Plugin v0.0.7";  // Displayed in dropdowns and log as plugin name
 
         public static string VA_DisplayInfo()
             => "Tanrr BMS Radio Plugin for VoiceAttack\r\n\r\nInitial POC.\r\n\r\n2023";  // Extended info
@@ -74,7 +74,7 @@ namespace Tanrr.VAPlugin.BMSRadio
             
         public static void SetSharedVarsDefaults(dynamic vaProxy)
         {
-            vaProxy.SetBoolean(">JBMSI_INITED", false);
+            vaProxy.SetBoolean(">>JBMSI_INITED", false);
             ResetMenuState(vaProxy);
         }
         public static bool VerifyMenuState(dynamic vaProxy, bool menuUp, bool noErrorsAllowed)
@@ -150,7 +150,7 @@ namespace Tanrr.VAPlugin.BMSRadio
 
         public static bool OneTimeMenuDataLoad(dynamic vaProxy)
         {
-            if (GetNonNullBool(vaProxy, ">JBMSI_INITED"))
+            if (GetNonNullBool(vaProxy, ">>JBMSI_INITED"))
             {
                 Logger.Warning(vaProxy, "OneTimeMenuDataLoad() called more than once - possible when switching betweeen profiles.");
                 // Don't try to reinitialize - just return success quietly since we should already be configured
@@ -307,7 +307,7 @@ namespace Tanrr.VAPlugin.BMSRadio
 
             Logger.Write(vaProxy, "OneTimeMenuDataLoad completed successfully");
 
-            vaProxy.SetBoolean(">JBMSI_INITED", true);
+            vaProxy.SetBoolean(">>JBMSI_INITED", true);
             return true;
 
          }
@@ -407,13 +407,13 @@ namespace Tanrr.VAPlugin.BMSRadio
         {
 
             // Init if this is our first call
-            if (!GetNonNullBool(vaProxy, ">JBMSI_INITED"))
+            if (!GetNonNullBool(vaProxy, ">>JBMSI_INITED"))
             {
                 try
                 {
                     OneTimeMenuDataLoad(vaProxy);
                     // If we failed to init, it should already be logged, so just return
-                    if (!GetNonNullBool(vaProxy, ">JBMSI_INITED"))
+                    if (!GetNonNullBool(vaProxy, ">>JBMSI_INITED"))
                         return;
                 }
                 catch (Exception e)

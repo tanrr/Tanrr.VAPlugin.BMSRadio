@@ -1,6 +1,6 @@
 # Jeeves BMS Radio Menus (Tanrr.VAPlugin.BMSRadio) 
 
-version 0.0.6
+version 0.0.7
 
 Jeeves BMS Radio Menus is a simple but powerful plugin for VoiceAttack to work with BMS radio menus. 
 
@@ -52,7 +52,7 @@ Details of the BMS Radio menus can be found **BMS-Comms-Nav-Book.pdf** in which 
 ### Limitations
 
 - The plugin uses the default keys for BMS menus (T for ATC; W/E/R for Wingman/Element/Flight, Q for AWACS, Y for Tanker/JTAC).  If you have changed these shortcuts you should edit the JSON to use your shortcuts.
-- The plugin's menu data is for the current (4.37) version of the BMS menus.  If you have a newer version of BMS or have modified the menu layout by changing the BMS ##Data/Art/CkptArt/menu.dat## file you should update the JSON file to match your changes.
+- The plugin's menu data is for BMS version 4.37.1 menus.  If you have a newer version of BMS or have modified the menu layout by changing the BMS ##Data/Art/CkptArt/menu.dat## file you should update the JSON file to match your changes.
 - The plugin's JSON files must be in UTF-8 format and DO NOT support UTF-16 or UNICODE
 - menuItemExecute strings currently only support visiible characters, do not support modifiers such as SHIFT, CTRL, or ALT, and do not support separate numpad characters. Support for these may be added to later versions.
 
@@ -75,8 +75,8 @@ Details of the BMS Radio menus can be found **BMS-Comms-Nav-Book.pdf** in which 
 - **\>JBMSI_NO_SUCH_MENU** -	READ-ONLY - (Checked and set only by VA *"JBMS Radio Menu Show"* command)
 - **\>JBMSI_MENU_RESPONSE** -	READ-ONLY - (Checked and set only by VA *"JBMS Wait For Menu Response"* command)
 
-- **\>JBMSI_INITED** -         INTERNAL, do not use
 - **\>JBMSI_MENU_UP** -		    INTERNAL, do not use
+- **\>\>JBMSI_INITED** -         INTERNAL, do not use
 
 
 ### JSON FORMAT:
@@ -138,7 +138,7 @@ For example: *"\[Switch;Push\] \[Flight;\] Uniform"* matches all of the followin
 - "Switch Uniform"
 - "Push Uniform"
 
-Though you can add the menu number as part of the recognition phrases, it isn't recommended, especially since *"2"* and *"3"* will be getting used a lot.  If you want to add it, I would recommend adding an additional identifier, such as *"Press 2"*.
+The provided VA profile already includes the command "Press \[0..9\]"" which will press the number keys for you, and these work even if the menu is not up.  DO NOT add the menu number as part of the recognition phrases.  It could interfere with other phrases - for example *"2"* and *"3"* are used as prefix *menuTargets*.  
 
 KEYSTROKES FOR MENU ITEMS:
 

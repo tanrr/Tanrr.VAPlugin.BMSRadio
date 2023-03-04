@@ -702,7 +702,7 @@
   <body>
     <article class="markdown-body">
       <h1 data-sourcepos="1:1-1:50">Jeeves BMS Radio Menus (Tanrr.VAPlugin.BMSRadio)</h1>
-<p data-sourcepos="3:1-3:13">version 0.0.6</p>
+<p data-sourcepos="3:1-3:13">version 0.0.7</p>
 <p data-sourcepos="5:1-5:101">Jeeves BMS Radio Menus is a simple but powerful plugin for VoiceAttack to work with BMS radio menus.</p>
 <p data-sourcepos="7:1-7:116">It is a flexible solution with more features than simpler VA profiles, while being relatively fast and light weight.</p>
 <p data-sourcepos="9:1-9:429">Users can easily call up radio menus by saying a menuTarget such as &quot;2&quot; or &quot;Flight&quot; followed by an appropriate menuName, such as &quot;Combat 3.&quot;  The menu is displayed and the plugin will listen for phrases that match the current menu's menu items.  This lets users who are not familiar with the menus look through them to make their choices, and will even warn them when they ask for a menu doesn't exist such as &quot;Flight, Combat 3.&quot;</p>
@@ -751,7 +751,7 @@
 <h3 data-sourcepos="52:1-52:15">Limitations</h3>
 <ul data-sourcepos="54:1-59:0">
 <li data-sourcepos="54:1-54:212">The plugin uses the default keys for BMS menus (T for ATC; W/E/R for Wingman/Element/Flight, Q for AWACS, Y for Tanker/JTAC).  If you have changed these shortcuts you should edit the JSON to use your shortcuts.</li>
-<li data-sourcepos="55:1-55:255">The plugin's menu data is for the current (4.37) version of the BMS menus.  If you have a newer version of BMS or have modified the menu layout by changing the BMS ##Data/Art/CkptArt/menu.dat## file you should update the JSON file to match your changes.</li>
+<li data-sourcepos="55:1-55:236">The plugin's menu data is for BMS version 4.37.1 menus.  If you have a newer version of BMS or have modified the menu layout by changing the BMS ##Data/Art/CkptArt/menu.dat## file you should update the JSON file to match your changes.</li>
 <li data-sourcepos="56:1-56:86">The plugin's JSON files must be in UTF-8 format and DO NOT support UTF-16 or UNICODE</li>
 <li data-sourcepos="57:1-59:0">menuItemExecute strings currently only support visiible characters, do not support modifiers such as SHIFT, CTRL, or ALT, and do not support separate numpad characters. Support for these may be added to later versions.</li>
 </ul>
@@ -786,11 +786,11 @@
 <li data-sourcepos="76:1-77:0">
 <p data-sourcepos="76:3-76:110"><strong>&gt;JBMSI_MENU_RESPONSE</strong> -	READ-ONLY - (Checked and set only by VA <em>&quot;JBMS Wait For Menu Response&quot;</em> command)</p>
 </li>
-<li data-sourcepos="78:1-78:51">
-<p data-sourcepos="78:3-78:51"><strong>&gt;JBMSI_INITED</strong> -         INTERNAL, do not use</p>
+<li data-sourcepos="78:1-78:49">
+<p data-sourcepos="78:3-78:49"><strong>&gt;JBMSI_MENU_UP</strong> -		    INTERNAL, do not use</p>
 </li>
 <li data-sourcepos="79:1-81:0">
-<p data-sourcepos="79:3-79:49"><strong>&gt;JBMSI_MENU_UP</strong> -		    INTERNAL, do not use</p>
+<p data-sourcepos="79:3-79:53"><strong>&gt;&gt;JBMSI_INITED</strong> -         INTERNAL, do not use</p>
 </li>
 </ul>
 <h3 data-sourcepos="82:1-82:16">JSON FORMAT:</h3>
@@ -849,7 +849,7 @@ You can use an online JSON schema validator, like <a href="https://jsonmate.com/
 <li data-sourcepos="138:1-138:18">&quot;Switch Uniform&quot;</li>
 <li data-sourcepos="139:1-140:0">&quot;Push Uniform&quot;</li>
 </ul>
-<p data-sourcepos="141:1-141:249">Though you can add the menu number as part of the recognition phrases, it isn't recommended, especially since <em>&quot;2&quot;</em> and <em>&quot;3&quot;</em> will be getting used a lot.  If you want to add it, I would recommend adding an additional identifier, such as <em>&quot;Press 2&quot;</em>.</p>
+<p data-sourcepos="141:1-141:324">The provided VA profile already includes the command &quot;Press [0..9]&quot;&quot; which will press the number keys for you, and these work even if the menu is not up.  DO NOT add the menu number as part of the recognition phrases.  It could interfere with other phrases - for example <em>&quot;2&quot;</em> and <em>&quot;3&quot;</em> are used as prefix <em>menuTargets</em>.</p>
 <p data-sourcepos="143:1-143:26">KEYSTROKES FOR MENU ITEMS:</p>
 <p data-sourcepos="145:1-145:309"><em>MenuItemExecute</em> (2nd text field in each array within <em>menuItems</em>) are normally set to the keystrokes to press when that menu item is chosen. These keys will be passed to the the VA profile <em>&quot;JBMS Press Keys&quot;</em> command which will simulate the keypresses.  (Unless they match a VA command as described later.)</p>
 <p data-sourcepos="147:1-147:283">You can change the <em>&quot;JBMS Press Keys&quot;</em> command in the VA profile by adjusting the keypress and pause times.  Those times are set conservatively long to work on all systems, so if you change the times make sure you test that they work for busy multiplayer servers and your own system.</p>
