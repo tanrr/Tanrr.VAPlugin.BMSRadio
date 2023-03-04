@@ -25,12 +25,12 @@ The system is designed for flexibility while remaining reasonably simple.  It is
 
 - *When the plugin loads the menu JSON it will check your phrases to make sure you haven't generated duplicate or empty phrases within each menu.*
 
-## INSTALLATION:
+## **INSTALLATION**:
 
-1. Make sure that *"Enable Plugin Support"* is enabled (VoiceAttack Settings (Wrench icon) under "General")
-2. Shut down VoiceAttack
-3. Move the **Tanrr.VAPlugin.BMSRadio** folder into the folder **..\VoiceAttack\Apps**.  This should leave the dlls and related files under **..\VoiceAttack\Apps\Tanrr.VAPlugin.BMSRadio**.
-4. **IMPORTANT**: From the **Tanrr.VAPlugin.BMSRadio** folder, *copy* the **Newtonsoft.Json.dll** file into the **..\VoiceAttack\Shared\Assemblies** folder.
+1. Make sure that *"Enable Plugin Support"* is enabled (VoiceAttack Settings (Wrench icon) under "General"), then shut down VoiceAttack
+2. Move the **Tanrr.VAPlugin.BMSRadio** folder into the folder **..\VoiceAttack\Apps**.  This should leave the dlls and related files under **..\VoiceAttack\Apps\Tanrr.VAPlugin.BMSRadio**.
+3. **IMPORTANT**: From the **Tanrr.VAPlugin.BMSRadio** folder, *copy* the **Newtonsoft.Json.dll** file into the **..\VoiceAttack\Shared\Assemblies** folder.
+4. Launch VoiceAttack and import **Jeeves BMS Radio Menus (ver) Profile.vap**
 5. *HOTKEYS:* The VoiceAttack profile provided only sets a hotkey of F24 (hold to listen) for VoiceAttack.  You will want to change the hotkeys to whatever keyboard keys or game controller buttons you use.  Hotkeys can be set globally (VoiceAttack Settings, Hotkeys) or just for the profile (Edit Profile, Options, Profile Hotkeys).
 
 ## DETAILS:

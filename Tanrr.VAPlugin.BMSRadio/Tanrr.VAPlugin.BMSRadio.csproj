@@ -60,9 +60,16 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <Content Include="Jeeves BMS Radio Menus v0.5-Profile.vap">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <None Include="packages.config" />
-    <None Include="Resources\Tanrr.VAPlugin.Radio.Menus.json" />
-    <None Include="Resources\Tanrr.VAPlugin.Radio.Schema.json" />
+    <Content Include="Tanrr.VAPlugin.Radio.Menus.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tanrr.VAPlugin.Radio.Schema.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
