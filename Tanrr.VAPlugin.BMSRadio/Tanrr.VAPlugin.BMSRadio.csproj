@@ -60,7 +60,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <Content Include="Jeeves BMS Radio Menus v0.5-Profile.vap">
+    <Content Include="Jeeves BMS Radio Profile.vap">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <None Include="packages.config" />

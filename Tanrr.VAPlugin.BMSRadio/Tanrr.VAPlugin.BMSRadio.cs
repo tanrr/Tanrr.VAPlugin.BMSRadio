@@ -71,7 +71,7 @@ namespace Tanrr.VAPlugin.BMSRadio
 
             return vaProxy.GetBoolean(propName) ?? false;
         }
-
+            
         public static void SetSharedVarsDefaults(dynamic vaProxy)
         {
             vaProxy.SetBoolean(">JBMSI_INITED", false);
@@ -162,13 +162,9 @@ namespace Tanrr.VAPlugin.BMSRadio
             Logger.WarningPrefix = "JeevesBMSRadio: WARNING: ";
             Logger.ErrorPrefix = "JeevesBMSRadio: ERROR: ";
             Logger.Json = GetNonNullBool(vaProxy, ">JBMS_JSON_LOG");
+            Logger.MenuItems = GetNonNullBool(vaProxy, ">JBMS_MENUITEMS_LOG");
             Logger.Structures = GetNonNullBool(vaProxy, ">JBMS_STRUCTURES_LOG");
             Logger.Verbose = GetNonNullBool(vaProxy, ">JBMS_VERBOSE_LOG");
-
-            // DEVELOPMENT TEMP - HARDCODED:
-            // Logger.Verbose = false;
-            // Logger.Json = false;
-            // Logger.Structures = false;
 
             Logger.Write(vaProxy, "OneTimeMenuDataLoad()");
 
@@ -348,14 +344,14 @@ namespace Tanrr.VAPlugin.BMSRadio
             return s_curMenuBMS = GetMenuBMS(vaProxy, menuFullID);
         }
 
-        public static MenuBMS GetSetCurMenuBMS(dynamic vaProxy, string MenuTarget, string MenuName)
+        public static MenuBMS GetSetCurMenuBMS(dynamic vaProxy, string menuTarget, string menuName)
         {
-            if (string.IsNullOrEmpty(MenuTarget) || string.IsNullOrEmpty(MenuName))
+            if (string.IsNullOrEmpty(menuTarget) || string.IsNullOrEmpty(menuName))
             {
-                Logger.Error(vaProxy, "Invalid MenuTarget or MenuName passed to GetSetCurMenuBMS");
+                Logger.Error(vaProxy, "Invalid menuTarget or menuName passed to GetSetCurMenuBMS");
                 return null;
             }
-            return GetSetCurMenuBMS(vaProxy, MenuBMS.MakeFullID(MenuTarget, MenuName));
+            return GetSetCurMenuBMS(vaProxy, MenuBMS.MakeFullID(menuTarget, menuName));
         }
 
         public static MenuBMS GetSetCurMenuBMS(dynamic vaProxy)
@@ -436,6 +432,7 @@ namespace Tanrr.VAPlugin.BMSRadio
             {
                 // Change logging modes if VA has changed them - only if OneTimeMenuDataLoad didn't already set them for this call
                 Logger.Json = GetNonNullBool(vaProxy, ">JBMS_JSON_LOG");
+                Logger.MenuItems = GetNonNullBool(vaProxy, ">JBMS_MENUITEMS_LOG");
                 Logger.Structures = GetNonNullBool(vaProxy, ">JBMS_STRUCTURES_LOG");
                 Logger.Verbose = GetNonNullBool(vaProxy, ">JBMS_VERBOSE_LOG");
             }
@@ -451,7 +448,7 @@ namespace Tanrr.VAPlugin.BMSRadio
                     break;
 
                 case "JBMS_RESET_MENU_STATE":
-                    // Should only be called when ESC has been pressed so current menu has already been closed
+                    // Should only be called when ESC has been pressed or current menu has already been closed
                     Logger.VerboseWrite(vaProxy, "JBMS_RESET_MENU_STATE - ESC should have been pressed already");
                     ResetMenuState(vaProxy);
                     break;
@@ -574,8 +571,9 @@ namespace Tanrr.VAPlugin.BMSRadio
                     MenuBMS Menu = GetSetCurMenuBMS(vaProxy);
                     if ( Menu == null)
                     {
-                        Logger.Error(vaProxy, "JBMS_SHOW_MENU called without valid MenuTarget or MenuName");
-                        // TODO - Consider way to report error back up to VA?  Separate error response?
+                        Logger.Error(vaProxy, "JBMS_SHOW_MENU called without valid or matching MenuTarget or MenuName");
+                        // Set the menu failure state so VoiceAttack can notify user
+                        vaProxy.SetBoolean(">JBMSI_NO_SUCH_MENU", true);
                         return;
                     }
 
@@ -585,7 +583,8 @@ namespace Tanrr.VAPlugin.BMSRadio
                         if (vaProxy.CommandExists("JBMS Close Menu"))
                         {
                             // Tell VA to execute close them menu with ESC, but NOT call back plugin with "JBMS_RESET_MENU_STATE"
-                            Logger.Write(vaProxy, "JBMS_SHOW_MENU called when menu already up, closing current menu");
+                            Logger.Write(vaProxy, "JBMS_SHOW_MENU called when menu already up, cancelling listening and closing current menu");
+                            vaProxy.Command.Execute("JBMS Kill Command Wait For Menu Response", WaitForReturn: true);
                             vaProxy.Command.Execute("JBMS Close Menu", WaitForReturn: true);
                             // Reset just the menu state related to it being up or having errors
                             ResetMenuState(vaProxy, onlyUpAndErrors: true);
@@ -601,6 +600,24 @@ namespace Tanrr.VAPlugin.BMSRadio
                     ExecuteCmdOrKeys(vaProxy, MenuShow, /* waitForReturn */ true);
                     // Assume Success
                     vaProxy.SetBoolean(">JBMSI_MENU_UP", true);
+
+                    // Only do the work to log available menu items, if our flag is set
+                    if (Logger.MenuItems)
+                    {
+                        // We're showing the log in VoiceAttack, so reverse it given the way it scrolls
+                        Stack<string> stackMenuDisplay = new Stack<string>();
+                        stackMenuDisplay.Push("    [[" + Menu.MenuTarget + "]] [[" + Menu.MenuName + "]]");
+
+                        // MenuItemBMS[] menuItems = 
+                        foreach (MenuItemBMS item in Menu.MenuItemsBMS)
+                        {
+                            stackMenuDisplay.Push("[" + item.MenuItemExecute + "]   " + item.MenuItemPhrases);
+                        }
+                        while (stackMenuDisplay.Count > 0)
+                        {
+                            Logger.MenuItemsWrite(vaProxy, stackMenuDisplay.Pop());
+                        }
+                    }
 
                     // Async non-blocking wait & listen for phrases that match menu item choices (with timeout)
                     // Plugin invoked with "JBMS_HANDLE_MENU_RESPONSE" if matching response heard

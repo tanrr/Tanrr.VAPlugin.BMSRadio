@@ -30,8 +30,10 @@ The system is designed for flexibility while remaining reasonably simple.  It is
 1. Make sure that *"Enable Plugin Support"* is enabled (VoiceAttack Settings (Wrench icon) under "General"), then shut down VoiceAttack
 2. Move the **Tanrr.VAPlugin.BMSRadio** folder into the folder **..\VoiceAttack\Apps**.  This should leave the dlls and related files under **..\VoiceAttack\Apps\Tanrr.VAPlugin.BMSRadio**.
 3. **IMPORTANT**: From the **Tanrr.VAPlugin.BMSRadio** folder, *copy* the **Newtonsoft.Json.dll** file into the **..\VoiceAttack\Shared\Assemblies** folder.
-4. Launch VoiceAttack and import **Jeeves BMS Radio Menus (ver) Profile.vap**
+4. Launch VoiceAttack and import **Jeeves BMS Radio Menus Profile.vap**
 5. *HOTKEYS:* The VoiceAttack profile provided only sets a hotkey of F24 (hold to listen) for VoiceAttack.  You will want to change the hotkeys to whatever keyboard keys or game controller buttons you use.  Hotkeys can be set globally (VoiceAttack Settings, Hotkeys) or just for the profile (Edit Profile, Options, Profile Hotkeys).
+
+\*\* *See recomended VoiceAttack settings at the end of this document* \*\*
 
 ## DETAILS:
 
@@ -55,11 +57,12 @@ Details of the BMS Radio menus can be found **BMS-Comms-Nav-Book.pdf** in which 
 
 ### VoiceAttack Variables
 
-**\>JBMS** variables can be changed by the VA profile, but should only be used in the same way (to pass info to the plugin, or check return states from the plugin).
+**\>JBMS** variables can be changed by the VA profile, but should only be used in the same way (to pass info to the plugin, or check return states from the plugin).  Feel free to set the Boolean **_LOG** variables (initialized in VA command *"JBMS Initial Load Init"*) to true for additinal logging, with slightly slower performance.
 
 **\>JBMSI** internal variables should NOT be changed by the VA profile, EXCEPT for the provided methods provided that use them. Changes to them could easily break the plugin.
 
 - **\>JBMS_JSON_LOG**	-       Boolean to add logging of JSON parsing
+- **\>JBMS_MENUITEMS_LOG**	- Boolean to add logging of menu items (shows list of menu items in log)
 - **\>JBMS_STRUCTURES_LOG** - Boolean to add logging of data structures manipulation
 - **\>JBMS_VERBOSE_LOG** -   Boolean to add more verbose general logging
 
@@ -185,3 +188,35 @@ menuName abbreviations (followed by 1 or 2/3 etc. for multiples)
   
 For example, Wingman, Combat 1 menu for Attack My Target 
 would be "JBMS-WC1-ATTACK-TGT" or something similar.
+
+
+## VOICEATTACK BASICS & RECOMMENDED SETTINGS
+
+**BASICS:**
+- *Only have VoiceAttack listen when you are holding down a key - don't leave it listening all the time.*
+- Turn on "Show Confidence Level" in VA Settings (wrench), Recognition tab to see how well/poorly VA is understanding you.
+
+**RECOMMENDED SETTINGS:**
+
+*VoiceAttack Settings, Recognition tab: See VA docs under "Recognition Tab" for deeper descriptions.*
+
+- *Recognized Speech Delay:* 10-30 - Helps VA differentiate between "Awacs" vs "Awacs Vectors" and combination phrases.
+
+- *Unrecognized Speech Delay:* 0
+
+- *Command Weight:* 80-95 - Higher values here tell VA to try to make whatever you are saying fit to one of the phrases in the profile.  If you set this to 100 it will ALWAYS pick the closest match it can, so be careful.
+
+- *Minimum Confidence Level:* 30-70
+
+   The minimum confidence level needed for a match. VA might recognize "Combat 1" but have a low confidence because you didn't say it clearly.  Run VA with "Show Confidence Level" enabled to see if how you should adjust this. I have mine at 35.
+   
+   **NOTE 1:** This can also be set in a profiles options, or for a specific command.
+   
+   **NOTE 2:** *"JBMS Wait For Menu Response"* VA Command specifically sets this very low, as it is extremely likely, since you just called up a menu, that your next words will be items in the menu.
+
+- *Min Unrecognized Confidence Level:* 30-60 - Higher numbers throw out more "unrecognized" sounds.  Only need to turn this up if you're in a noisy environment.
+
+- Disable Adaptive Recognition: OFF (unless VA seems to become unresponsive often)
+- Disable Acoustic Echo Cancellation: ON (but can effect other apps, and OFF is usually ok)
+- Reject Pending Speech: OFF
+

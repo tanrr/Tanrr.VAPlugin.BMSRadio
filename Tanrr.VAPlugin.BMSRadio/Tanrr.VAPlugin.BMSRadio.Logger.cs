@@ -9,6 +9,7 @@ namespace Tanrr.VAPlugin.BMSRadio
     public static class Logger
     {
         static private bool s_Json = false;
+        static private bool s_MenuItems = false;
         static private bool s_Structures = false;
         static private bool s_Verbose = false;
 
@@ -17,6 +18,7 @@ namespace Tanrr.VAPlugin.BMSRadio
         static private string s_ErrorPrefix = "ERROR: ";
 
         static public bool Json { get => s_Json; set => s_Json = value; }
+        static public bool MenuItems {  get => s_MenuItems; set => s_MenuItems = value; } 
         static public bool Structures{ get => s_Structures; set => s_Structures = value; }
         static public bool Verbose{ get => s_Verbose; set => s_Verbose = value; }
 
@@ -34,6 +36,14 @@ namespace Tanrr.VAPlugin.BMSRadio
         public static void JsonWrite(dynamic vaProxy, string msg)
         {
             if (s_Json || s_Verbose)
+            {
+                vaProxy.WriteToLog(s_Prefix + msg, "Blue");
+            }
+        }
+
+        public static void MenuItemsWrite(dynamic vaProxy, string msg)
+        {
+            if (s_MenuItems || s_Verbose)
             {
                 vaProxy.WriteToLog(s_Prefix + msg, "Blue");
             }

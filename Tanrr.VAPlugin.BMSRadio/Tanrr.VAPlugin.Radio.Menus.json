@@ -403,8 +403,8 @@
 	{
 		"menuTarget": "Flight",
 		"targetPhrases": "Flight",
-		"menuName": "Runway Lineup",
-		"menuNamePhrases": "Runway Line Up",
+		"menuName": "Runway",
+		"menuNamePhrases": "Runway [Line Up;]",
 		"menuShow": "RRRRRRRR",
 
 		"menuItems": [
@@ -487,8 +487,8 @@
 		"menuShow": "TTTTT",
 
 		"menuItems": [
-			[ "Request Q N H", "1" ],
-			[ "Request Q F E", "2" ],
+			[ "Request [Q N H;Cue Enn Ech]", "1" ],
+			[ "Request [Q F E;Cue Eff Eee]", "2" ],
 			[ "Say Active Take Off Runway", "3" ],
 			[ "Say Active [Landing;] Runway", "4" ],
 			[ "Request Wind Check", "5" ]
