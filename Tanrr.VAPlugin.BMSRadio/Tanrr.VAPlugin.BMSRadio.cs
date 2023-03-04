@@ -44,7 +44,7 @@ namespace Tanrr.VAPlugin.BMSRadio
         }
 
         public static string VA_DisplayName()
-            => "Tanrr VA BMS Radio Plugin v0.0.7";  // Displayed in dropdowns and log as plugin name
+            => "Tanrr VA BMS Radio Plugin v0.0.8";  // Displayed in dropdowns and log as plugin name
 
         public static string VA_DisplayInfo()
             => "Tanrr BMS Radio Plugin for VoiceAttack\r\n\r\nInitial POC.\r\n\r\n2023";  // Extended info

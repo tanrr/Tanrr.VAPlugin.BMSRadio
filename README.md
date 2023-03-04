@@ -1,6 +1,6 @@
 # Jeeves BMS Radio Menus (Tanrr.VAPlugin.BMSRadio) 
 
-version 0.0.7
+version 0.0.8
 
 Jeeves BMS Radio Menus is a simple but powerful plugin for VoiceAttack to work with BMS radio menus. 
 
