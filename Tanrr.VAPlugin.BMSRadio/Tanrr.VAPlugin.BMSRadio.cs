@@ -39,7 +39,7 @@ namespace Tanrr.VAPlugin.BMSRadio
         }
 
         public static string VA_DisplayName()
-            => "Jeeves BMS Radio Plugin for VoiceAttack v0.0.9 Alpha";  // Displayed in dropdowns and log as plugin name
+            => "Jeeves BMS Radio Plugin for VoiceAttack v0.1.0 Beta";  // Displayed in dropdowns and log as plugin name
 
         public static string VA_DisplayInfo()
             => "Jeeves BMS Radio Plugin for VoiceAttack\r\n\r\nInitial POC.\r\n\r\n2023";  // Extended info

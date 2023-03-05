@@ -1,6 +1,6 @@
 # Jeeves BMS Radio Menus (Tanrr.VAPlugin.BMSRadio) 
 
-version 0.0.9
+version 0.1.0
 
 Jeeves BMS Radio Menus is a simple but powerful plugin for VoiceAttack to work with BMS radio menus. 
 
@@ -24,6 +24,8 @@ The system is designed for flexibility while remaining reasonably simple.  It is
 
 - *When the plugin loads the menu JSON it will check your phrases to make sure you haven't generated duplicate or empty phrases within each menu.*
 
+- *To help with radio tuning, VA commands for "Push Uniform [1..20]" are included, to allow you to quickly change between COMM1 UHF presets. These assume the default keyboard shortcuts for the ICP controls.
+
 ## **INSTALLATION**:
 
 *This plugin uses Newtonsoft.Json.dll version 13.0.2, and Newtonsoft.Json.Schema.dll version 3.0.14.  They are included, or you can download your own versions. Note that STEP 3 copies the Newtonsoft.Json.dll file to a different directory.*
@@ -32,7 +34,7 @@ The system is designed for flexibility while remaining reasonably simple.  It is
 2. Move the **Tanrr.VAPlugin.BMSRadio** folder into the folder **..\VoiceAttack\Apps**.  This should leave the dlls and related files under **..\VoiceAttack\Apps\Tanrr.VAPlugin.BMSRadio**.
 3. **IMPORTANT**: From the **Tanrr.VAPlugin.BMSRadio** folder, *copy* the **Newtonsoft.Json.dll** file into the **..\VoiceAttack\Shared\Assemblies** folder.
 4. Launch VoiceAttack and import **Jeeves BMS Radio Menus Profile.vap**
-5. *HOTKEYS:* The VoiceAttack profile provided only sets a hotkey of F24 (hold to listen) for VoiceAttack.  You will want to change the hotkeys to whatever keyboard keys or game controller buttons you use.  Hotkeys can be set globally (VoiceAttack Settings, Hotkeys) or just for the profile (Edit Profile, Options, Profile Hotkeys).
+5. *HOTKEYS:* The VoiceAttack profile provided only sets a hotkey of F24 (hold to listen) for VoiceAttack. You will want to change the hotkeys to whatever keyboard keys or game controller buttons you use.  Hotkeys can be set globally (VoiceAttack Settings, Hotkeys) or just for the profile (Edit Profile, Options, Profile Hotkeys).
 
 \*\* *See recomended VoiceAttack settings at the end of this document* \*\*
 
