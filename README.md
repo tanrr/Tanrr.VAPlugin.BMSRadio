@@ -1,13 +1,12 @@
 # Jeeves BMS Radio Menus (Tanrr.VAPlugin.BMSRadio) 
 
-version 0.0.8
+version 0.0.9
 
 Jeeves BMS Radio Menus is a simple but powerful plugin for VoiceAttack to work with BMS radio menus. 
 
 It is a flexible solution with more features than simpler VA profiles, while being relatively fast and light weight.
 
 Users can easily call up radio menus by saying a menuTarget such as "2" or "Flight" followed by an appropriate menuName, such as "Combat 3."  The menu is displayed and the plugin will listen for phrases that match the current menu's menu items.  This lets users who are not familiar with the menus look through them to make their choices, and will even warn them when they ask for a menu doesn't exist such as "Flight, Combat 3."
-
 
 The system is designed for flexibility while remaining reasonably simple.  It is easy to update JBMS to match updates to the game, and to change the recognition phrases for menuTargets, menuNames, and menuItems to work for you.  Additional ease of use features include adding direct commands that don't leave menus up, as well as the ability to have menu items call your own methods in the VoiceAttack profile. 
 
@@ -169,6 +168,48 @@ If you set *menuItemExecute* (2nd text field in each array within *menuItems*) t
 
 Your *menuItemExecute* VA command (if not keypresses) should not be long running as the plugin will wait for it to return. Your command can look at the **\>JBMS_MENU_TGT** and **\>JBMS_MENU_NAME** variables which will still be valid till your command returns. Your command is responsible for making sure the menu is dismissed, either by pressing a key to choose a menu item, or by executing *"Dismiss Menu Only"* command in the VA profile. Your command SHOULD NOT call the plugin with context *JBMS_RESET_MENU_STATE* as that will be done by the plugin after your command finishes.
 
+CUSTOMIZING THE VOICEATTACK PROFILE
+
+The amount of time the profile waits for responses for a menu before dismissing it is set in *"JBMS Wait For Menu Response"* command, within the "Wait for spoken response" call.  It is currently left at 15 seconds, which is pretty long.  Change it to whatever works for you.
+
+As mentioned earlier, you can change the timing for keypresses and pauses in the *"JBMS Press Keys"* command.  Make sure you verify changes work for your system and the servers you play on.
+
+Though you can add your own commands directly to this JBMS Radio profile, it is probably better to make your own separate profile and include it from this profile.  This can be done by editing the JBMS Radio profile, clicking OPTIONS, going to the *General* tab, and adding your profile to the *"Include Commands from Other Profiles" section. 
+
+Note that Voice Attack commands that call the *"Internal Reset Menu" command need to have *"Allow Other Commands to Execute While This One is Running" checked.
+
+
+## VOICEATTACK BASICS & RECOMMENDED SETTINGS
+
+**BASICS:**
+- *Only have VoiceAttack listen when you are holding down a key - don't leave it listening all the time.*
+- Turn on "Show Confidence Level" in VA Settings (wrench), Recognition tab to see how well/poorly VA is understanding you.
+
+**RECOMMENDED SETTINGS:**
+
+*VoiceAttack Settings, Recognition tab: See VA docs under "Recognition Tab" for deeper descriptions.*
+
+- *Recognized Speech Delay:* 10-30 - Helps VA differentiate between "Awacs" vs "Awacs Vectors" and combination phrases.
+
+- *Unrecognized Speech Delay:* 0
+
+- *Command Weight:* 80-95 - Higher values here tell VA to try to make whatever you are saying fit to one of the phrases in the profile.  If you set this to 100 it will ALWAYS pick the closest match it can, so be careful.
+
+- *Minimum Confidence Level:* 30-70
+
+   The minimum confidence level needed for a match. VA might recognize "Combat 1" but have a low confidence because you didn't say it clearly.  Run VA with "Show Confidence Level" enabled to see if how you should adjust this. I have mine at 35.
+   
+   **NOTE 1:** This can also be set in a profiles options, or for a specific command.
+   
+   **NOTE 2:** *"JBMS Wait For Menu Response"* VA Command specifically sets this very low, as it is extremely likely, since you just called up a menu, that your next words will be items in the menu.
+
+- *Min Unrecognized Confidence Level:* 30-60 - Higher numbers throw out more "unrecognized" sounds.  Only need to turn this up if you're in a noisy environment.
+
+- Disable Adaptive Recognition: OFF (unless VA seems to become unresponsive often)
+- Disable Acoustic Echo Cancellation: ON (but can effect other apps, and OFF is usually ok)
+- Reject Pending Speech: OFF
+
+
 **MENUTARGET & MENUNAME ABBREVIATIONS (NOT REQUIRED BUT HELPFUL):**
 
 menuTarget abbreviations:
@@ -202,35 +243,3 @@ menuName abbreviations (followed by 1 or 2/3 etc. for multiples)
   
 For example, Wingman, Combat 1 menu for Attack My Target 
 would be "JBMS-WC1-ATTACK-TGT" or something similar.
-
-
-## VOICEATTACK BASICS & RECOMMENDED SETTINGS
-
-**BASICS:**
-- *Only have VoiceAttack listen when you are holding down a key - don't leave it listening all the time.*
-- Turn on "Show Confidence Level" in VA Settings (wrench), Recognition tab to see how well/poorly VA is understanding you.
-
-**RECOMMENDED SETTINGS:**
-
-*VoiceAttack Settings, Recognition tab: See VA docs under "Recognition Tab" for deeper descriptions.*
-
-- *Recognized Speech Delay:* 10-30 - Helps VA differentiate between "Awacs" vs "Awacs Vectors" and combination phrases.
-
-- *Unrecognized Speech Delay:* 0
-
-- *Command Weight:* 80-95 - Higher values here tell VA to try to make whatever you are saying fit to one of the phrases in the profile.  If you set this to 100 it will ALWAYS pick the closest match it can, so be careful.
-
-- *Minimum Confidence Level:* 30-70
-
-   The minimum confidence level needed for a match. VA might recognize "Combat 1" but have a low confidence because you didn't say it clearly.  Run VA with "Show Confidence Level" enabled to see if how you should adjust this. I have mine at 35.
-   
-   **NOTE 1:** This can also be set in a profiles options, or for a specific command.
-   
-   **NOTE 2:** *"JBMS Wait For Menu Response"* VA Command specifically sets this very low, as it is extremely likely, since you just called up a menu, that your next words will be items in the menu.
-
-- *Min Unrecognized Confidence Level:* 30-60 - Higher numbers throw out more "unrecognized" sounds.  Only need to turn this up if you're in a noisy environment.
-
-- Disable Adaptive Recognition: OFF (unless VA seems to become unresponsive often)
-- Disable Acoustic Echo Cancellation: ON (but can effect other apps, and OFF is usually ok)
-- Reject Pending Speech: OFF
-

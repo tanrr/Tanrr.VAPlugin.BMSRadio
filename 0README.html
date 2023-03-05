@@ -702,7 +702,7 @@
   <body>
     <article class="markdown-body">
       <h1 data-sourcepos="1:1-1:50">Jeeves BMS Radio Menus (Tanrr.VAPlugin.BMSRadio)</h1>
-<p data-sourcepos="3:1-3:13">version 0.0.8</p>
+<p data-sourcepos="3:1-3:13">version 0.0.9</p>
 <p data-sourcepos="5:1-5:101">Jeeves BMS Radio Menus is a simple but powerful plugin for VoiceAttack to work with BMS radio menus.</p>
 <p data-sourcepos="7:1-7:116">It is a flexible solution with more features than simpler VA profiles, while being relatively fast and light weight.</p>
 <p data-sourcepos="9:1-9:429">Users can easily call up radio menus by saying a menuTarget such as &quot;2&quot; or &quot;Flight&quot; followed by an appropriate menuName, such as &quot;Combat 3.&quot;  The menu is displayed and the plugin will listen for phrases that match the current menu's menu items.  This lets users who are not familiar with the menus look through them to make their choices, and will even warn them when they ask for a menu doesn't exist such as &quot;Flight, Combat 3.&quot;</p>
@@ -868,70 +868,74 @@ You can use an online JSON schema validator, like <a href="https://jsonmate.com/
 <p data-sourcepos="166:1-166:47">MAPPING MENU ITEMS TO YOUR OWN CUSTOM COMMANDS:</p>
 <p data-sourcepos="168:1-168:526">If you set <em>menuItemExecute</em> (2nd text field in each array within <em>menuItems</em>) to match the name of a <strong>unique</strong> command within the VA profile, the plugin will execute that command, instead of pressing keys matching the letters in the string. It is strongly recommended that you make such commands NOT callable by voice to avoid conflicting menu states.  Your implementation of such a VA command should NOT call back into the plugin with a &quot;JBMS_DIRECT_COMMAND&quot; for the same menu item as this would create a never-ending loop.</p>
 <p data-sourcepos="170:1-170:580">Your <em>menuItemExecute</em> VA command (if not keypresses) should not be long running as the plugin will wait for it to return. Your command can look at the <strong>&gt;JBMS_MENU_TGT</strong> and <strong>&gt;JBMS_MENU_NAME</strong> variables which will still be valid till your command returns. Your command is responsible for making sure the menu is dismissed, either by pressing a key to choose a menu item, or by executing <em>&quot;Dismiss Menu Only&quot;</em> command in the VA profile. Your command SHOULD NOT call the plugin with context <em>JBMS_RESET_MENU_STATE</em> as that will be done by the plugin after your command finishes.</p>
-<p data-sourcepos="172:1-172:67"><strong>MENUTARGET &amp; MENUNAME ABBREVIATIONS (NOT REQUIRED BUT HELPFUL):</strong></p>
-<p data-sourcepos="174:1-180:15">menuTarget abbreviations:
+<p data-sourcepos="172:1-172:35">CUSTOMIZING THE VOICEATTACK PROFILE</p>
+<p data-sourcepos="174:1-174:274">The amount of time the profile waits for responses for a menu before dismissing it is set in <em>&quot;JBMS Wait For Menu Response&quot;</em> command, within the &quot;Wait for spoken response&quot; call.  It is currently left at 15 seconds, which is pretty long.  Change it to whatever works for you.</p>
+<p data-sourcepos="176:1-176:189">As mentioned earlier, you can change the timing for keypresses and pauses in the <em>&quot;JBMS Press Keys&quot;</em> command.  Make sure you verify changes work for your system and the servers you play on.</p>
+<p data-sourcepos="178:1-178:342">Though you can add your own commands directly to this JBMS Radio profile, it is probably better to make your own separate profile and include it from this profile.  This can be done by editing the JBMS Radio profile, clicking OPTIONS, going to the <em>General</em> tab, and adding your profile to the *&quot;Include Commands from Other Profiles&quot; section.</p>
+<h2 data-sourcepos="181:1-181:44">VOICEATTACK BASICS &amp; RECOMMENDED SETTINGS</h2>
+<p data-sourcepos="183:1-183:11"><strong>BASICS:</strong></p>
+<ul data-sourcepos="184:1-186:0">
+<li data-sourcepos="184:1-184:105"><em>Only have VoiceAttack listen when you are holding down a key - don't leave it listening all the time.</em></li>
+<li data-sourcepos="185:1-186:0">Turn on &quot;Show Confidence Level&quot; in VA Settings (wrench), Recognition tab to see how well/poorly VA is understanding you.</li>
+</ul>
+<p data-sourcepos="187:1-187:25"><strong>RECOMMENDED SETTINGS:</strong></p>
+<p data-sourcepos="189:1-189:101"><em>VoiceAttack Settings, Recognition tab: See VA docs under &quot;Recognition Tab&quot; for deeper descriptions.</em></p>
+<ul data-sourcepos="191:1-211:0">
+<li data-sourcepos="191:1-192:0">
+<p data-sourcepos="191:3-191:119"><em>Recognized Speech Delay:</em> 10-30 - Helps VA differentiate between &quot;Awacs&quot; vs &quot;Awacs Vectors&quot; and combination phrases.</p>
+</li>
+<li data-sourcepos="193:1-194:0">
+<p data-sourcepos="193:3-193:32"><em>Unrecognized Speech Delay:</em> 0</p>
+</li>
+<li data-sourcepos="195:1-196:0">
+<p data-sourcepos="195:3-195:220"><em>Command Weight:</em> 80-95 - Higher values here tell VA to try to make whatever you are saying fit to one of the phrases in the profile.  If you set this to 100 it will ALWAYS pick the closest match it can, so be careful.</p>
+</li>
+<li data-sourcepos="197:1-204:0">
+<p data-sourcepos="197:3-197:35"><em>Minimum Confidence Level:</em> 30-70</p>
+<p data-sourcepos="199:4-199:244">The minimum confidence level needed for a match. VA might recognize &quot;Combat 1&quot; but have a low confidence because you didn't say it clearly.  Run VA with &quot;Show Confidence Level&quot; enabled to see if how you should adjust this. I have mine at 35.</p>
+<p data-sourcepos="201:4-201:85"><strong>NOTE 1:</strong> This can also be set in a profiles options, or for a specific command.</p>
+<p data-sourcepos="203:4-203:198"><strong>NOTE 2:</strong> <em>&quot;JBMS Wait For Menu Response&quot;</em> VA Command specifically sets this very low, as it is extremely likely, since you just called up a menu, that your next words will be items in the menu.</p>
+</li>
+<li data-sourcepos="205:1-206:0">
+<p data-sourcepos="205:3-205:160"><em>Min Unrecognized Confidence Level:</em> 30-60 - Higher numbers throw out more &quot;unrecognized&quot; sounds.  Only need to turn this up if you're in a noisy environment.</p>
+</li>
+<li data-sourcepos="207:1-207:82">
+<p data-sourcepos="207:3-207:82">Disable Adaptive Recognition: OFF (unless VA seems to become unresponsive often)</p>
+</li>
+<li data-sourcepos="208:1-208:91">
+<p data-sourcepos="208:3-208:91">Disable Acoustic Echo Cancellation: ON (but can effect other apps, and OFF is usually ok)</p>
+</li>
+<li data-sourcepos="209:1-211:0">
+<p data-sourcepos="209:3-209:28">Reject Pending Speech: OFF</p>
+</li>
+</ul>
+<p data-sourcepos="212:1-212:67"><strong>MENUTARGET &amp; MENUNAME ABBREVIATIONS (NOT REQUIRED BUT HELPFUL):</strong></p>
+<p data-sourcepos="214:1-220:15">menuTarget abbreviations:
 W-ingman
 E-lement
 F-light
 T-ATC
 Q-AWACS
 Y-Tanker/JTAC</p>
-<p data-sourcepos="182:1-187:9">menuName abbreviations (followed by 1 or 2/3 etc. for multiples)
+<p data-sourcepos="222:1-227:9">menuName abbreviations (followed by 1 or 2/3 etc. for multiples)
 C-ombat
 M-ission
 F-ormation
 X-Misc
 R-unway</p>
-<p data-sourcepos="189:3-195:9">G-round
+<p data-sourcepos="229:3-235:9">G-round
 T-ower
 A-pproach
 D-eparture
 N-Common
 C-arrior &amp; LSO
 B-Abort</p>
-<p data-sourcepos="197:3-198:27">Q-Awacts Tactical (so QQ)
+<p data-sourcepos="237:3-238:27">Q-Awacts Tactical (so QQ)
 V-Awacs Vectors   (so QV)</p>
-<p data-sourcepos="200:3-201:16">T-Tanker (so YT)
+<p data-sourcepos="240:3-241:16">T-Tanker (so YT)
 J-JTAC (so YJ)</p>
-<p data-sourcepos="203:1-204:52">For example, Wingman, Combat 1 menu for Attack My Target
+<p data-sourcepos="243:1-244:52">For example, Wingman, Combat 1 menu for Attack My Target
 would be &quot;JBMS-WC1-ATTACK-TGT&quot; or something similar.</p>
-<h2 data-sourcepos="207:1-207:44">VOICEATTACK BASICS &amp; RECOMMENDED SETTINGS</h2>
-<p data-sourcepos="209:1-209:11"><strong>BASICS:</strong></p>
-<ul data-sourcepos="210:1-212:0">
-<li data-sourcepos="210:1-210:105"><em>Only have VoiceAttack listen when you are holding down a key - don't leave it listening all the time.</em></li>
-<li data-sourcepos="211:1-212:0">Turn on &quot;Show Confidence Level&quot; in VA Settings (wrench), Recognition tab to see how well/poorly VA is understanding you.</li>
-</ul>
-<p data-sourcepos="213:1-213:25"><strong>RECOMMENDED SETTINGS:</strong></p>
-<p data-sourcepos="215:1-215:101"><em>VoiceAttack Settings, Recognition tab: See VA docs under &quot;Recognition Tab&quot; for deeper descriptions.</em></p>
-<ul data-sourcepos="217:1-236:0">
-<li data-sourcepos="217:1-218:0">
-<p data-sourcepos="217:3-217:119"><em>Recognized Speech Delay:</em> 10-30 - Helps VA differentiate between &quot;Awacs&quot; vs &quot;Awacs Vectors&quot; and combination phrases.</p>
-</li>
-<li data-sourcepos="219:1-220:0">
-<p data-sourcepos="219:3-219:32"><em>Unrecognized Speech Delay:</em> 0</p>
-</li>
-<li data-sourcepos="221:1-222:0">
-<p data-sourcepos="221:3-221:220"><em>Command Weight:</em> 80-95 - Higher values here tell VA to try to make whatever you are saying fit to one of the phrases in the profile.  If you set this to 100 it will ALWAYS pick the closest match it can, so be careful.</p>
-</li>
-<li data-sourcepos="223:1-230:0">
-<p data-sourcepos="223:3-223:35"><em>Minimum Confidence Level:</em> 30-70</p>
-<p data-sourcepos="225:4-225:244">The minimum confidence level needed for a match. VA might recognize &quot;Combat 1&quot; but have a low confidence because you didn't say it clearly.  Run VA with &quot;Show Confidence Level&quot; enabled to see if how you should adjust this. I have mine at 35.</p>
-<p data-sourcepos="227:4-227:85"><strong>NOTE 1:</strong> This can also be set in a profiles options, or for a specific command.</p>
-<p data-sourcepos="229:4-229:198"><strong>NOTE 2:</strong> <em>&quot;JBMS Wait For Menu Response&quot;</em> VA Command specifically sets this very low, as it is extremely likely, since you just called up a menu, that your next words will be items in the menu.</p>
-</li>
-<li data-sourcepos="231:1-232:0">
-<p data-sourcepos="231:3-231:160"><em>Min Unrecognized Confidence Level:</em> 30-60 - Higher numbers throw out more &quot;unrecognized&quot; sounds.  Only need to turn this up if you're in a noisy environment.</p>
-</li>
-<li data-sourcepos="233:1-233:82">
-<p data-sourcepos="233:3-233:82">Disable Adaptive Recognition: OFF (unless VA seems to become unresponsive often)</p>
-</li>
-<li data-sourcepos="234:1-234:91">
-<p data-sourcepos="234:3-234:91">Disable Acoustic Echo Cancellation: ON (but can effect other apps, and OFF is usually ok)</p>
-</li>
-<li data-sourcepos="235:1-236:0">
-<p data-sourcepos="235:3-235:28">Reject Pending Speech: OFF</p>
-</li>
-</ul>
 
     </article>
   </body>

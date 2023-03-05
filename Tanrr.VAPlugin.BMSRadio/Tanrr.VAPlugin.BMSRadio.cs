@@ -14,11 +14,6 @@ using System.Runtime.CompilerServices;
 
 namespace Tanrr.VAPlugin.BMSRadio
 {
-    // JBMS Generated GUIDS: TODO - RETAIN #2 and #3 for later use
-    // G1 7e22363e-2cca-4b26-8aae-a292f73d2a53
-    // G2 16223078-853e-41fb-a741-3e9cacfe94d9
-    // G3 da2b13d9-f5fd-47e3-93af-b5c9e089b5a8
-
     public struct DirCmdIndexes
     {
         public int IndexMenu { get; }
@@ -44,10 +39,10 @@ namespace Tanrr.VAPlugin.BMSRadio
         }
 
         public static string VA_DisplayName()
-            => "Tanrr VA BMS Radio Plugin v0.0.8";  // Displayed in dropdowns and log as plugin name
+            => "Jeeves BMS Radio Plugin for VoiceAttack v0.0.9 Alpha";  // Displayed in dropdowns and log as plugin name
 
         public static string VA_DisplayInfo()
-            => "Tanrr BMS Radio Plugin for VoiceAttack\r\n\r\nInitial POC.\r\n\r\n2023";  // Extended info
+            => "Jeeves BMS Radio Plugin for VoiceAttack\r\n\r\nInitial POC.\r\n\r\n2023";  // Extended info
 
         public static Guid VA_Id()
             => new Guid("{7e22363e-2cca-4b26-8aae-a292f73d2a53}");  // TANR JBMS G1
@@ -92,12 +87,19 @@ namespace Tanrr.VAPlugin.BMSRadio
             }
         }
 
+        // Resets our stored menu states, and cancels any pending Wait for Response in the VA profile
+        // Clearing menu target and name can be overridden if needed
         public static void ResetMenuState(dynamic vaProxy, bool onlyUpAndErrors = false)
         {
             Logger.Write(vaProxy, "ResetMenuState");
 
-            vaProxy.SetBoolean(">JBMSI_NO_SUCH_MENU", false);            // This is set by plugin if its called to load a target/menu pair that doesn't exist
-            vaProxy.SetBoolean(">JBMSI_MENU_UP", false);                 // True only while menu is up (hopefully)
+            vaProxy.SetBoolean(">JBMSI_NO_SUCH_MENU", false);               // Set by plugin if it's called to load a target/menu pair that doesn't exist
+            vaProxy.SetBoolean(">JBMSI_MENU_UP", false);                    // True only while menu is up (hopefully)
+            // Kill any currently executing "JBMS Wait For Menu Response"   
+            vaProxy.Command.Execute("JBMS Kill Command Wait For Menu Response", WaitForReturn: true);
+            // Set in JBMS Wait For Menu Response - clear in case it got set just before JBMS Wait was terminated
+            vaProxy.SetText(">JBMSI_MENU_RESPONSE", string.Empty);          
+
             if (onlyUpAndErrors)
                 return;
 
@@ -535,6 +537,7 @@ namespace Tanrr.VAPlugin.BMSRadio
                                 ExecuteCmdOrKeys(vaProxy, MenuItemExecute, /* waitForReturn */ true);
 
                                 // Passing key/cmd should have brought down menu, so only reset our menu state - don't press escape
+                                // Note that this will also terminate any current "JBMS Wait For Menu Response" in progress
                                 ResetMenuState(vaProxy);
                                 MenuUp = false;
                             }
