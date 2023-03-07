@@ -14,94 +14,85 @@ using System.Runtime.CompilerServices;
 
 namespace Tanrr.VAPlugin.BMSRadio
 {
-    public struct DirCmdIndexes
+    public struct DirCmdInfo
     {
-        public int IndexMenu { get; }
+        // Holds menu key (menuFullID), and index of menuItem within that menu
+        // Stored as value in Dictionary to map direct commands to their associated menu and menu item
         public int IndexMenuItem { get; }
-        public DirCmdIndexes(int indexMenu, int indexMenuItem)
+        public string MenuFullID { get; }
+        public DirCmdInfo(string menuFullID, int indexMenuItem)
         {
-            this.IndexMenu = indexMenu; 
+            this.MenuFullID = menuFullID;
             this.IndexMenuItem = indexMenuItem;
         }
     };
 
     public class Jeeves_BMS_Radio_Plugin 
     {
-        protected static List<MenuBMS> s_menusBMS = null;
+        protected static string s_version = "v0.1.1";
+        protected static Dictionary<string, MenuBMS> s_menusAll = null;
+        protected static Dictionary<string, DirCmdInfo> s_DirCmdMap = null;
         protected static MenuBMS s_curMenuBMS = null;
 
-        protected static Dictionary<string, DirCmdIndexes> s_DirCmdMap = new Dictionary<string, DirCmdIndexes>();
-       
-        public static MenuBMS CurMenuBMS 
-        { 
-            get => s_curMenuBMS;
-            set => s_curMenuBMS = value; 
-        }
-
         public static string VA_DisplayName()
-            => "Jeeves BMS Radio Plugin for VoiceAttack v0.1.0 Beta";  // Displayed in dropdowns and log as plugin name
+            => $"Jeeves BMS Radio Plugin for VoiceAttack {s_version} Beta";  // Displayed in VA dropdowns and log
 
         public static string VA_DisplayInfo()
-            => "Jeeves BMS Radio Plugin for VoiceAttack\r\n\r\nInitial POC.\r\n\r\n2023";  // Extended info
+            => $"Jeeves BMS Radio Plugin for VoiceAttack {s_version} Beta 2023";  // Extended info
 
         public static Guid VA_Id()
             => new Guid("{7e22363e-2cca-4b26-8aae-a292f73d2a53}");  // TANR JBMS G1
 
         // Called from VA when the 'stop all commands' button is pressed or a 'stop all commands' action is called
-        /// Will help you know if processing needs to stop if you have long-running code
         public static void VA_StopCommand()  
         {
-            // JBMS Radio Menus shouldn't have any long running code unless it's a bug
-            // Only extended wait is async from our side:
-            //   A call to AV "JBMS Wait For Menu Response" will do a "Wait for Spoken Response" command (with a timeout)
-            //   However, our call doesn't wait for a return, VA will just send us the results later
+            // Only extended wait is actually async call into VA Profile "JBMS Wait For Menu Response"
+            // which has a "Wait for Spoken Response" command (with a timeout) - VA will stop that command on its own
 
             // Revisit this if major code or logic changes happen to make sure it's still not needed
         }
 
         public static bool GetNonNullBool(dynamic vaProxy, string propName)
         {
-            if (string.IsNullOrEmpty(propName))
-                return false;
-
+            if (string.IsNullOrEmpty(propName)) { return false; }   
             return vaProxy.GetBoolean(propName) ?? false;
         }
-            
-        public static void SetSharedVarsDefaults(dynamic vaProxy)
+
+        public static bool GetNonNullText(dynamic vaProxy, string propName, out string textValue)
         {
-            vaProxy.SetBoolean(">>JBMSI_INITED", false);
-            ResetMenuState(vaProxy);
+            // Assumes non-null out variable for textValue - okay to throw exception if null
+            textValue = vaProxy.GetText(propName);
+            if (textValue == null) 
+            { 
+                textValue = string.Empty;
+                return false; 
+            }
+            return true;
         }
+
         public static bool VerifyMenuState(dynamic vaProxy, bool menuUp, bool noErrorsAllowed)
         {
             bool IsMenuUp = GetNonNullBool(vaProxy, ">JBMSI_MENU_UP");
             bool HasErrors = GetNonNullBool(vaProxy, ">JBMSI_NO_SUCH_MENU");
 
-            if (noErrorsAllowed)
-            {
-                return ((IsMenuUp == menuUp) && !HasErrors);
-            }
-            else
-            {
-                return ((IsMenuUp == menuUp));
-            }
+            if (noErrorsAllowed) {  return ((IsMenuUp == menuUp) && !HasErrors);    }
+            else {                  return ((IsMenuUp == menuUp));                  }
         }
 
         // Resets our stored menu states, and cancels any pending Wait for Response in the VA profile
         // Clearing menu target and name can be overridden if needed
         public static void ResetMenuState(dynamic vaProxy, bool onlyUpAndErrors = false)
         {
-            Logger.Write(vaProxy, "ResetMenuState");
+            Logger.VerboseWrite(vaProxy, "ResetMenuState");
 
             vaProxy.SetBoolean(">JBMSI_NO_SUCH_MENU", false);               // Set by plugin if it's called to load a target/menu pair that doesn't exist
             vaProxy.SetBoolean(">JBMSI_MENU_UP", false);                    // True only while menu is up (hopefully)
             // Kill any currently executing "JBMS Wait For Menu Response"   
             vaProxy.Command.Execute("JBMS Kill Command Wait For Menu Response", WaitForReturn: true);
             // Set in JBMS Wait For Menu Response - clear in case it got set just before JBMS Wait was terminated
-            vaProxy.SetText(">JBMSI_MENU_RESPONSE", string.Empty);          
+            vaProxy.SetText(">JBMSI_MENU_RESPONSE", string.Empty);
 
-            if (onlyUpAndErrors)
-                return;
+            if (onlyUpAndErrors) { return; }
 
             vaProxy.SetText(">JBMS_MENU_TGT", "");
             vaProxy.SetText(">JBMS_MENU_NAME", "");
@@ -111,9 +102,7 @@ namespace Tanrr.VAPlugin.BMSRadio
         {
             // Tell VA to execute close them menu with ESC, but NOT call back plugin with "JBMS_RESET_MENU_STATE"
             if (pressEscape)
-            {
-                vaProxy.Command.Execute("JBMS Close Menu", WaitForReturn: true);
-            }
+            {   vaProxy.Command.Execute("JBMS Close Menu", WaitForReturn: true);    }
             ResetMenuState(vaProxy, onlyUpAndErrors);
         }
 
@@ -133,9 +122,7 @@ namespace Tanrr.VAPlugin.BMSRadio
         {
             stringFromFile = string.Empty;
             try
-            {
-                stringFromFile = File.ReadAllText(pathFile);
-            }
+            {   stringFromFile = File.ReadAllText(pathFile);    }
             catch
             {
                 Logger.Error(vaProxy, "Cannot read file " + pathFile);
@@ -172,11 +159,21 @@ namespace Tanrr.VAPlugin.BMSRadio
 
             // Look for our menu info json file and schema and load each into a string
             string appsDir = vaProxy.AppsDir;
-            if (String.IsNullOrEmpty(appsDir))
+            if (string.IsNullOrEmpty(appsDir))
             {
                 Logger.Error(vaProxy, "Invalid AppsDir - Cannot load menu info");
                 return false;
             }
+
+            string versionProfile;
+            if ( !GetNonNullText(vaProxy, ">JBMSI_VERSION", out versionProfile) )
+            {
+                Logger.Error(vaProxy, "No version information available from VA Profile - Aborting load");
+                return false;
+            }
+            else if (!versionProfile.Equals(s_version))
+            {   Logger.Warning(vaProxy, $"Plugin version {s_version} does not equal profile version {versionProfile}");   }
+
             string menuJsonPath = appsDir + "\\Tanrr.VAPlugin.BMSRadio\\Tanrr.VAPlugin.Radio.Menus.json";
             string menuJsonSchemaPath = appsDir + "\\Tanrr.VAPlugin.BMSRadio\\Tanrr.VAPlugin.Radio.Schema.json";
 
@@ -196,9 +193,7 @@ namespace Tanrr.VAPlugin.BMSRadio
             // Parse top level menu as array - If this fails, json isn't usable          
             JArray menusDeserialized = new JArray();
             try
-            {
-                menusDeserialized = JArray.Parse(menusJsonRead);
-            }
+            {   menusDeserialized = JArray.Parse(menusJsonRead);    }
             catch
             {
                 Logger.Error(vaProxy, "Failed to parse json " + menuJsonPath + " to JArray");
@@ -210,13 +205,10 @@ namespace Tanrr.VAPlugin.BMSRadio
                 return false;
             }
 
-            // SCHEMA SCHEMA SCHEMA
             // Parse schema & verify menu json
             JSchema menuSchemaDeserialized = new JSchema();
             try
-            {
-                menuSchemaDeserialized = JSchema.Parse(menuSchemaRead);
-            }
+            {   menuSchemaDeserialized = JSchema.Parse(menuSchemaRead); }
             catch
             {
                 Logger.Error(vaProxy, "Failed to parse schema " + menuJsonSchemaPath);
@@ -227,7 +219,6 @@ namespace Tanrr.VAPlugin.BMSRadio
                 Logger.Error(vaProxy, "Failed to parse schema " + menuJsonSchemaPath);
                 return false;
             }
-
             IList<string> errorMsgs = new List<string>();
             if (!menusDeserialized.IsValid(menuSchemaDeserialized, out errorMsgs))
             {
@@ -240,12 +231,10 @@ namespace Tanrr.VAPlugin.BMSRadio
             }
             Logger.Write(vaProxy, "Verified menu JSON against JSON schema" + menuJsonSchemaPath);
             Logger.VerboseWrite(vaProxy, "Verified menu JSON " + menuJsonPath + "\n against JSON schema " + menuJsonSchemaPath);
-            // SCHEMA SCHEMA SCHEMA
-
 
             // Read through each menu and add details to our list
-            s_menusBMS = new List<MenuBMS>();
-            int indexMenu = 0;
+            s_menusAll = new Dictionary<string, MenuBMS>();
+            s_DirCmdMap = new Dictionary<string, DirCmdInfo>();
             foreach (JObject menuJson in menusDeserialized) // <-- Note that here we used JObject instead of usual JProperty
             {
                 JArray menuItems = (JArray)menuJson["menuItems"];
@@ -267,13 +256,9 @@ namespace Tanrr.VAPlugin.BMSRadio
                 MenuBMS menuBMS = new MenuBMS
                 (vaProxy, (string)menuJson["menuTarget"], (string)menuJson["targetPhrases"], (string)menuJson["menuName"], (string)menuJson["menuNamePhrases"], (string)menuJson["menuShow"], menuItemsBMS);
 
-                // Store the index to this menu for quicker access later
+                // Store menu in Dictionary with MenuFullID as key
                 try
-                {
-                    s_menusBMS.Add(menuBMS);
-                    // Don't increase the index yet as we refer to it when caching info for menuItem directCommands
-                    vaProxy.SessionState.Add(menuBMS.MenuFullID, indexMenu);
-                }
+                {   s_menusAll.Add(menuBMS.MenuFullID, menuBMS);    }
                 catch (System.ArgumentException e)
                 {
                     Logger.Error(vaProxy, "Failed to add a menu with menuTarget_menuName of " + menuBMS.MenuFullID);
@@ -281,20 +266,15 @@ namespace Tanrr.VAPlugin.BMSRadio
                     return false;
                 }
 
-                // For each menu fully added, add any of it's direct commands to a dictionary mapping to the specific menu and menuitem
-                // We're repeating the for loop, but couldn't do this safely before in case creation and adding the full menu failed
+                // Now that menu is fully validated, record map of its direct commmands to their matching dictionary and menuItem
                 // TODO: Move this into a container for the list of menus?
                 for (int i = 0; i < countMenuItems; i++)
                 {
                     if (menuItemsBMS[i].HasDirectCmd())
                     {
-                        // Cache the string in case we need to show it in the fail message
                         string dirCmd = menuItemsBMS[i].MenuItemDirectCmd;
-                        // Save dictionary entry of DirCmd to this specific menu index and menu item index
                         try
-                        {
-                            s_DirCmdMap.Add(dirCmd, new DirCmdIndexes(indexMenu, i));
-                        }
+                        {   s_DirCmdMap.Add(dirCmd, new DirCmdInfo(menuBMS.MenuFullID, i));  }
                         catch (System.ArgumentException e)
                         {
                             Logger.Warning(vaProxy, "Failed to add Direct Menu Cmd \"" + dirCmd + "\" probably due to duplicates");
@@ -303,12 +283,9 @@ namespace Tanrr.VAPlugin.BMSRadio
                         }
                     }
                 }
-
-                indexMenu++;
             }
 
             Logger.Write(vaProxy, "OneTimeMenuDataLoad completed successfully");
-
             vaProxy.SetBoolean(">>JBMSI_INITED", true);
             return true;
 
@@ -316,16 +293,17 @@ namespace Tanrr.VAPlugin.BMSRadio
 
         public static MenuBMS GetMenuBMS(dynamic vaProxy, string menuFullID)
         {
+            MenuBMS menuBMS = null;
             if (string.IsNullOrEmpty(menuFullID))
             {
                 Logger.Error(vaProxy, "Invalid menuFullID passed to GetMenuBMS");
                 return null;
             }
-            foreach (MenuBMS MenuTest in s_menusBMS)
+            else if (!s_menusAll.TryGetValue(menuFullID, out menuBMS))
             {
-                if (MenuTest.MenuFullID == menuFullID) { return MenuTest; }
+                Logger.Warning(vaProxy, "Unknown menuFullID passed to GetMenuBMS");
             }
-            return null;
+            return menuBMS;
         }
 
         public static MenuBMS GetSetCurMenuBMS(dynamic vaProxy, string menuFullID)
@@ -343,7 +321,9 @@ namespace Tanrr.VAPlugin.BMSRadio
                 else { s_curMenuBMS = null; }
             }
 
-            return s_curMenuBMS = GetMenuBMS(vaProxy, menuFullID);
+            s_menusAll.TryGetValue(menuFullID, out s_curMenuBMS);
+            // s_curMenuBMS was already set to null, so return it whether this succeeded or not
+            return s_curMenuBMS;
         }
 
         public static MenuBMS GetSetCurMenuBMS(dynamic vaProxy, string menuTarget, string menuName)
@@ -396,13 +376,9 @@ namespace Tanrr.VAPlugin.BMSRadio
             if (string.IsNullOrEmpty(cmdOrKeys)) { return false; }
 
             if (vaProxy.CommandExists(cmdOrKeys))
-            {
-                return ExecuteCmdOnly(vaProxy, cmdOrKeys, waitForReturn);
-            }
+            {   return ExecuteCmdOnly(vaProxy, cmdOrKeys, waitForReturn);   }
             else
-            {
-                return PressKeysOnly(vaProxy, cmdOrKeys, waitForReturn);
-            }
+            {   return PressKeysOnly(vaProxy, cmdOrKeys, waitForReturn);    }
         }
 
         public static void VA_Invoke1(dynamic vaProxy)
@@ -430,14 +406,6 @@ namespace Tanrr.VAPlugin.BMSRadio
                     return;
                 }
             }
-            else
-            {
-                // Change logging modes if VA has changed them - only if OneTimeMenuDataLoad didn't already set them for this call
-                Logger.Json = GetNonNullBool(vaProxy, ">JBMS_JSON_LOG");
-                Logger.MenuItems = GetNonNullBool(vaProxy, ">JBMS_MENUITEMS_LOG");
-                Logger.Structures = GetNonNullBool(vaProxy, ">JBMS_STRUCTURES_LOG");
-                Logger.Verbose = GetNonNullBool(vaProxy, ">JBMS_VERBOSE_LOG");
-            }
 
             Logger.VerboseWrite(vaProxy, "Invoked with context " + vaProxy.Context);
 
@@ -446,8 +414,7 @@ namespace Tanrr.VAPlugin.BMSRadio
             switch (vaProxy.Context)
             {
                 case "JBMS_DO_INIT":
-                    // We init automatically on first call, so nothing to do
-                    break;
+                    break;  // We init automatically on first call, so nothing to do
 
                 case "JBMS_RESET_MENU_STATE":
                     // Should only be called when ESC has been pressed or current menu has already been closed
@@ -455,15 +422,31 @@ namespace Tanrr.VAPlugin.BMSRadio
                     ResetMenuState(vaProxy);
                     break;
 
+                case "JBMS_RELOAD_LOG_SETTINGS":
+                    // User or profile initiated reload of logging parameters
+                    Logger.Write(vaProxy, "Reloading logging settings");
+                    Logger.Json = GetNonNullBool(vaProxy, ">JBMS_JSON_LOG");
+                    Logger.MenuItems = GetNonNullBool(vaProxy, ">JBMS_MENUITEMS_LOG");
+                    Logger.Structures = GetNonNullBool(vaProxy, ">JBMS_STRUCTURES_LOG");
+                    Logger.Verbose = GetNonNullBool(vaProxy, ">JBMS_VERBOSE_LOG");
+                    if (Logger.Verbose)
+                    {
+                        Logger.VerboseWrite(vaProxy, "JSON LOGGING: " + (Logger.Json ? "ON" : "OFF"));
+                        Logger.VerboseWrite(vaProxy, "MENU LOGGING: " + (Logger.MenuItems ? "ON" : "OFF"));
+                        Logger.VerboseWrite(vaProxy, "STRUCT LOGGING: " + (Logger.Structures ? "ON" : "OFF"));
+                        Logger.VerboseWrite(vaProxy, "VERBOSE LOGGING: " + (Logger.Verbose ? "ON" : "OFF"));
+                    }
+                    break;
+
                 case "JBMS_DIRECT_CMD":
                     string dirCmd = vaProxy.GetText(">JBMS_DIRECT_CMD");
+                    Logger.Write(vaProxy, "JBMS_DIRECT_CMD for " + dirCmd);
                     vaProxy.SetText(">JBMS_DIRECT_CMD", string.Empty);
                     if (string.IsNullOrEmpty(dirCmd))
                     {
                         Logger.Error(vaProxy, "JBMS_DIRECT_CMD received with empty >JBMS_DIRECT_CMD variable");
                         break;
                     }
-
                     Logger.VerboseWrite(vaProxy, "JBMS_DIRECT_CMD received for \"" + dirCmd + "\"");
                     if (MenuUp)
                     {
@@ -472,24 +455,14 @@ namespace Tanrr.VAPlugin.BMSRadio
                     }
                     try
                     {
-                        DirCmdIndexes dirCmdIndexes = s_DirCmdMap[dirCmd];
-                        if (dirCmdIndexes.IndexMenu < 0 || dirCmdIndexes.IndexMenu > s_menusBMS.Count)
-                        {
-                            Logger.Error(vaProxy, "JBMS_DIRECT_CMD received for \"" + dirCmd + "\" but no such direct command found in DirCmdMap");
-                            break;
-                        }
-                        MenuBMS menuForDC = s_menusBMS[dirCmdIndexes.IndexMenu];
+                        DirCmdInfo dirCmdInfo = s_DirCmdMap[dirCmd];
+                        MenuBMS menuForDC = s_menusAll[dirCmdInfo.MenuFullID];
                         MenuItemBMS[] menuItemsForDC = menuForDC.MenuItemsBMS;
-                        if (dirCmdIndexes.IndexMenuItem < 0 || dirCmdIndexes.IndexMenuItem >= menuItemsForDC.Length )
-                        {
-                            Logger.Error(vaProxy, "JBMS_DIRECT_CMD received for \"" + dirCmd + "\" but invalid menu item index stored in DirCmdMap");
-                            break;
-                        }
-                        MenuItemBMS menuItemForDC = menuItemsForDC[dirCmdIndexes.IndexMenuItem];
+                        MenuItemBMS menuItemForDC = menuItemsForDC[dirCmdInfo.IndexMenuItem];
 
                         bool ExecOK = false;
                         // Now we know the specific menu and which menu item, so we can bring up the menu 
-                        ExecOK = ExecuteCmdOrKeys(vaProxy, menuForDC.MenuShow, /* waitForReturn */ true);
+                        ExecOK = ExecuteCmdOrKeys(vaProxy, menuForDC.MenuShow, waitForReturn: true);
                         if (!ExecOK) 
                         {
                             Logger.Error(vaProxy, "JBMS_DIRECT_CMD for \"" + dirCmd + "\" failed to bring up associated menu");
@@ -505,11 +478,10 @@ namespace Tanrr.VAPlugin.BMSRadio
                     }
                     catch (KeyNotFoundException e) 
                     {
-                        Logger.Warning(vaProxy, "JBMS_DIRECT_CMD received for \"" + dirCmd + "\" but no such direct command found in DirCmdMap");
+                        Logger.Warning(vaProxy, "JBMS_DIRECT_CMD received for \"" + dirCmd + "\" but failed to retrieve DirCmdMap or associated menu");
                         Logger.Warning(vaProxy, "Exception " + e.Message);
                         break;
                     }
-
                     break;
 
                 case "JBMS_HANDLE_MENU_RESPONSE":
@@ -517,9 +489,7 @@ namespace Tanrr.VAPlugin.BMSRadio
                     if ( MenuUp && (s_curMenuBMS != null) )
                     {
                         if (string.IsNullOrEmpty(MenuResponse))
-                        {
-                            Logger.VerboseWrite(vaProxy, "JBMS_HANDLE_MENU_RESPONSE received empty MenuResponse");
-                        }
+                        {   Logger.VerboseWrite(vaProxy, "JBMS_HANDLE_MENU_RESPONSE received empty MenuResponse");  }
                         else if (MenuResponse == "_JBMS_MENU_TIMEOUT")
                         {
                             Logger.VerboseWrite(vaProxy, "JBMS_HANDLE_MENU_RESPONSE received _JBMS_MENU_TIMEOUT");
@@ -542,9 +512,7 @@ namespace Tanrr.VAPlugin.BMSRadio
                                 MenuUp = false;
                             }
                             else
-                            {
-                                Logger.Write(vaProxy, "JBMS_HANDLE_MENU_RESPONSE found no match for MenuResponse \"" + MenuResponse + "\"");
-                            }
+                            {   Logger.Write(vaProxy, "JBMS_HANDLE_MENU_RESPONSE found no match for MenuResponse \"" + MenuResponse + "\"");    }
                         }
                     }
                     else 
@@ -567,7 +535,6 @@ namespace Tanrr.VAPlugin.BMSRadio
                             ResetMenuState(vaProxy);
                         }
                     }
-
                     break;
                 
                 case "JBMS_SHOW_MENU":
@@ -586,6 +553,7 @@ namespace Tanrr.VAPlugin.BMSRadio
                         if (vaProxy.CommandExists("JBMS Close Menu"))
                         {
                             // Tell VA to execute close them menu with ESC, but NOT call back plugin with "JBMS_RESET_MENU_STATE"
+                            // TODO: Consider changing this logging to VerboseWrite (but leaving it explains to user why the calls for reset state are sent as seen in default VA Log for commands called by plugin...)
                             Logger.Write(vaProxy, "JBMS_SHOW_MENU called when menu already up, cancelling listening and closing current menu");
                             vaProxy.Command.Execute("JBMS Kill Command Wait For Menu Response", WaitForReturn: true);
                             vaProxy.Command.Execute("JBMS Close Menu", WaitForReturn: true);
@@ -607,15 +575,16 @@ namespace Tanrr.VAPlugin.BMSRadio
                     // Only do the work to log available menu items, if our flag is set
                     if (Logger.MenuItems)
                     {
-                        // We're showing the log in VoiceAttack, so reverse it given the way it scrolls
+                        // We're showing the log in VoiceAttack, which *usually* inserts at the top so reverse it given the way it scrolls
                         Stack<string> stackMenuDisplay = new Stack<string>();
                         stackMenuDisplay.Push("    [[" + Menu.MenuTarget + "]] [[" + Menu.MenuName + "]]");
 
-                        // MenuItemBMS[] menuItems = 
                         foreach (MenuItemBMS item in Menu.MenuItemsBMS)
                         {
                             stackMenuDisplay.Push("[" + item.MenuItemExecute + "]   " + item.MenuItemPhrases);
                         }
+                        // If user reversed the log to run top to bottom reverse ourselves
+                        if (vaProxy.LogReversed) { stackMenuDisplay.Reverse(); }
                         while (stackMenuDisplay.Count > 0)
                         {
                             Logger.MenuItemsWrite(vaProxy, stackMenuDisplay.Pop());
@@ -626,12 +595,11 @@ namespace Tanrr.VAPlugin.BMSRadio
                     // Plugin invoked with "JBMS_HANDLE_MENU_RESPONSE" if matching response heard
                     string AllMenuItemPhrases = Menu.AllMenuItemPhrases;
                     vaProxy.Command.Execute("JBMS Wait For Menu Response", WaitForReturn: false, PassedText: $@"""{AllMenuItemPhrases}""");
-
                     break;
 
                 default:
                     Logger.Error(vaProxy, "Called with unknown Context: " + vaProxy.Context);
-                    throw new ArgumentException("", "context");
+                    throw new ArgumentException("Unknown vaProxy.Context");
             }
         }
     }

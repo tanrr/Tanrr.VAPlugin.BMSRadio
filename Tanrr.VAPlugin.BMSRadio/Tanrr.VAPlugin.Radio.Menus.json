@@ -417,7 +417,7 @@
 	},
 	{
 		"menuTarget": "ATC",
-		"targetPhrases": "Ground",
+		"targetPhrases": "[Contact;] Ground",
 		"menuName": "Ground",
 		"menuNamePhrases": "Ground;Chief",
 		"menuShow": "T",
@@ -434,7 +434,7 @@
 	},
 	{
 		"menuTarget": "ATC",
-		"targetPhrases": "Tower",
+		"targetPhrases": "[Contact;] Tower",
 		"menuName": "Tower",
 		"menuNamePhrases": "Tower;Traffic",
 		"menuShow": "TT",
@@ -452,7 +452,7 @@
 	},
 	{
 		"menuTarget": "ATC",
-		"targetPhrases": "Approach",
+		"targetPhrases": "[Contact;] Approach",
 		"menuName": "Approach",
 		"menuNamePhrases": "Approach",
 		"menuShow": "TTT",
@@ -470,7 +470,7 @@
 	},
 	{
 		"menuTarget": "ATC",
-		"targetPhrases": "Departure",
+		"targetPhrases": "[Contact;] Departure",
 		"menuName": "Departure",
 		"menuNamePhrases": "Departure",
 		"menuShow": "TTTT",
@@ -481,7 +481,7 @@
 	},
 	{
 		"menuTarget": "ATC",
-		"targetPhrases": "Common",
+		"targetPhrases": "[Contact;] Common",
 		"menuName": "Common",
 		"menuNamePhrases": "Common",
 		"menuShow": "TTTTT",
@@ -496,7 +496,7 @@
 	},
 	{
 		"menuTarget": "ATC",
-		"targetPhrases": "Carrier",
+		"targetPhrases": "[Contact;] Carrier",
 		"menuName": "Carrier",
 		"menuNamePhrases": "Carrier",
 		"menuShow": "TTTTTT",
@@ -514,7 +514,7 @@
 	},
 	{
 		"menuTarget": "ATC",
-		"targetPhrases": "Contingencies",
+		"targetPhrases": "[Contact;] Contingencies",
 		"menuName": "Contingencies",
 		"menuNamePhrases": "Contingencies",
 		"menuShow": "TTTTTTT",
@@ -565,7 +565,7 @@
 	},
 	{
 		"menuTarget": "Tanker",
-		"targetPhrases": "Tanker",
+		"targetPhrases": "[Contact;] Tanker",
 		"menuName": "Tanker",
 		"menuNamePhrases": "Tanker",
 		"menuShow": "Y",
@@ -581,7 +581,7 @@
 	},
 	{
 		"menuTarget": "JTAC",
-		"targetPhrases": "Jay Tack",
+		"targetPhrases": "[Contact;] Jay Tack",
 		"menuName": "JTAC",
 		"menuNamePhrases": "Jay Tack",
 		"menuShow": "YY",
