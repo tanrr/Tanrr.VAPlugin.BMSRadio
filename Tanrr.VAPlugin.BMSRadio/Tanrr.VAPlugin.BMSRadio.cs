@@ -88,7 +88,7 @@ namespace Tanrr.VAPlugin.BMSRadio
             vaProxy.SetBoolean(">JBMSI_NO_SUCH_MENU", false);               // Set by plugin if it's called to load a target/menu pair that doesn't exist
             vaProxy.SetBoolean(">JBMSI_MENU_UP", false);                    // True only while menu is up (hopefully)
             // Kill any currently executing "JBMS Wait For Menu Response"   
-            vaProxy.Command.Execute("JBMS Kill Command Wait For Menu Response", WaitForReturn: true);
+            vaProxy.Command.Execute("JBMS Kill Command Wait For Menu Response", WaitForReturn: true, AsSubcommand: true);
             // Set in JBMS Wait For Menu Response - clear in case it got set just before JBMS Wait was terminated
             vaProxy.SetText(">JBMSI_MENU_RESPONSE", string.Empty);
 
@@ -102,7 +102,7 @@ namespace Tanrr.VAPlugin.BMSRadio
         {
             // Tell VA to execute close them menu with ESC, but NOT call back plugin with "JBMS_RESET_MENU_STATE"
             if (pressEscape)
-            {   vaProxy.Command.Execute("JBMS Close Menu", WaitForReturn: true);    }
+            {   vaProxy.Command.Execute("JBMS Close Menu", WaitForReturn: true, AsSubcommand: true);    }
             ResetMenuState(vaProxy, onlyUpAndErrors);
         }
 
@@ -348,37 +348,37 @@ namespace Tanrr.VAPlugin.BMSRadio
             return GetSetCurMenuBMS(vaProxy, MenuTarget, MenuName);
         }
 
-        public static bool ExecuteCmdOnly(dynamic vaProxy, string cmdExecute, bool waitForReturn)
+        public static bool ExecuteCmdOnly(dynamic vaProxy, string cmdExecute, bool waitForReturn, bool asSubCommand = true)
         {
             if (    !string.IsNullOrEmpty(cmdExecute)
                 &&  vaProxy.CommandExists(cmdExecute))
             {
                 // Tell VA to execute cmdOrKeys as a Command in the profile
-                vaProxy.Command.Execute(cmdExecute, WaitForReturn: waitForReturn);
+                vaProxy.Command.Execute(cmdExecute, WaitForReturn: waitForReturn, AsSubcommand: asSubCommand);
                 return true;
             }
             return false;
         }
 
-        public static bool PressKeysOnly(dynamic vaProxy, string keysToPress, bool waitForReturn)
+        public static bool PressKeysOnly(dynamic vaProxy, string keysToPress, bool waitForReturn, bool asSubCommand = true)
         {
             if (!string.IsNullOrEmpty(keysToPress))
             {
                 // Tell VA to press the chars in cmdOrKeys
-                vaProxy.Command.Execute("JBMS Press Keys", WaitForReturn: waitForReturn, PassedText: $@"""{keysToPress}""");
+                vaProxy.Command.Execute("JBMS Press Keys", WaitForReturn: waitForReturn, AsSubcommand: asSubCommand, PassedText: $@"""{keysToPress}""");
                 return true;
             }
             return false;
         }
 
-        public static bool ExecuteCmdOrKeys(dynamic vaProxy, string cmdOrKeys, bool waitForReturn)
+        public static bool ExecuteCmdOrKeys(dynamic vaProxy, string cmdOrKeys, bool waitForReturn, bool asSubCommand = true)
         {
             if (string.IsNullOrEmpty(cmdOrKeys)) { return false; }
 
             if (vaProxy.CommandExists(cmdOrKeys))
-            {   return ExecuteCmdOnly(vaProxy, cmdOrKeys, waitForReturn);   }
+            {   return ExecuteCmdOnly(vaProxy, cmdOrKeys, waitForReturn, asSubCommand);   }
             else
-            {   return PressKeysOnly(vaProxy, cmdOrKeys, waitForReturn);    }
+            {   return PressKeysOnly(vaProxy, cmdOrKeys, waitForReturn, asSubCommand);    }
         }
 
         public static void VA_Invoke1(dynamic vaProxy)
@@ -555,8 +555,8 @@ namespace Tanrr.VAPlugin.BMSRadio
                             // Tell VA to execute close them menu with ESC, but NOT call back plugin with "JBMS_RESET_MENU_STATE"
                             // TODO: Consider changing this logging to VerboseWrite (but leaving it explains to user why the calls for reset state are sent as seen in default VA Log for commands called by plugin...)
                             Logger.Write(vaProxy, "JBMS_SHOW_MENU called when menu already up, cancelling listening and closing current menu");
-                            vaProxy.Command.Execute("JBMS Kill Command Wait For Menu Response", WaitForReturn: true);
-                            vaProxy.Command.Execute("JBMS Close Menu", WaitForReturn: true);
+                            vaProxy.Command.Execute("JBMS Kill Command Wait For Menu Response", WaitForReturn: true, AsSubcommand: true);
+                            vaProxy.Command.Execute("JBMS Close Menu", WaitForReturn: true, AsSubcommand: true);
                             // Reset just the menu state related to it being up or having errors
                             ResetMenuState(vaProxy, onlyUpAndErrors: true);
                         }
@@ -594,7 +594,7 @@ namespace Tanrr.VAPlugin.BMSRadio
                     // Async non-blocking wait & listen for phrases that match menu item choices (with timeout)
                     // Plugin invoked with "JBMS_HANDLE_MENU_RESPONSE" if matching response heard
                     string AllMenuItemPhrases = Menu.AllMenuItemPhrases;
-                    vaProxy.Command.Execute("JBMS Wait For Menu Response", WaitForReturn: false, PassedText: $@"""{AllMenuItemPhrases}""");
+                    vaProxy.Command.Execute("JBMS Wait For Menu Response", WaitForReturn: false, AsSubcommand: true, PassedText: $@"""{AllMenuItemPhrases}""");
                     break;
 
                 default:
