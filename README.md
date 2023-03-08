@@ -1,6 +1,6 @@
 # Jeeves BMS Radio Menus (Tanrr.VAPlugin.BMSRadio) 
 
-version 0.1.1
+version 0.1.2
 
 Jeeves BMS Radio Menus is a simple but powerful plugin for VoiceAttack to work with BMS radio menus. 
 
@@ -43,7 +43,8 @@ The system is designed for flexibility while remaining reasonably simple.  It is
 2. Move the **Tanrr.VAPlugin.BMSRadio** folder into the folder **..\VoiceAttack\Apps**.  This should leave the dlls and related files under **..\VoiceAttack\Apps\Tanrr.VAPlugin.BMSRadio**.
 3. **IMPORTANT**: From the **Tanrr.VAPlugin.BMSRadio** folder, *copy* the **Newtonsoft.Json.dll** file into the **..\VoiceAttack\Shared\Assemblies** folder.
 4. Launch VoiceAttack and import **Jeeves BMS Radio Menus Profile.vap**
-5. *HOTKEYS:* The VoiceAttack profile provided only sets a hotkey of F24 (hold to listen) for VoiceAttack. You will want to change the hotkeys to whatever keyboard keys or game controller buttons you use.  Hotkeys can be set globally (VoiceAttack Settings, Hotkeys) or just for the profile (Edit Profile, Options, Profile Hotkeys).
+5. Shut down, then relaunch VoiceAttack, so the updated profile can initialize the updated plugin
+6. *HOTKEYS:* The VoiceAttack profile provided only sets a hotkey of F24 (hold to listen) for VoiceAttack. You will want to change the hotkeys to whatever keyboard keys or game controller buttons you use.  Hotkeys can be set globally (VoiceAttack Settings, Hotkeys) or just for the profile (Edit Profile, Options, Profile Hotkeys).
 
 \*\* *See recomended VoiceAttack settings at the end of this document* \*\*
 

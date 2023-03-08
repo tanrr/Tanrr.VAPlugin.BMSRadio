@@ -29,7 +29,7 @@ namespace Tanrr.VAPlugin.BMSRadio
 
     public class Jeeves_BMS_Radio_Plugin 
     {
-        protected static string s_version = "v0.1.1";
+        protected static string s_version = "v0.1.2";
         protected static Dictionary<string, MenuBMS> s_menusAll = null;
         protected static Dictionary<string, DirCmdInfo> s_DirCmdMap = null;
         protected static MenuBMS s_curMenuBMS = null;
