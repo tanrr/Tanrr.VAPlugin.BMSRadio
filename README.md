@@ -6,7 +6,7 @@ Jeeves BMS Radio Menus is a simple but powerful plugin for VoiceAttack to work w
 
 It is a flexible solution with more features than simpler VA profiles, while being relatively fast and light weight.
 
-Users can easily call up radio menus by saying a menuTarget such as "2" or "Flight" followed by an appropriate menuName, such as "Combat 3."  The menu is displayed and the plugin will listen for phrases that match the current menu's menu items.  This lets users who are not familiar with the menus look through them to make their choices, and will even warn them when they ask for a menu doesn't exist such as "Flight, Combat 3."
+Users can easily call up radio menus by saying a menuTarget such as "2" or "Flight" followed by an appropriate menuName, such as "Combat 3."  The menu is displayed and the plugin will listen for phrases that match the current menu's menu items.  This lets users who are not familiar with the menus look through them to make their choices, and will even warn them when they ask for a menu that doesn't exist such as "Flight, Combat 3."
 
 The system is designed for flexibility while remaining reasonably simple.  It is easy to update JBMS to match updates to the game, and to change the recognition phrases for menuTargets, menuNames, and menuItems to work for you.  Additional ease of use features include adding direct commands that don't leave menus up, as well as the ability to have menu items call your own methods in the VoiceAttack profile. 
 
