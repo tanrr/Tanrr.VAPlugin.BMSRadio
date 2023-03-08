@@ -18,7 +18,7 @@ The system is designed for flexibility while remaining reasonably simple.  It is
 
 - *A particular menu item can be given a custom "callable" name, so you can add your own VA phrase to directly run that menu item without waiting (say for "Bogey Dope").*
 
-- *Since the list of menuItem phrases in the JSON file are not directly part of the VA profile, your phrases can duplicate menuItem phrases without it being a problem. For example, you can match the direct phrase "Attack My Target" to execute the menu item for "Wingman, Combat Management 1" without it causing problems for the "Attack My Target" menu items for Wingman, Element, or Flight.*
+- *Since the list of menuItem phrases in the JSON file are not directly part of the VA profile, your profile command phrases can duplicate menuItem phrases without it being a problem. For example, you can match the direct phrase "Attack My Target" to execute the menu item for "Wingman, Combat Management 1" without it causing problems for the "Attack My Target" menu items for Wingman, Element, or Flight.*
 
 - *A JSON schema is provided to validate the menu JSON file.  This is done automatically on program load, or you can manually verify your changes match the schema as you edit the menu file by using a JSON schema validator like https://jsonmate.com/.*
 
