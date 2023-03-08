@@ -81,14 +81,17 @@ namespace Tanrr.VAPlugin.BMSRadio
 
         // Resets our stored menu states, and cancels any pending Wait for Response in the VA profile
         // Clearing menu target and name can be overridden if needed
-        public static void ResetMenuState(dynamic vaProxy, bool onlyUpAndErrors = false)
+        public static void ResetMenuState(dynamic vaProxy, bool onlyUpAndErrors = false, bool killWaitForMenu = true)
         {
             Logger.VerboseWrite(vaProxy, "ResetMenuState");
 
             vaProxy.SetBoolean(">JBMSI_NO_SUCH_MENU", false);               // Set by plugin if it's called to load a target/menu pair that doesn't exist
             vaProxy.SetBoolean(">JBMSI_MENU_UP", false);                    // True only while menu is up (hopefully)
-            // Kill any currently executing "JBMS Wait For Menu Response"   
-            vaProxy.Command.Execute("JBMS Kill Command Wait For Menu Response", WaitForReturn: true, AsSubcommand: true);
+            // Kill "JBMS Wait For Menu Response" if its currently executing
+            if (killWaitForMenu && vaProxy.Command.Active("JBMS Wait For Menu Response"))
+            {
+                vaProxy.Command.Execute("JBMS Kill Command Wait For Menu Response", WaitForReturn: true, AsSubcommand: true);
+            }
             // Set in JBMS Wait For Menu Response - clear in case it got set just before JBMS Wait was terminated
             vaProxy.SetText(">JBMSI_MENU_RESPONSE", string.Empty);
 
@@ -419,7 +422,7 @@ namespace Tanrr.VAPlugin.BMSRadio
                 case "JBMS_RESET_MENU_STATE":
                     // Should only be called when ESC has been pressed or current menu has already been closed
                     Logger.VerboseWrite(vaProxy, "JBMS_RESET_MENU_STATE - ESC should have been pressed already");
-                    ResetMenuState(vaProxy);
+                    ResetMenuState(vaProxy, onlyUpAndErrors: false, killWaitForMenu: false);
                     break;
 
                 case "JBMS_RELOAD_LOG_SETTINGS":
@@ -507,8 +510,8 @@ namespace Tanrr.VAPlugin.BMSRadio
                                 ExecuteCmdOrKeys(vaProxy, MenuItemExecute, /* waitForReturn */ true);
 
                                 // Passing key/cmd should have brought down menu, so only reset our menu state - don't press escape
-                                // Note that this will also terminate any current "JBMS Wait For Menu Response" in progress
-                                ResetMenuState(vaProxy);
+                                // Since we're being passed the menu response by "JBMS Wait For Menu Response" we don't need to kill it
+                                ResetMenuState(vaProxy, onlyUpAndErrors: false, killWaitForMenu: false);
                                 MenuUp = false;
                             }
                             else
