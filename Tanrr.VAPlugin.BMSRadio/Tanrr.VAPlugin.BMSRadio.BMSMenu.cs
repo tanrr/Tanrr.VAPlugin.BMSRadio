@@ -8,10 +8,13 @@ namespace Tanrr.VAPlugin.BMSRadio
 {
     public class MenuItemBMS
     {
+        // Single menu line item that has the phrases menuItem matches to, the keys/command to execute if selected
+        // and an optional direct command that should cause this menuItem to be executed if called from the
+
         public string MenuItemPhrases { get; set; }              // Possibly multiple phrases
-        public string MenuItemExecute { get; set; }              // Having Command as string instead of number means it could be any char (or a combo of chars)
-        public string MenuItemDirectCmd { get; set; }              // Having Command as string instead of number means it could be any char (or a combo of chars)
-        public string[] ExtractedMenuItemPhrases { get; set; }   // Array of each of all possible versions of the phrases, extracted separately 
+        public string MenuItemExecute { get; set; }              // Execute as string can be chars to press or a named VA command to execute
+        public string MenuItemDirectCmd { get; set; }            // Has to be unique string, used by VA profile to call plugin to execute this menuItem
+        public string[] ExtractedMenuItemPhrases { get; set; }   // Array of all possible versions of the phrases, extracted separately, lowercase
 
         public bool HasDirectCmd() { return !string.IsNullOrEmpty(MenuItemDirectCmd); }  
         public MenuItemBMS(dynamic vaProxy, string itemPhrases, string itemExec, string directCmd = null)
@@ -55,7 +58,7 @@ namespace Tanrr.VAPlugin.BMSRadio
         }
 
         // Clear out starting, ending, or double ";" in strings - needed to avoid empty matches
-        // Note that we DO allow internal null matches, but not for a full match - "Attack [Air;AA;];Get Them" is fine, but "Hello ;; Attack [Air;AA;];Get Them;" is not
+        // Internal null matches allowed, but not a full match - "Attack [Air;AA;];Get Them" is fine, but "Attack [Air;AA;];Get Them;" is not
         private string RemoveEmptyMatches(string phrases)
         {
             if (phrases == null) return string.Empty;
@@ -67,8 +70,11 @@ namespace Tanrr.VAPlugin.BMSRadio
             return phrases.Replace(";;", ";");
         }
     }
+
     public class MenuBMS
     {
+        // Main data class containing a single menu (menuTarget+menuName) and a list of that menu's menuItems
+
         protected static char[] s_normTrimChars = {' ', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
 
         protected Dictionary<string, string> _extractedMenuItems;
@@ -173,6 +179,7 @@ namespace Tanrr.VAPlugin.BMSRadio
             }
 
             // Keep everything lowercase
+            // TODO: Maybe keep FullID, Target, and MenuName mixed case for readability?  Slows matching/dictionary though
             MenuTarget = MenuTarget.ToLower();
             TargetPhrases = TargetPhrases.ToLower();
             MenuName = MenuName.ToLower();
@@ -224,9 +231,9 @@ namespace Tanrr.VAPlugin.BMSRadio
 
             Logger.StructuresWrite(vaProxy, "MenuBMS MakeFullID Finished");
 
-            // Create a string with all commands, ; delimeted, to pass to Get User Input - Wait for Spoken Response 
+            // Create a string with all lowercase commands, ; delimeted, to pass to Get User Input - Wait for Spoken Response 
             // AND Fill in _extractedMenuItems dictionary with all possble phrases, mapped to their MenuItemExecute values
-            // ie "Weapons Free [Air;A A;]" separated into "Weapons Free Air", "Weapons Free A A" and "Weapons Free"
+            // ie "Weapons Free [Air;A A;]" separated into "weapons free air", "weapons free a a" and "weapons free"
             foreach (MenuItemBMS menuItem in MenuItemsBMS)
             {
                 Logger.StructuresWrite(vaProxy, "menuItem " + menuItem.MenuItemPhrases + " : " + menuItem.MenuItemExecute);
@@ -263,7 +270,7 @@ namespace Tanrr.VAPlugin.BMSRadio
                     }
                 }
             }
-            // Get rid of that last ";" so we don't match an empty string
+            // Get rid of that last ";" so we don't allow matching an empty string
             AllMenuItemPhrases = AllMenuItemPhrases.TrimEnd(';');
         }
 

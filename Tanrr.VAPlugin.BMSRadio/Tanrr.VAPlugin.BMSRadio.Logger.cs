@@ -41,7 +41,7 @@ namespace Tanrr.VAPlugin.BMSRadio
             }
         }
 
-        public static void MenuItemsWrite(dynamic vaProxy, string msg)
+        public static void MenuWrite(dynamic vaProxy, string msg)
         {
             if (s_MenuItems || s_Verbose)
             {

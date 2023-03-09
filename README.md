@@ -63,6 +63,8 @@ within each menu.*
 
 - *To help learn the menus, ask the plugin to list menus by target or name.
 "List Wingman Combat Menus", "List ATC Menus", "List All Formation Menus", etc. 
+Note that to list all menus for a menuTarget you must say something in the format 
+"List Wingman Menus" ("List All Wingman Menus" won't be understood).
 The amount of time each menu is displayed when listing menus is adjustable in the profile.*
 
 - *To help with radio tuning, VA commands for 
@@ -103,7 +105,7 @@ the hotkeys to whatever keyboard keys or game controller buttons you use.
 Hotkeys can be set globally (VoiceAttack Settings, Hotkeys) 
 or just for the profile (Edit Profile, Options, Profile Hotkeys).
 
-\*\* *See recomended VoiceAttack settings at the end of this document* \*\*
+\*\* *See recommended VoiceAttack settings at the end of this document* \*\*
 
 ## DETAILS:
 
@@ -121,21 +123,34 @@ The relevant sections are:
 
 ### Limitations
 
+- The plugin does not (yet) support comms menus being disabled with g_bDisableCommsMenu 1,
+  nor does it support switching off the comms menu wit hthe new chatline dot command 
+  **".commsmenu 0"**.  Support for this may be added later.
+- The plugin and VA profile currently do not verify that BMS is the active window. 
+  If you are typing (or speaking with the speech recognition button down) this 
+  could cause invalid input.  This is planned to be changed in later versions to only
+  send keystrokes to BMS or to ignore input if BMS is not the active window.
 - The plugin uses the default keys for BMS menus 
-(T for ATC; W/E/R for Wingman/Element/Flight, Q for AWACS, 
-Y for Tanker/JTAC).  If you have changed these shortcuts you should 
-edit the JSON to use your shortcuts.
-- The plugin's menu data is for BMS version 4.37.1 menus. 
-If you have a newer version of BMS or have modified the menu layout 
-by changing the BMS ##Data/Art/CkptArt/menu.dat## file you should 
-update the JSON file to match your changes.
+  (T for ATC; W/E/R for Wingman/Element/Flight, Q for AWACS, 
+  Y for Tanker/JTAC).  If you have changed these shortcuts you should 
+  edit the JSON to use your shortcuts.
+- Current menu data is for BMS version 4.37.1 menus. 
+  If you have a newer version of BMS or have modified the menu  
+  by changing the BMS ##Data/Art/CkptArt/menu.dat## file you should 
+  update the JSON file to match your changes.
 - The plugin's JSON files must be in UTF-8 format and 
-DO NOT support UTF-16 or UNICODE
-- menuItemExecute strings currently only support visiible characters, 
-do not support modifiers such as SHIFT, CTRL, or ALT, 
-and do not support separate numpad characters. 
-Support for these may be added to later versions.
-
+  DO NOT support UTF-16 or UNICODE
+- menuItemExecute strings currently only support visible characters, 
+  do not support modifiers such as SHIFT, CTRL, or ALT, 
+  and do not support separate numpad characters. 
+  Support for these may be added to later versions.
+- This plugin is managing asynchronous states without calling into the BMS 
+  code, and without locking data used by VoiceAttack (though it is sharing 
+  state variables between the plugin and the VA profile).  
+  This greatly simplifies the plugin, but it is possible for it to get out
+  of sync and think it has a menu up when it doesn't or vs. vs.  If this
+  happens you should just be able to say *"Reset Menu"*, *"Cancel Menu*" or
+  even just *"Press Escape"* to reset.
 
 ### VoiceAttack Variables
 
@@ -144,35 +159,30 @@ but should only be used in the same way (to pass info to the plugin,
 or check return states from the plugin).  
 Feel free to set the Boolean **_LOG** variables 
 (initialized in VA command *"JBMS Initial Load Init"*) to true 
-for additinal logging, with slightly slower performance.
+for additional logging, with slightly slower performance.
 
 **\>JBMSI** internal variables should NOT be changed by the VA profile, 
 EXCEPT for the provided methods provided that use them. 
 Changes to them could easily break the plugin.
 
-- **\>JBMS_JSON_LOG**	-       Boolean to add logging of JSON parsing
-- **\>JBMS_MENUITEMS_LOG**	- Boolean to add logging of menu items 
-(shows list of menu items in log)
-- **\>JBMS_STRUCTURES_LOG** - Boolean to add logging of data structures manipulation
-- **\>JBMS_VERBOSE_LOG** -   Boolean to add more verbose general logging
+```
+\>JBMS_JSON_LOG       Boolean for logging of JSON parsing
+\>JBMS_MENU_LOG       Boolean for logging of menu items (shows list of menu items in log)
+\>JBMS_STRUCT_LOG     Boolean for logging of data structures manipulation
+\>JBMS_VERBOSE_LOG    Boolean for more verbose general logging
 
-- **\>JBMS_MENU_TGT**	-      Change ONLY to set menuTarget before calling 
-plugin with context *"JBMS_SHOW_MENU"*
-- **\>JBMS_MENU_NAME**	-      Change ONLY to set menuName before calling 
-plugin with context *"JBMS_SHOW_MENU"*
-- **\>JBMS_DIRECT_CMD**	-    Change ONLY to set directCommand before calling 
-plugin with context *"JBMS_DIRECT_CMD"*
+>JBMS_MENU_TGT	   ONLY to set menuTarget before calling plugin w/ context "JBMS_SHOW_MENU"
+>JBMS_MENU_NAME	   ONLY to set menuName before calling plugin w/ context "JBMS_SHOW_MENU"
+>JBMS_DIRECT_CMD   ONLY to set directCommand before calling plugin w/ context "JBMS_DIRECT_CMD"
 
-- **\>JBMSI_NO_SUCH_MENU** -	READ-ONLY - 
-(Checked and set only by VA *"JBMS Radio Menu Show"* command)
-- **\>JBMSI_MENU_RESPONSE** -	READ-ONLY - 
-(Checked and set only by VA *"JBMS Wait For Menu Response"* command)
+>JBMSI_NO_SUCH_MENU   READ-ONLY - (Checked & set only by "JBMS Radio Menu Show" command)
+>JBMSI_MENU_RESPONSE  READ-ONLY - (Checked & set only by "JBMS Wait For Menu Response" command)
 
-- **\>JBMSI_MENU_UP** -	INTERNAL, do not use
-- **\>JBMSI_VERSION** - INTERNAL, do not use
-
-- **\>\>JBMSI_INITED** - INTERNAL, do not use
-
+>JBMSI_LISTING_MENUS  INTERNAL, do not use
+>JBMSI_MENU_UP        INTERNAL, do not use
+>JBMSI_VERSION        INTERNAL, do not use
+>>JBMSI_INITED        INTERNAL, do not use
+```
 
 ### JSON FORMAT:
 
@@ -213,10 +223,12 @@ array of menus. Each menu has the format shown below.
   - Optional third string: *menuItemDirectCmd* identifier for the menu item so a VA command can call it directly
   
 **NOTES:**
-  - *targetPhrases* and *menuNamePhrases* are not currently used, 
-  but should match the VA profile's prefix & suffix phrases for this menu 
-  as they are planned to be used later. If you update the phrases in the 
-  VoiceAttack profile, please update the phrases in the JSON as well.
+  - *targetPhrases* and *menuNamePhrases* are used internally list menus for 
+  the VA *"List Wingman/ATC/All Combat/Formation Menus"* command,
+  and are planned for later functionality. 
+  Make sure they match the VA profile's prefix & suffix phrases for menus. 
+  So if you update the phrases in the VA profile, please update the matching 
+  phrases in the JSON and vs. vs.
 
 **WORKING WITH MENU JSON and VOICEATTACK PROFILE:**
 
@@ -234,7 +246,7 @@ PHRASES TO SELECT MENU ITEMS:
 *MenuItemPhrases* (1st text field in each array within *menuItems*) are 
 the VoiceAttack command phrases the plugin will listen for while this 
 menu is up.  They are the same format as VoiceAttack commands: 
-multiple options, seprated by semi-colons, sub-sections specified by 
+multiple options, separated by semi-colons, sub-sections specified by 
 \[brackets\].  Note that sub-sections can match to nothing as well by 
 having a ; with nothing after it.
 
@@ -281,8 +293,8 @@ before calling the plugin with context set to *JBMS_DIRECT_CMD*.
 
 The provided VA profile has some examples of this:
 
-- "Bogey Dope" mapped to "JBMS-QV1-BOGEY-DOPE" (for "Awacs - Vectors", "Bogey Dope")
-- "Awacs Declare" mapped to "JBMS-QV1-BOGEY-DOPE" (for "Awacs - Tactical", "Declare")
+- "Bogey Dope" mapped to "JBMS-QV1-BOGEY-DOPE" (for "AWACS - Vectors", "Bogey Dope")
+- "AWACS Declare" mapped to "JBMS-QV1-BOGEY-DOPE" (for "AWACS - Tactical", "Declare")
 - "Fence In" mapped to the "JBMS-FX1-FENCE-IN" (for "Flight - Miscellaneous", "Fence In")
 - "Attack My Target" mapped to "JBMS-WC1-ATTACK-TGT" (for "2 - Combat 1", "Attack My Target")
 
@@ -315,7 +327,7 @@ CUSTOMIZING THE VOICEATTACK PROFILE
 The profile command *"JBMS Initial Load Init"* sets default logging options.  
 You can change these to have more logging. You can also change log settings 
 on the fly with the voice command 
-*"\[Enable;Disable\] \[Jason;Menu;Struture;Verbose\] Logging"*.
+*"\[Enable;Disable\] \[Jason;Menu;Struct;Struture;Verbose\] Logging"*.
 
 The amount of time the profile waits for responses for a menu before dismissing 
 it is set in *"JBMS Wait For Menu Response"* command, within the 
@@ -358,8 +370,8 @@ difficult for VoiceAttack (and my plugin) to understand you.
 *VoiceAttack Settings, Recognition tab: See VA docs under "Recognition Tab" for 
 deeper descriptions.*
 
-- *Recognized Speech Delay:* 10-30 - Helps VA differentiate between "Awacs" vs 
-"Awacs Vectors" and combination phrases.
+- *Recognized Speech Delay:* 10-30 - Helps VA differentiate between "AWACS" vs 
+"AWACS Vectors" and combination phrases.
 
 - *Unrecognized Speech Delay:* 0
 
