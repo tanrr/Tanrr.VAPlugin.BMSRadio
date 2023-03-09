@@ -425,8 +425,8 @@
 		"menuItems": [
 			[ "[Install;Remove] [E P U;Eee Pea You] Safety Pin", "1" ],
 			[ "[Install;Remove] Chocks", "2" ],
-			[ "Request Taxi for Departure", "3" ],
-			[ "Request Taxi [Back;] to Ramp", "4" ],
+			[ "Request [Taxi;Taxiing] [for;] Departure", "3" ],
+			[ "Request [Taxi;Taxiing] [Back;] to Ramp", "4" ],
 			[ "Request Hot Pit Refuel", "5" ],
 			[ "Say Again", "6" ],
 			[ "Request [J F S;Jay Eff Ess] Recharge", "7" ]
