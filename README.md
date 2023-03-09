@@ -124,7 +124,7 @@ The relevant sections are:
 ### Limitations
 
 - The plugin does not (yet) support comms menus being disabled with g_bDisableCommsMenu 1,
-  nor does it support switching off the comms menu wit hthe new chatline dot command 
+  nor does it support switching off the comms menu with the new chatline dot command 
   **".commsmenu 0"**.  Support for this may be added later.
 - The plugin and VA profile currently do not verify that BMS is the active window. 
   If you are typing (or speaking with the speech recognition button down) this 
