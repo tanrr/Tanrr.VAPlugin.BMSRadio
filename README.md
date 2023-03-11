@@ -1,6 +1,6 @@
 # Jeeves BMS Radio Menus (Tanrr.VAPlugin.BMSRadio) 
 
-version 0.1.2
+v0.1.3  (tested with Falcon BMS 4.37.2 - for BMS 4.37.1 use plugin v0.1.2)
 
 Jeeves BMS Radio Menus is a simple but powerful plugin for VoiceAttack 
 to work with Falcon BMS radio menus. 
@@ -23,7 +23,7 @@ and menuItems to work for you.  Additional ease of use features include
 adding direct commands that don't leave menus up, as well as the ability 
 to have menu items call your own methods in the VoiceAttack profile. 
 
-This is a personal project, so so use at your own risk.
+This is a personal project, so use at your own risk.
 With that said, I hope to keep this up to date with new versions of 
 Falcon BMS and welcome feedback through GitHub's Issue reporting.
 The current GitHub project is at 
@@ -37,16 +37,16 @@ phrases. You can easily update the JSON to match changes to the
 games menu items, or even add new menus as needed. 
 The VoiceAttack profile is relatively simple to modify to your needs.*
 
-- *The menu items can be configured to do keypresses or to call your 
+- *Menu items can be configured to do keypresses or to call your 
 own named command in VA.* 
 
-- *A particular menu item can be given a custom "callable" name, 
+- *A menu item can be given a custom "callable" name, 
 so you can add your own VA phrase to directly run that menu item 
 without waiting (say for "Bogey Dope").*
 
-- *Since the list of menuItem phrases in the JSON file are not 
+- *Since the menuItem phrases in the JSON file are not 
 directly part of the VA profile, your profile command phrases 
-can duplicate menuItem phrases without it being a problem. 
+can duplicate menuItem phrases without a conflict. 
 For example, you can match the direct phrase "Attack My Target" 
 to execute the menu item for "Wingman, Combat Management 1" without 
 it causing problems for the "Attack My Target" menu items for Wingman, 
@@ -69,7 +69,8 @@ The amount of time each menu is displayed when listing menus is adjustable in th
 
 - *To help with radio tuning, VA commands for 
 "Push [Uniform;Victor] [1..20]" are included, to allow you to 
-quickly change between UHF and VHF presets.*
+quickly change between UHF and VHF presets.  You can also say 
+"Press [0..9]" to generate a keystroke for a number, or "Press Escape."*
 
 ## **INSTALLATION**:
 
@@ -80,10 +81,12 @@ Note that STEP 3 copies the Newtonsoft.Json.dll file to a different directory.*
 
 ### Remove Any Previous Install
 
-- Run VoiceAttack and delete or rename "Jeeves BMS Radio Profile"
+- Run VoiceAttack and delete or rename "Jeeves BMS Radio Profile"  
+Rename if you customized the profile so you can copy command phrases to the new profile
 - If renaming, change the active profile so your old profile won't 
 initialize with the newer version of the plugin
 - Shut down VoiceAttack
+- Save a copy of the **Tanrr.VAPlugin.Radio.Menus.json** file if you customized it
 - Delete the **Tanrr.VAPlugin.BMSRadio** folder in **..VoiceAttack\Apps**
 
 ### Install New Version
@@ -99,7 +102,9 @@ under **..\VoiceAttack\Apps\Tanrr.VAPlugin.BMSRadio**.
 4. Launch VoiceAttack and import **Jeeves BMS Radio Menus Profile.vap**
 5. Shut down, then relaunch VoiceAttack, so the updated profile 
 can initialize the updated plugin
-6. *HOTKEYS:* The VoiceAttack profile provided only sets a hotkey 
+6. If you had custom phrases in the JSON file, merge them by hand (usually easy to do).  
+If you had custom phrases in the VA profile, copy them to the new profile. 
+7. *HOTKEYS:* The VoiceAttack profile provided only sets a hotkey 
 of F24 (hold to listen) for VoiceAttack. You will want to change 
 the hotkeys to whatever keyboard keys or game controller buttons you use. 
 Hotkeys can be set globally (VoiceAttack Settings, Hotkeys) 
@@ -123,34 +128,34 @@ The relevant sections are:
 
 ### Limitations
 
-- The plugin does not (yet) support comms menus being disabled with g_bDisableCommsMenu 1,
+- Current menu data is for BMS 4.37.2 menus (use plugin v0.1.2 for BMS 4.37.1)
+  For newer versions of BMS, or if you have modified the menu 
+  by changing the BMS **Data/Art/CkptArt/menu.dat** file, 
+  update the JSON file to match your changes.
+- BMS menus, when disimissed, will briefly display the first menu 
+  for their group before closing.  ("Combat 1" if you were looking at "Formation 1"). 
+  This appears to be a BMS bug.
+- Plugin does not (yet) support comms menus being disabled with g_bDisableCommsMenu 1,
   nor does it support switching off the comms menu with the new chatline dot command 
-  **".commsmenu 0"**.  Support for this may be added later.
-- The plugin and VA profile currently do not verify that BMS is the active window. 
+  **".commsmenu 0"**.  Support may be added later.
+- Plugin and VA profile currently do not verify that BMS is the active window. 
   If you are typing (or speaking with the speech recognition button down) this 
   could cause invalid input.  This is planned to be changed in later versions to only
   send keystrokes to BMS or to ignore input if BMS is not the active window.
-- The plugin uses the default keys for BMS menus 
+- Plugin uses the default keys for BMS menus 
   (T for ATC; W/E/R for Wingman/Element/Flight, Q for AWACS, 
   Y for Tanker/JTAC).  If you have changed these shortcuts you should 
   edit the JSON to use your shortcuts.
-- Current menu data is for BMS version 4.37.1 menus. 
-  If you have a newer version of BMS or have modified the menu  
-  by changing the BMS ##Data/Art/CkptArt/menu.dat## file you should 
-  update the JSON file to match your changes.
-- The plugin's JSON files must be in UTF-8 format and 
-  DO NOT support UTF-16 or UNICODE
+- Plugin's JSON files must be in UTF-8 format and DO NOT support UNICODE
 - menuItemExecute strings currently only support visible characters, 
   do not support modifiers such as SHIFT, CTRL, or ALT, 
-  and do not support separate numpad characters. 
-  Support for these may be added to later versions.
-- This plugin is managing asynchronous states without calling into the BMS 
-  code, and without locking data used by VoiceAttack (though it is sharing 
-  state variables between the plugin and the VA profile).  
+  and do not support numpad characters. Support may be added to later versions.
+- This plugin manages asynchronous states without calling into the BMS 
+  code, and without locking data used by VoiceAttack (though it shares
+  state variables with the VA profile).  
   This greatly simplifies the plugin, but it is possible for it to get out
-  of sync and think it has a menu up when it doesn't or vs. vs.  If this
-  happens you should just be able to say *"Reset Menu"*, *"Cancel Menu*" or
-  even just *"Press Escape"* to reset.
+  of sync. If it is incorrectly displaying a menu, or listing menus 
+  just say *"Reset Menu"*, *"Cancel Menu*" or even just *"Press Escape"* to reset.
 
 ### VoiceAttack Variables
 

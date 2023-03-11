@@ -33,7 +33,7 @@ namespace Tanrr.VAPlugin.BMSRadio
     {
         // Jeeves BMS Radio VoiceAttack Plugin
 
-        protected static string s_version = "v0.1.2";
+        protected static string s_version = "v0.1.3";
         protected static Dictionary<string, MenuBMS> s_menusAll = null;       // Dictionary containing all BMS radio menus
         protected static Dictionary<string, DirCmdInfo> s_DirCmdMap = null;   // Map of direct command items to specific menus+items
 
@@ -74,7 +74,7 @@ namespace Tanrr.VAPlugin.BMSRadio
             => $"Jeeves BMS Radio Plugin for VoiceAttack {s_version} Beta";  // Displayed in VA dropdowns and log
 
         public static string VA_DisplayInfo()
-            => $"Jeeves BMS Radio Plugin for VoiceAttack {s_version} Beta 2023";  // Extended info
+            => $"Jeeves BMS Radio Plugin for VoiceAttack {s_version} Beta 2023 for BMS 4.37.2";  // Extended info
 
         public static Guid VA_Id()
             => new Guid("{7e22363e-2cca-4b26-8aae-a292f73d2a53}");  // TANR JBMS G1

@@ -452,20 +452,33 @@
 	},
 	{
 		"menuTarget": "ATC",
-		"targetPhrases": "[Contact;] Approach",
-		"menuName": "Approach",
-		"menuNamePhrases": "Approach",
+		"targetPhrases": "[Contact;] Approach 1",
+		"menuName": "Approach 1",
+		"menuNamePhrases": "[Contact;] Approach 1",
 		"menuShow": "TTT",
 
 		"menuItems": [
 			[ "Request [Vector for;Vectors for;] Visual Approach", "1" ],
-			[ "Request [Vector for;Vectors for;] Instrument Approach", "2" ],
-			[ "Request Overhead Approach", "3" ],
-			[ "Request Unrestricted Approach", "4" ],
-			[ "[Declare;] Emergency", "5" ],
-			[ "Abort", "6" ],
-			[ "Traffic in Sight", "7" ],
-			[ "Say Again", "8" ]
+			[ "Request [Vector for;Vectors for;] Visual Approach Heavy", "2" ],
+			[ "Request [Vector for;Vectors for;] Instrument Approach", "3" ],
+			[ "Request [Vector for;Vectors for;] Instrument Approach Heavy", "4" ],
+			[ "Request Overhead Approach", "5" ],
+			[ "Request Unrestricted Approach", "6" ],
+			[ "Request Unrestricted Approach Heavy", "7" ]
+		]
+	},
+	{
+		"menuTarget": "ATC",
+		"targetPhrases": "[Contact;] Approach 2",
+		"menuName": "Approach 2",
+		"menuNamePhrases": "[Contact;] Approach 2",
+		"menuShow": "TTTT",
+
+		"menuItems": [
+			[ "[Declare;] Emergency", "1" ],
+			[ "Abort", "2" ],
+			[ "Traffic in Sight", "3" ],
+			[ "Say Again", "4" ]
 		]
 	},
 	{
@@ -473,7 +486,7 @@
 		"targetPhrases": "[Contact;] Departure",
 		"menuName": "Departure",
 		"menuNamePhrases": "Departure",
-		"menuShow": "TTTT",
+		"menuShow": "TTTTT",
 
 		"menuItems": [
 			[ "[Report;] Airborne", "1" ]
@@ -484,7 +497,7 @@
 		"targetPhrases": "[Contact;] Common",
 		"menuName": "Common",
 		"menuNamePhrases": "Common",
-		"menuShow": "TTTTT",
+		"menuShow": "TTTTTT",
 
 		"menuItems": [
 			[ "Request [Q N H;Cue Enn Ech]", "1" ],
@@ -499,7 +512,7 @@
 		"targetPhrases": "[Contact;] Carrier",
 		"menuName": "Carrier",
 		"menuNamePhrases": "Carrier",
-		"menuShow": "TTTTTT",
+		"menuShow": "TTTTTTT",
 
 		"menuItems": [
 			[ "Inbound Mother", "1" ],
@@ -517,7 +530,7 @@
 		"targetPhrases": "[Contact;] Contingencies",
 		"menuName": "Contingencies",
 		"menuNamePhrases": "Contingencies",
-		"menuShow": "TTTTTTT",
+		"menuShow": "TTTTTTTT",
 
 		"menuItems": [
 			[ "Report 1 Ground Abort", "1" ],
