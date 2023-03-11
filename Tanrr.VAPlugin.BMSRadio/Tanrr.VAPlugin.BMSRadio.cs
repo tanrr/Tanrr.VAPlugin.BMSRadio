@@ -201,8 +201,8 @@ namespace Tanrr.VAPlugin.BMSRadio
                 return false;
             }
 
-            string versionProfile;
-            if ( !GetNonNullText(vaProxy, JBMSI_Version, out versionProfile) )
+
+            if ( !GetNonNullText(vaProxy, JBMSI_Version, out string versionProfile) )
             {
                 Logger.Error(vaProxy, "No version information available from VA Profile - Aborting load");
                 return false;
@@ -213,14 +213,12 @@ namespace Tanrr.VAPlugin.BMSRadio
             // Look for our menu info json file and schema and load each into a string
             string menuJsonPath = appsDir + "\\Tanrr.VAPlugin.BMSRadio\\Tanrr.VAPlugin.Radio.Menus.json";
             string menuJsonSchemaPath = appsDir + "\\Tanrr.VAPlugin.BMSRadio\\Tanrr.VAPlugin.Radio.Schema.json";
-            string menusJsonRead = string.Empty;
-            string menuSchemaRead = string.Empty;
-            if (!ReadFileIntoString(vaProxy, menuJsonPath, out menusJsonRead))
+            if (!ReadFileIntoString(vaProxy, menuJsonPath, out string menusJsonRead))
             {
                 Logger.Error(vaProxy, "No json data read from " + menuJsonPath);
                 return false;
             }
-            if (!ReadFileIntoString(vaProxy, menuJsonSchemaPath, out menuSchemaRead))
+            if (!ReadFileIntoString(vaProxy, menuJsonSchemaPath, out string menuSchemaRead))
             {
                 Logger.Error(vaProxy, "No schema data read from " + menuJsonSchemaPath);
                 return false;
@@ -330,6 +328,7 @@ namespace Tanrr.VAPlugin.BMSRadio
 
          }
 
+        
         public static MenuBMS GetMenuBMS(dynamic vaProxy, string menuFullID)
         {
             MenuBMS menu = null;

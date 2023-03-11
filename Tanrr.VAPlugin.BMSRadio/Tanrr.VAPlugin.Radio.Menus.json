@@ -458,8 +458,8 @@
 		"menuShow": "TTT",
 
 		"menuItems": [
-			[ "Request [Vector;Vectors] for Visual Approach", "1" ],
-			[ "Request [Vector;Vectors] for Instrument Approach", "2" ],
+			[ "Request [Vector for;Vectors for;] Visual Approach", "1" ],
+			[ "Request [Vector for;Vectors for;] Instrument Approach", "2" ],
 			[ "Request Overhead Approach", "3" ],
 			[ "Request Unrestricted Approach", "4" ],
 			[ "[Declare;] Emergency", "5" ],
