@@ -1,5 +1,10 @@
 [
 	{
+		"verPluginJSON": "v0.1.4",
+		"verBMSJSON": "4.37.2",
+		"userField": "User can update this field with their own notes"
+	},
+	{
 		"menuTarget": "Wingman",
 		"targetPhrases": "Wingman;2",
 		"menuName": "Combat 1",

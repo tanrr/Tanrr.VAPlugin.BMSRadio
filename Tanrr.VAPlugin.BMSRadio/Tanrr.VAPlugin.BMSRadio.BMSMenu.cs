@@ -58,8 +58,6 @@ namespace Tanrr.VAPlugin.BMSRadio
 
         void SetEmpty()
         {
-            // TODO: Cleanup first if non-null
-
             _menuItemPhrases = string.Empty;
             _menuItemExecute = string.Empty;
             _menuItemDirectCmd = string.Empty;
@@ -91,22 +89,22 @@ namespace Tanrr.VAPlugin.BMSRadio
         protected HashSet<string> _extractedNormTargetPhrases;
         protected HashSet<string> _extractedNormMenuNamePhrases;
 
-        // TODO - Make these get only, rename as protected members with _
+        protected string _menuFullID;       // MenuTarget_MenuName for easy ident, generated on creation
 
-        protected string _menuFullID;        // MenuTarget_MenuName for easy ident, generated on creation
-
-        public string _menuTarget;           // "Wingman"   // Caller must pass THIS string when trying to bring up a menu, not whatever user said
-        protected string _menuTargetNorm;
+        public string    _menuTarget;       // "Wingman"   // Caller must pass THIS string when trying to bring up a menu, not whatever user said
+        protected string _menuTargetNorm;   // "wingman"
         protected string _targetPhrases;    // "2;Wingman;Heya"
 
         protected string _menuName;         // "Combat 3"  // Caller must pass THIS string when trying to bring up a menu, not whatever user said
-        protected string _menuNameNorm;
-        protected string _menuNamePhrases;   // "Combat [Management;] 3"
+        protected string _menuNameNorm;     // "combat"
+        protected string _menuNamePhrases;  // "Combat [Management;] 3"
         protected string _menuShow;         // If this matches a VA phrase in the profile, execute that command, else presses chars passed
 
         protected string _allMenuItemPhrases;
 
         public MenuItemBMS[] MenuItemsBMS;
+
+        // TODO - Make these get only, rename as protected members with _
 
         public string MenuFullID { get => _menuFullID; set => _menuFullID = value; }
 

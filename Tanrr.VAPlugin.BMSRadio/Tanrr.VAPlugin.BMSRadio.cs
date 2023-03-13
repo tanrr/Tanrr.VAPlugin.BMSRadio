@@ -33,7 +33,9 @@ namespace Tanrr.VAPlugin.BMSRadio
     {
         // Jeeves BMS Radio VoiceAttack Plugin
 
-        protected static string s_version = "v0.1.3";
+        protected static string s_version = "v0.1.4";
+        protected static string s_verPluginJSON = "";
+        protected static string s_verBMSJSON = "";
         protected static Dictionary<string, MenuBMS> s_menusAll = null;       // Dictionary containing all BMS radio menus
         protected static Dictionary<string, DirCmdInfo> s_DirCmdMap = null;   // Map of direct command items to specific menus+items
 
@@ -254,9 +256,9 @@ namespace Tanrr.VAPlugin.BMSRadio
                 return false;
             }
             IList<string> errorMsgs = new List<string>();
-            if (!menusDeserialized.IsValid(menuSchemaDeserialized, out errorMsgs))
+            if (!menusDeserialized.IsValid(menuSchemaDeserialized, out errorMsgs) || menusDeserialized.Count <= 1)
             {
-                Logger.Error(vaProxy, "" + menuJsonPath + " failed schema validation against " + menuJsonSchemaPath);
+                Logger.Error(vaProxy, "" + menuJsonPath + " failed schema validation against " + menuJsonSchemaPath + "or didn't contain menus");
                 if (errorMsgs != null)
                 {
                     foreach (string msg in errorMsgs) { Logger.Error(vaProxy, "Schema Error: " + msg); }
@@ -265,6 +267,42 @@ namespace Tanrr.VAPlugin.BMSRadio
             }
             Logger.Write(vaProxy, "Verified menu JSON against JSON schema" + menuJsonSchemaPath);
             Logger.VerboseWrite(vaProxy, "Verified menu JSON " + menuJsonPath + "\n against JSON schema " + menuJsonSchemaPath);
+
+            // Load version info from the JSON
+            try
+            {
+                JObject versionInfo = (JObject)menusDeserialized.First();
+                if (versionInfo != null)
+                {
+                    s_verPluginJSON = (string)versionInfo["verPluginJSON"];
+                    s_verBMSJSON = (string)versionInfo["verBMSJSON"];
+                }
+                if (string.IsNullOrEmpty(s_verPluginJSON) || string.IsNullOrEmpty(s_verBMSJSON))
+                {
+                    s_verBMSJSON = s_verPluginJSON = string.Empty;
+                    Logger.Error(vaProxy, "Failed to load version information from JSON - possibly due to JSON from plugin ver 0.1.3 or earlier");
+                    return false;
+                }
+                // Remove the first element of the JArray since it's not part of the menu
+                int cTest = menusDeserialized.Count;
+                menusDeserialized.RemoveAt(0);
+                if (cTest - 1 != menusDeserialized.Count)
+                {
+                    Logger.Error(vaProxy, "Unexpected failure removing head item (ver info) from menusDeserialized");
+                    return false;
+                }
+                Logger.Write(vaProxy, $"Loading JSON menu file for plugin version {s_verPluginJSON} and BMS version {s_verBMSJSON}");
+                if (!s_version.Equals(s_verPluginJSON))
+                {   Logger.Warning(vaProxy, $"Plugin version {s_version} does not match JSON version {s_verPluginJSON}"); }
+            } 
+            catch (Exception e)
+            {
+                Logger.Error(vaProxy, "Failed to load version information from JSON - Exception thrown");
+                Logger.Error(vaProxy, e.Message);
+                return false;
+            }
+            
+
 
             // Read through each menu and add details to our list
             s_menusAll = new Dictionary<string, MenuBMS>();

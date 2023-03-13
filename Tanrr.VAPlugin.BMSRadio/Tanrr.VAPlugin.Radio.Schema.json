@@ -1,7 +1,30 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
   "type": "array",
-  "items": {
+  "items": [
+    {
+      "type": "object",
+      "properties": {
+        "verPluginJSON": {
+          "allOf": [
+            { "type": "string" },
+            { "maxLength": 15 }
+          ]
+        },
+        "verBMSJSON": {
+          "allOf": [
+            { "type": "string" },
+            { "maxLength": 15 }
+          ]
+        }
+      },
+      "required": [
+        "verPluginJSON",
+        "verBMSJSON"
+      ]
+    }
+  ],
+  "additionalItems": {
     "type": "object",
     "properties": {
       "menuTarget": {
@@ -53,6 +76,7 @@
         }
       }
     },
+    "additionalProperties": false,
     "required": [
       "menuTarget",
       "targetPhrases",
