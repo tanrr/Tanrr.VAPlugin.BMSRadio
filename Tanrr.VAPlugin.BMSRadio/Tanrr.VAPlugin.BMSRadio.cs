@@ -65,6 +65,8 @@ namespace Tanrr.VAPlugin.BMSRadio
         protected const string CmdJBMS_WaitForMenuResponse = "JBMS Wait For Menu Response";
         protected const string CmdJBMS_CloseMenu = "JBMS Close Menu";
         protected const string CmdJBMS_PressKeys = "JBMS Press Keys";
+        protected const string CmdJBMS_PressKeyCombo = "JBMS Press Key Combo";
+        protected const string CmdJBMS_PressKeyComboList = "JBMS Press Key Combo List";
         protected const string CmdJBMS_KillWaitForMenuResponse = "JBMS Kill Command Wait For Menu Response";
 
         protected const string JBMS_MenuTimeout = "_JBMS_MENU_TIMEOUT";     // Possible JBMSI_MenuResponse;
@@ -325,8 +327,40 @@ namespace Tanrr.VAPlugin.BMSRadio
                     menuItemsBMS[i] = menuItem;
                 }
 
+                // Build menuShow from its json array into a semicolon delimited quoted element string
+                JArray menuShowParts = (JArray)menuJson["menuShow"];
+                string menuShow = string.Empty;
+                if ( menuShowParts == null || menuShowParts.Count <= 0 || string.IsNullOrEmpty((string)menuShowParts[0]) )
+                {
+                    Logger.Error(vaProxy, "Invalid menuShow in JSON");
+                    return false;
+                }
+                for (int iShow = 0; iShow < menuShowParts.Count; iShow++ )
+                {
+                    // A menuShow segment containing '[' will be assumed to be something to pass to "Variable Keypress" since it may have [LALT] etc.
+                    // Otherwise it is assumed to be (multiple) simple keystrokes to pass to "Quick Input"
+                    // HOWEVER, "Quick Input" assumes capital letters or shifted keys like '$' mean for it to hold the SHIFT key down
+                    string menuShowPart = (string)menuShowParts[iShow];
+                    if (!menuShowPart.Contains("["))
+                    {
+                        // Warn users if their "simple" text commands will actually generate SHIFT presses, but allow it through
+                        string menuShowPartLower = menuShowPart.ToLower();
+                        if (!menuShowPart.Equals(menuShowPartLower))
+                        {
+                            JToken tgtTok, menTok;  // Direct (string)menuJson["menuName"] returns null here - don't see why, but working around it
+                            if (menuJson.TryGetValue("menuTarget", s_strComp, out tgtTok) && menuJson.TryGetValue("menuName", s_strComp, out menTok) )
+                            {   Logger.Warning(vaProxy, "menuShow in JSON for " + tgtTok.ToString() + "_" + menTok.ToString() + " contains shifted characters"); }
+                            else
+                            { Logger.Warning(vaProxy, "menuShow in JSON contains shifted characters"); }
+                        }
+                    }
+                    menuShow += "\"" + menuShowPart + "\"";
+                    if (iShow <= menuShowParts.Count)
+                    {   menuShow += ";";  }
+                }
+
                 MenuBMS menu = new MenuBMS
-                (vaProxy, (string)menuJson["menuTarget"], (string)menuJson["targetPhrases"], (string)menuJson["menuName"], (string)menuJson["menuNamePhrases"], (string)menuJson["menuShow"], menuItemsBMS);
+                (vaProxy, (string)menuJson["menuTarget"], (string)menuJson["targetPhrases"], (string)menuJson["menuName"], (string)menuJson["menuNamePhrases"], menuShow, menuItemsBMS);
 
                 // Store menu in Dictionary with MenuFullID as key
                 try
@@ -453,6 +487,19 @@ namespace Tanrr.VAPlugin.BMSRadio
             return false;
         }
 
+        protected static bool PressKeyComboList(dynamic vaProxy, string keyComboList, bool waitForReturn, bool asSubCommand = true)
+        {
+            // Sends the passed keyComboToPress string to VA to press those keys in sequence
+            // TODO: May need to change this to handle Unicode or language variations
+            // TODO: May need to change this to allow keys with modifiers to be sent: ie LCTRL+LSHIFT+T followed by CMD+C etc.
+            if (!string.IsNullOrEmpty(keyComboList))
+            {
+                vaProxy.Command.Execute(CmdJBMS_PressKeyComboList, WaitForReturn: waitForReturn, AsSubcommand: asSubCommand, PassedText: keyComboList);
+                return true;
+            }
+            return false;
+        }
+
         protected static bool ExecuteCmdOrKeys(dynamic vaProxy, string cmdOrKeys, bool waitForReturn, bool asSubCommand = true)
         {
             // Executes as VA command phrase if one matches, else passes to VA to press the chars in the string as keystrokes
@@ -487,7 +534,7 @@ namespace Tanrr.VAPlugin.BMSRadio
             if ( s_indexMenuToList >= s_menusToList.Count)
             {
                 Logger.VerboseWrite(vaProxy, "Done listing menus");
-                // TODO - Current menu *SHOULD* have been closed, but should verify it here
+                // Current menu *SHOULD* have been closed, but should verify it here
                 if (MenuUp)
                 {
                     Logger.Warning(vaProxy, "ListMenus at end of list, but last menu not closed properly");
@@ -539,8 +586,7 @@ namespace Tanrr.VAPlugin.BMSRadio
                 ResetMenuState(vaProxy, onlyUpAndErrors: true, killWaitForMenu: false);
             }
 
-            string MenuShow = Menu.MenuShow;
-            ExecuteCmdOrKeys(vaProxy, MenuShow, /* waitForReturn */ true);
+            PressKeyComboList(vaProxy, Menu.MenuShow, /* waitForReturn */ true);
             // Assume Success
             vaProxy.SetBoolean(JBMSI_MenuUp, true);
 
@@ -765,6 +811,10 @@ namespace Tanrr.VAPlugin.BMSRadio
                     break;
                 
                 case "JBMS_SHOW_MENU":
+                    // TEMP TEST TEMP TEST
+                    // PressKeyComboList(vaProxy, "\"Ok\";\"[LALT]F\";\"A\";\"?\"", waitForReturn: false);
+                    // break;
+
                     // If user asks for a different menu while listing menus, we need to cancel the listing first
                     if (GetNonNullBool(vaProxy, JBMSI_ListingMenus))
                     {
@@ -773,7 +823,7 @@ namespace Tanrr.VAPlugin.BMSRadio
                     // ShowMenu will dismiss the current menu and kill the Wait For Menu Response handler
                     ShowMenu(vaProxy, menuUp: MenuUp, listingMenus: false);
                     break;
-
+                    
                 case "JBMS_LIST_MENUS":
                     // Will build a list of menus matching the users phrase and iterate through them, showing one at a time
                     // User can stop the listing while menus are up by:

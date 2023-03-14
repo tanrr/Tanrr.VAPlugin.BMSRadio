@@ -9,7 +9,7 @@
 		"targetPhrases": "Wingman;2",
 		"menuName": "Combat 1",
 		"menuNamePhrases": "Combat [Management;] 1",
-		"menuShow": "W",
+		"menuShow": [ "w" ],
 
 		"menuItems": [
 			[ "Attack My Target", "1", "JBMS-WC1-ATTACK-TGT" ],
@@ -28,7 +28,7 @@
 		"targetPhrases": "Element;3",
 		"menuName": "Combat 1",
 		"menuNamePhrases": "Combat [Management;] 1",
-		"menuShow": "E",
+		"menuShow": [ "e" ],
 
 		"menuItems": [
 			[ "Attack My Target", "1" ],
@@ -47,7 +47,7 @@
 		"targetPhrases": "Flight",
 		"menuName": "Combat 1",
 		"menuNamePhrases": "Combat [Management;] 1",
-		"menuShow": "R",
+		"menuShow": [ "r" ],
 
 		"menuItems": [
 			[ "Attack My Target", "1" ],
@@ -66,7 +66,7 @@
 		"targetPhrases": "Wingman;2",
 		"menuName": "Combat 2",
 		"menuNamePhrases": "Combat [Management;] 2",
-		"menuShow": "WW",
+		"menuShow": [ "ww" ],
 
 		"menuItems": [
 			[ "Rejoin", "1" ],
@@ -83,7 +83,7 @@
 		"targetPhrases": "Element;3",
 		"menuName": "Combat 2",
 		"menuNamePhrases": "Combat [Management;] 2",
-		"menuShow": "EE",
+		"menuShow": [ "ee" ],
 
 		"menuItems": [
 			[ "Rejoin", "1" ],
@@ -96,7 +96,7 @@
 		"targetPhrases": "Flight",
 		"menuName": "Combat 2",
 		"menuNamePhrases": "Combat [Management;] 2",
-		"menuShow": "RR",
+		"menuShow": [ "rr" ],
 
 		"menuItems": [
 			[ "Rejoin", "1" ],
@@ -109,7 +109,7 @@
 		"targetPhrases": "Wingman;2",
 		"menuName": "Combat 3",
 		"menuNamePhrases": "Combat [Management;] 3",
-		"menuShow": "WWW",
+		"menuShow": [ "www" ],
 
 		"menuItems": [
 			[ "Offensive Pursuit", "1" ],
@@ -127,7 +127,7 @@
 		"targetPhrases": "Element;3",
 		"menuName": "Combat 3",
 		"menuNamePhrases": "Combat [Management;] 3",
-		"menuShow": "EEE",
+		"menuShow": [ "eee" ],
 
 		"menuItems": [
 			[ "Offensive Pursuit", "1" ],
@@ -145,7 +145,7 @@
 		"targetPhrases": "Wingman;2",
 		"menuName": "Mission",
 		"menuNamePhrases": "Mission [Management;] [1;]",
-		"menuShow": "WWWW",
+		"menuShow": [ "wwww" ],
 
 		"menuItems": [
 			[ "Resume Mission", "1" ],
@@ -165,7 +165,7 @@
 		"targetPhrases": "Element;3",
 		"menuName": "Mission",
 		"menuNamePhrases": "Mission [Management;] [1;]",
-		"menuShow": "EEEE",
+		"menuShow": [ "eeee" ],
 
 		"menuItems": [
 			[ "Resume Mission", "1" ],
@@ -184,7 +184,7 @@
 		"targetPhrases": "Flight",
 		"menuName": "Mission",
 		"menuNamePhrases": "Mission [Management;] [1;]",
-		"menuShow": "RRR",
+		"menuShow": [ "rrr" ],
 
 		"menuItems": [
 			[ "Resume Mission", "1" ],
@@ -203,7 +203,7 @@
 		"targetPhrases": "Wingman;2",
 		"menuName": "Formation 1",
 		"menuNamePhrases": "Formation [Management;] 1",
-		"menuShow": "WWWWW",
+		"menuShow": [ "wwwww" ],
 
 		"menuItems": [
 			[ "Close Up", "1" ],
@@ -223,7 +223,7 @@
 		"targetPhrases": "Element;3",
 		"menuName": "Formation 1",
 		"menuNamePhrases": "Formation [Management;] 1",
-		"menuShow": "EEEEE",
+		"menuShow": [ "eeeee" ],
 
 		"menuItems": [
 			[ "Close Up", "1" ],
@@ -243,7 +243,7 @@
 		"targetPhrases": "Flight",
 		"menuName": "Formation 1",
 		"menuNamePhrases": "Formation [Management;] 1",
-		"menuShow": "RRRR",
+		"menuShow": [ "rrrr" ],
 
 		"menuItems": [
 			[ "Close Up", "1" ],
@@ -263,7 +263,7 @@
 		"targetPhrases": "Wingman;2",
 		"menuName": "Formation 2",
 		"menuNamePhrases": "Formation [Management;] 2",
-		"menuShow": "WWWWWW",
+		"menuShow": [ "wwwwww" ],
 
 		"menuItems": [
 			[ "Go Wedge", "1" ],
@@ -282,7 +282,7 @@
 		"targetPhrases": "Element;3",
 		"menuName": "Formation 2",
 		"menuNamePhrases": "Formation [Management;] 2",
-		"menuShow": "EEEEEE",
+		"menuShow": [ "eeeeee" ],
 
 		"menuItems": [
 			[ "Go Wedge", "1" ],
@@ -301,7 +301,7 @@
 		"targetPhrases": "Flight",
 		"menuName": "Formation 2",
 		"menuNamePhrases": "Formation [Management;] 2",
-		"menuShow": "RRRRR",
+		"menuShow": [ "rrrrr" ],
 
 		"menuItems": [
 			[ "Go Wedge", "1" ],
@@ -320,7 +320,7 @@
 		"targetPhrases": "Flight",
 		"menuName": "Formation 3",
 		"menuNamePhrases": "Formation [Management;] 3",
-		"menuShow": "RRRRRR",
+		"menuShow": [ "rrrrrr" ],
 
 		"menuItems": [
 			[ "Go Vick", "1" ],
@@ -338,7 +338,7 @@
 		"targetPhrases": "Wingman;2",
 		"menuName": "Miscellaneous",
 		"menuNamePhrases": "[Miscellaneous;Misk] [1;]",
-		"menuShow": "WWWWWWW",
+		"menuShow": [ "wwwwwww" ],
 
 		"menuItems": [
 			[ "Fence In", "1" ],
@@ -358,7 +358,7 @@
 		"targetPhrases": "Element;3",
 		"menuName": "Miscellaneous",
 		"menuNamePhrases": "[Miscellaneous;Misk] [1;]",
-		"menuShow": "EEEEEEE",
+		"menuShow": [ "eeeeeee" ],
 
 		"menuItems": [
 			[ "Fence In", "1" ],
@@ -378,7 +378,7 @@
 		"targetPhrases": "Flight",
 		"menuName": "Miscellaneous",
 		"menuNamePhrases": "[Miscellaneous;Misk] [1;]",
-		"menuShow": "RRRRRRR",
+		"menuShow": [ "rrrrrrr" ],
 
 		"menuItems": [
 			[ "Fence In", "1", "JBMS-FX1-FENCE-IN" ],
@@ -398,7 +398,7 @@
 		"targetPhrases": "Wingman;2",
 		"menuName": "Runway",
 		"menuNamePhrases": "Runway [Line Up;]",
-		"menuShow": "WWWWWWWW",
+		"menuShow": [ "wwwwwwww" ],
 
 		"menuItems": [
 			[ "Single Ship", "1" ],
@@ -410,7 +410,7 @@
 		"targetPhrases": "Flight",
 		"menuName": "Runway",
 		"menuNamePhrases": "Runway [Line Up;]",
-		"menuShow": "RRRRRRRR",
+		"menuShow": [ "rrrrrrrr" ],
 
 		"menuItems": [
 			[ "Single Ship", "1" ],
@@ -425,7 +425,7 @@
 		"targetPhrases": "[Contact;] Ground",
 		"menuName": "Ground",
 		"menuNamePhrases": "Ground;Chief",
-		"menuShow": "T",
+		"menuShow": [ "t" ],
 
 		"menuItems": [
 			[ "[Install;Remove] [E P U;Eee Pea You] Safety Pin", "1" ],
@@ -442,7 +442,7 @@
 		"targetPhrases": "[Contact;] Tower",
 		"menuName": "Tower",
 		"menuNamePhrases": "Tower;Traffic",
-		"menuShow": "TT",
+		"menuShow": [ "tt" ],
 
 		"menuItems": [
 			[ "[Ready for;Request] Departure", "1" ],
@@ -460,7 +460,7 @@
 		"targetPhrases": "[Contact;] Approach 1",
 		"menuName": "Approach 1",
 		"menuNamePhrases": "[Contact;] Approach 1",
-		"menuShow": "TTT",
+		"menuShow": [ "ttt" ],
 
 		"menuItems": [
 			[ "Request [Vector for;Vectors for;] Visual Approach", "1" ],
@@ -477,7 +477,7 @@
 		"targetPhrases": "[Contact;] Approach 2",
 		"menuName": "Approach 2",
 		"menuNamePhrases": "[Contact;] Approach 2",
-		"menuShow": "TTTT",
+		"menuShow": [ "tttt" ],
 
 		"menuItems": [
 			[ "[Declare;] Emergency", "1" ],
@@ -491,7 +491,7 @@
 		"targetPhrases": "[Contact;] Departure",
 		"menuName": "Departure",
 		"menuNamePhrases": "Departure",
-		"menuShow": "TTTTT",
+		"menuShow": [ "ttttt" ],
 
 		"menuItems": [
 			[ "[Report;] Airborne", "1" ]
@@ -502,7 +502,7 @@
 		"targetPhrases": "[Contact;] Common",
 		"menuName": "Common",
 		"menuNamePhrases": "Common",
-		"menuShow": "TTTTTT",
+		"menuShow": [ "tttttt" ],
 
 		"menuItems": [
 			[ "Request [Q N H;Cue Enn Ech]", "1" ],
@@ -517,7 +517,7 @@
 		"targetPhrases": "[Contact;] Carrier",
 		"menuName": "Carrier",
 		"menuNamePhrases": "Carrier",
-		"menuShow": "TTTTTTT",
+		"menuShow": [ "ttttttt" ],
 
 		"menuItems": [
 			[ "Inbound Mother", "1" ],
@@ -535,7 +535,7 @@
 		"targetPhrases": "[Contact;] Contingencies",
 		"menuName": "Contingencies",
 		"menuNamePhrases": "Contingencies",
-		"menuShow": "TTTTTTTT",
+		"menuShow": [ "tttttttt" ],
 
 		"menuItems": [
 			[ "Report 1 Ground Abort", "1" ],
@@ -549,7 +549,7 @@
 		"targetPhrases": "A Wax",
 		"menuName": "Tactical",
 		"menuNamePhrases": "Tactical;Tacticals",
-		"menuShow": "Q",
+		"menuShow": [ "q" ],
 
 		"menuItems": [
 			[ "Request Picture", "1" ],
@@ -568,7 +568,7 @@
 		"targetPhrases": "A Wax",
 		"menuName": "Vectors",
 		"menuNamePhrases": "Vector;Vectors",
-		"menuShow": "QQ",
+		"menuShow": [ "qq" ],
 
 		"menuItems": [
 			[ "Bogey Dope;[Request;] Vector to Nearest Air Threat", "1", "JBMS-QV1-BOGEY-DOPE" ],
@@ -586,7 +586,7 @@
 		"targetPhrases": "[Contact;] Tanker",
 		"menuName": "Tanker",
 		"menuNamePhrases": "Tanker",
-		"menuShow": "Y",
+		"menuShow": [ "y" ],
 
 		"menuItems": [
 			[ "Request [Air;] Flight [Refueling;Refuel];Approaching [for;to] Refuel", "1" ],
@@ -602,7 +602,7 @@
 		"targetPhrases": "[Contact;] Jay Tack",
 		"menuName": "JTAC",
 		"menuNamePhrases": "Jay Tack",
-		"menuShow": "YY",
+		"menuShow": [ "yy" ],
 
 		"menuItems": [
 			[ "Initial Contact;[Initial;] Check In", "1" ],

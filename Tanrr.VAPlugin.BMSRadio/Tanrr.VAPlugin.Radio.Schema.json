@@ -16,8 +16,15 @@
             { "type": "string" },
             { "maxLength": 15 }
           ]
+        },
+        "userField": {
+          "allOf": [
+            { "type": "string" },
+            { "maxLength": 250 }
+          ]
         }
       },
+      "additionalProperties": false,
       "required": [
         "verPluginJSON",
         "verBMSJSON"
@@ -53,8 +60,15 @@
       },
       "menuShow": {
         "allOf": [
-          { "type": "string" },
-          { "maxLength": 30 }
+          { "type": "array" },
+          {
+            "items": {
+              "type": "string",
+              "maxLength": 40
+            }
+          },
+          { "minItems": 1 },
+          { "maxItems": 15 }
         ]
       },
       "menuItems": {

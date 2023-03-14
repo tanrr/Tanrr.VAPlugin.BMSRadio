@@ -201,7 +201,7 @@ array of menus. Each menu has the format shown below.
 		"targetPhrases": "Flight",
 		"menuName": "Miscellaneous 1",
 		"menuNamePhrases": "[Miscellaneous;Misk] [1;]",
-		"menuShow": "RRRRRRR",
+		"menuShow": [ "rrrrrrr" ],
 
 		"menuItems": [
 			[ "Fence In", "1", "JBMS-FX1-FENCE-IN" ],
@@ -220,7 +220,7 @@ array of menus. Each menu has the format shown below.
 **REQUIRED:**
 - All values are text strings in *"Quotes"*
 - The combination of menuTarget+menuName must be unique for all menus in the JSON
-- The menuShow text/command must be unique for all menus in the JSON
+- The menuShow array of keystrokes should use lowercase (details further on)
 - All named items must be non-empty
 - menuItems Array line includes multiple menuItem arrays:
   - First string: *menuItemPhrases* to match that menu item
@@ -228,11 +228,10 @@ array of menus. Each menu has the format shown below.
   - Optional third string: *menuItemDirectCmd* identifier for the menu item so a VA command can call it directly
   
 **NOTES:**
-  - *targetPhrases* and *menuNamePhrases* are used internally list menus for 
-  the VA *"List Wingman/ATC/All Combat/Formation Menus"* command,
-  and are planned for later functionality. 
+  - *targetPhrases* and *menuNamePhrases* are used internally to list menus for 
+  the VA *"List Wingman/ATC/All Combat/Formation Menus"* command.
   Make sure they match the VA profile's prefix & suffix phrases for menus. 
-  So if you update the phrases in the VA profile, please update the matching 
+  If you update the phrases in the VA profile, please update the matching 
   phrases in the JSON and vs. vs.
 
 **WORKING WITH MENU JSON and VOICEATTACK PROFILE:**
@@ -245,6 +244,27 @@ JSON against the schema while you work on it.
 Menu JSON: **Tanrr.VAPlugin.Radio.Menus.json**
 
 Schema JSON: **Tanrr.VAPlugin.Radio.Schema.json**
+
+KEYSTROKES TO SHOW EACH MENU:
+
+*showMenu* is an array of (possibly) multiple strings that contain 
+the keystrokes to bring up a menu.  It's flexible but has some restrictions.  
+
+- Multiple keypresses without modifiers or special keys can in a single string like 
+`"menuShow": [ "rrrrrrr" ],` but can **NOT** include capital letters
+or any key that requires SHIFT to be held down. 
+These keystrokes are sent to VoiceAttack's "Quick Input" command.
+- Keypresses that include modifiers like \[CTRL\], \[RSHIFT\], \[LWIN\], or \[ALT\] or that use 
+"special" keys like \[NUMENTER\] (anything in brackets) must only include
+a **SINGLE** non-modifier keystroke.  Multiple keystrokes will **NOT** work as expected. 
+So, `[ "[LSHIFT][LALT]r" ]` works, but `[ "[LALT]rrr" ]` does not. 
+These strings are passed to VoiceAttack's "Variable Input" command. 
+
+A silly example would be if you ran the below *menuShow* with an empty Notepad active.  
+It would type *Hello* then make the text larger and smaller before saying *bye*.
+
+`"menuShow": [ "[SHIFT]H", "ello", "[LCTRL]=", "[RCTRL]=", "[CTRL]-", "[CTRL]-", "[LCTRL]A", "bye" ],`
+
 
 PHRASES TO SELECT MENU ITEMS:
 
