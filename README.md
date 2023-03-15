@@ -247,8 +247,10 @@ Schema JSON: **Tanrr.VAPlugin.Radio.Schema.json**
 
 KEYSTROKES TO SHOW EACH MENU:
 
-*showMenu* is an array of (possibly) multiple strings that contain 
-the keystrokes to bring up a menu.  It's flexible but has some restrictions.  
+*menuShow* is an array of (possibly) multiple strings that contain 
+the keystrokes to bring up a menu.  The list of keystrokes is sent to 
+the command *"JBMS Press Key Combo List"* in the VA profile. 
+This gives good flexibility but has some restrictions.  
 
 - Multiple keypresses without modifiers or special keys can in a single string like 
 `"menuShow": [ "rrrrrrr" ],` but can **NOT** include capital letters
@@ -290,9 +292,11 @@ and *"3"* are used as prefix *menuTargets*.
 KEYSTROKES FOR MENU ITEMS:
 
 *MenuItemExecute* (2nd text field in each array within *menuItems*) are 
-normally set to the keystrokes to press when that menu item is chosen. 
-These keys will be passed to the the VA profile *"JBMS Press Keys"* 
-command which will simulate the keypresses. 
+normally set to the keystroke(s) to press when that menu item is chosen. 
+These keys will be passed to the the VA profile *"JBMS Press Key Combo List"* 
+command and are handled like a single string of the *menuShow* field. 
+This means you can have multiple simple non-shifted keys like *"aaa"* 
+or a single keystroke or special key with modifiers, like *"[LCTRL]a"*. 
 (Unless they match a VA command as described later.) 
 
 You can change the *"JBMS Press Keys"* command in the VA profile by 

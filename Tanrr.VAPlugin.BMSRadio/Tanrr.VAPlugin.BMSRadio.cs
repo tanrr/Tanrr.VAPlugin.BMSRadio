@@ -64,8 +64,6 @@ namespace Tanrr.VAPlugin.BMSRadio
         // VoiceAttack command phrases to execute from plugin
         protected const string CmdJBMS_WaitForMenuResponse = "JBMS Wait For Menu Response";
         protected const string CmdJBMS_CloseMenu = "JBMS Close Menu";
-        protected const string CmdJBMS_PressKeys = "JBMS Press Keys";
-        protected const string CmdJBMS_PressKeyCombo = "JBMS Press Key Combo";
         protected const string CmdJBMS_PressKeyComboList = "JBMS Press Key Combo List";
         protected const string CmdJBMS_KillWaitForMenuResponse = "JBMS Kill Command Wait For Menu Response";
 
@@ -473,15 +471,14 @@ namespace Tanrr.VAPlugin.BMSRadio
             return false;
         }
 
-        protected static bool PressKeysOnly(dynamic vaProxy, string keysToPress, bool waitForReturn, bool asSubCommand = true)
+        protected static bool PressKeyComboSingle(dynamic vaProxy, string keyComboSingle, bool waitForReturn, bool asSubCommand = true)
         {
-            // Sends the passed keysToPress string to VA to press those keys in sequence
+            // Like PressKeyComboList, but for a single unquoted string that is not comma delimited - can handle modifiers or multiple keys but not both
             // TODO: May need to change this to handle Unicode or language variations
             // TODO: May need to change this to allow keys with modifiers to be sent: ie LCTRL+LSHIFT+T followed by CMD+C etc.
-            if (!string.IsNullOrEmpty(keysToPress))
+            if (!string.IsNullOrEmpty(keyComboSingle))
             {
-                // Tell VA to press the chars in cmdOrKeys
-                vaProxy.Command.Execute(CmdJBMS_PressKeys, WaitForReturn: waitForReturn, AsSubcommand: asSubCommand, PassedText: $@"""{keysToPress}""");
+                vaProxy.Command.Execute(CmdJBMS_PressKeyComboList, WaitForReturn: waitForReturn, AsSubcommand: asSubCommand, PassedText: $@"""{keyComboSingle}""");
                 return true;
             }
             return false;
@@ -489,7 +486,7 @@ namespace Tanrr.VAPlugin.BMSRadio
 
         protected static bool PressKeyComboList(dynamic vaProxy, string keyComboList, bool waitForReturn, bool asSubCommand = true)
         {
-            // Sends the passed keyComboToPress string to VA to press those keys in sequence
+            // Sends the passed keyComboList (semicolon delimited quoated strings) to VA to press those keys in sequence
             // TODO: May need to change this to handle Unicode or language variations
             // TODO: May need to change this to allow keys with modifiers to be sent: ie LCTRL+LSHIFT+T followed by CMD+C etc.
             if (!string.IsNullOrEmpty(keyComboList))
@@ -508,7 +505,7 @@ namespace Tanrr.VAPlugin.BMSRadio
             if (vaProxy.CommandExists(cmdOrKeys))
             {   return ExecuteCmdOnly(vaProxy, cmdOrKeys, waitForReturn, asSubCommand);   }
             else
-            {   return PressKeysOnly(vaProxy, cmdOrKeys, waitForReturn, asSubCommand);    }
+            {   return PressKeyComboSingle(vaProxy, cmdOrKeys, waitForReturn, asSubCommand);    }
         }
 
         protected static void ResetListMenus(dynamic vaProxy)
