@@ -1,6 +1,6 @@
 # Jeeves BMS Radio Menus (Tanrr.VAPlugin.BMSRadio) 
 
-v0.1.3  (tested with Falcon BMS 4.37.2 - for BMS 4.37.1 use plugin v0.1.2)
+v0.1.4  (tested with Falcon BMS 4.37.2 - for BMS 4.37.1 use plugin v0.1.2)
 
 Jeeves BMS Radio Menus is a simple but powerful plugin for VoiceAttack 
 to work with Falcon BMS radio menus. 
