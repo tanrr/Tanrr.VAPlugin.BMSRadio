@@ -147,9 +147,6 @@ The relevant sections are:
   Y for Tanker/JTAC).  If you have changed these shortcuts you should 
   edit the JSON to use your shortcuts.
 - Plugin's JSON files must be in UTF-8 format and DO NOT support UNICODE
-- menuItemExecute strings currently only support visible characters, 
-  do not support modifiers such as SHIFT, CTRL, or ALT, 
-  and do not support numpad characters. Support may be added to later versions.
 - This plugin manages asynchronous states without calling into the BMS 
   code, and without locking data used by VoiceAttack (though it shares
   state variables with the VA profile).  
