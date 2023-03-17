@@ -1,6 +1,6 @@
 [
 	{
-		"verPluginJSON": "v0.1.4",
+		"verPluginJSON": "v0.1.5",
 		"verBMSJSON": "4.37.2",
 		"userField": "User can update this field with their own notes"
 	},

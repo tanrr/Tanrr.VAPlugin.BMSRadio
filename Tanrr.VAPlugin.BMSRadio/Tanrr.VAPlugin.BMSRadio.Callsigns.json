@@ -1,0 +1,56 @@
+{
+	"version": {
+		"verPluginJSON": "v0.1.5",
+		"verBMSJSON": "4.37.2"
+	},
+	"flightInfo": {
+		"callsignFlight": "Viper",
+		"numberFlight": "1",
+		"posInFlight": "1"
+	},
+
+	"awacsNames": [ "Darkstar;Magic;Overlord;Sentry" ],
+
+	"tankerNames": [ "Arco;Camel;Canteen;Shell;Texaco" ],
+
+	"jtacNames": [ "Axeman;Badger;Darknight;Eyeball;Finger;Hammer;Whiplash" ],
+
+	"pilotNames": [
+		"Amber;Angel;Argos;Avenger", 
+		"Banshee;Barrel;Bat;Beast;Bison;Blackhawk;Blackjack;Blade;Blazer;Blood;Bluebell;Bone;Boxer;Bronco;Buckskin",
+		"Buff;Bug;Bull;Bulldog;Buzzard;Buzzsaw",
+		"Caddy;Cajun;Charger;Checker;Cheetah;Chowder;Claw;Cobra;Copper;Cougar;Cowboy;Crimson;Cucumber;Cyborg", 
+		"Dart;Devil;Diamond;Dipper;Dog;Dolphin;Domino;Doom;Dragnet;Dragon", 
+		"Eagle;Elvis", 
+		"Falcon;Fenwick;Fiend;Fist;Fury", 
+		"Gamble;Garbo;Gator;Gauntlet;Gazelle;Ghost;Glass;Goblin;Gunhog;Gypsy", 
+		"Hammer;Harrier;Hawk;Hawkeye;Hobby;Hog;Hopper;Hornet;Hostage;Hunter;Intruder", 
+		"Jackal;Jaguar;Jolly;Jumbo;Knight", 
+		"Lancer;Lightning;Lion;Lobo;Lynx", 
+		"Mack;Magnet;Mako;Mauler;Mirage;Mohawk;Mongo;Mudhen;Mustang", 
+		"Nighthawk;Nightmare;Nightwing;Nimrod", 
+		"Panther;Phantom;Plasma;Poacher;Puma;Python", 
+		"Rafale;Ragdoll;Ramrod;Rapier;Raven;Redtail;Redwolf;Rider;Roach;Rocket;Rooster;Rumble", 
+		"Satan;Sawbuck;Scout;Screwbird;Serpent;Shark;Sherpa;Skyhawk;Slick;Smoke;Snake;Spade;Sparky;Spartan;Spirit",
+		"Stallion;Sting;Stingray;Stonecat;Stud", 
+		"Talon;Tempest;Thunder;Tiger;Tomcat;Tornado;Tracker;Trojan;Troll;Turkey", 
+		"Vandal;Vapor;Venus;Viper;Viking;Voodoo;Vulture", 
+		"Wagon;Warhawk;Warhog;Weasel;Wildcat", 
+		"Zipper"
+	],
+
+	"theatersTEMP": [
+		{
+			"map": "korea",
+			"names": [ "kutaisi", "brinder", "foo" ]
+		},
+		{
+			"map": "balkans",
+			"names": [ "nellis", "Krycheck" ]
+		},
+		{
+			"map": "israel",
+			"names": [ "nellis", "Krycheck" ]
+		}
+	]
+}

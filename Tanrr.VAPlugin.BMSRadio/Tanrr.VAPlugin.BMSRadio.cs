@@ -33,9 +33,11 @@ namespace Tanrr.VAPlugin.BMSRadio
     {
         // Jeeves BMS Radio VoiceAttack Plugin
 
-        protected static string s_version = "v0.1.4";
-        protected static string s_verPluginJSON = "";
-        protected static string s_verBMSJSON = "";
+        protected static string s_version = "v0.1.5";
+        protected static string s_verPluginJSON = string.Empty;
+        protected static string s_verBMSJSON = string.Empty;
+        protected static string s_csVerPluginJSON = string.Empty;
+        protected static string s_csVerBMSJSON = string.Empty;
         protected static Dictionary<string, MenuBMS> s_menusAll = null;       // Dictionary containing all BMS radio menus
         protected static Dictionary<string, DirCmdInfo> s_DirCmdMap = null;   // Map of direct command items to specific menus+items
 
@@ -59,20 +61,44 @@ namespace Tanrr.VAPlugin.BMSRadio
         protected const string JBMSI_ListingMenus = ">JBMSI_LISTING_MENUS"; // Boolean set while listing multiple menus
         protected const string JBMSI_MenuUp = ">JBMSI_MENU_UP";             // Boolean set while menu is displayed and waiting for menu response
         protected const string JBMSI_Version = ">JBMSI_VERSION";            // Plugin Version
+
+
+        protected const string JBMSI_CallsignsAWACS = ">>JBMSI_CALLSIGNS_AWACS";    // Possible AWACS Callsigns (no numbers)
+        protected const string JBMSI_CallsignsJTAC =  ">>JBMSI_CALLSIGNS_JTAC";     // Possible JTAC callsigns (no numbers)
+        protected const string JBMSI_CallsignsTankers=">>JBMSI_CALLSIGNS_TANKERS";  // Possible TANKER callsigns (no numbers)
+
+        protected const string JBMSI_Callsign =       ">>JBMSI_CALLSIGN";           // Current callsign user has registered
+        protected const string JBMSI_CallsignNum =    ">>JBMSI_CALLSIGN_NUM";       // Current callsign flight number (not position in flight) - can be empty
+        protected const string JBMSI_CallsignPos =    ">>JBMSI_CALLSIGN_POS";       // Current callsign position in flight (1-4) - can be empty
+        protected const string JBMSI_CSMatch =        ">>JBMSI_CS_MATCH";           // Phrase matching callsign with optional flight #: "[Fiend;Fiend 3]"
+        protected const string JBMSI_CSMatchEmptyOK = ">>JBMSI_CS_MATCH_EMPTY_OK";  // Same as CSMatch, but allows matching nothing: "[Fiend;Fiend 3;]"
+
+
+        protected const string JBMSI_CallsignList =   ">>JBMSI_CALLSIGN_LIST"; // Semicolon delimited list of all pilot callsigns we're allowed to match
+        protected const string JBMSI_CallsignsLoaded= ">>JBMSI_CALLSIGNS_LOADED"; // Boolean set after plugin loads callsigns from files
+        protected const string JBMSI_CallsignsInited= ">>JBMSI_CALLSIGNS_INITED"; // Boolean set AFTER profile RE-init refreshes command phrases using >>JBMSI_CALLSIGN or >>JBMSI_CALLSIGN_LIST
+  
         protected const string JBMSI_Inited = ">>JBMSI_INITED";             // Plugin initialized - stays set when switching profiles, unset when VA quits
+
 
         // VoiceAttack command phrases to execute from plugin
         protected const string CmdJBMS_WaitForMenuResponse = "JBMS Wait For Menu Response";
         protected const string CmdJBMS_CloseMenu = "JBMS Close Menu";
         protected const string CmdJBMS_PressKeyComboList = "JBMS Press Key Combo List";
         protected const string CmdJBMS_KillWaitForMenuResponse = "JBMS Kill Command Wait For Menu Response";
+        protected const string CmdJBMS_SetCallsign = "JBMS Set Callsign";
 
         protected const string JBMS_MenuTimeout = "_JBMS_MENU_TIMEOUT";     // Possible JBMSI_MenuResponse;
 
         // TODO - Forcing string comps to ignore case till decide lowercase vs mixed
-        protected const StringComparison s_strComp = StringComparison.OrdinalIgnoreCase;    
+        protected const StringComparison s_strComp = StringComparison.OrdinalIgnoreCase;
 
-        public static string VA_DisplayName()
+        protected static string s_awacsNames = string.Empty;   
+        protected static string s_tankerNames = string.Empty;  
+        protected static string s_jtacNames = string.Empty;    
+        protected static string s_pilotCallsignsQuery = string.Empty;
+
+    public static string VA_DisplayName()
             => $"Jeeves BMS Radio Plugin for VoiceAttack {s_version} Beta";  // Displayed in VA dropdowns and log
 
         public static string VA_DisplayInfo()
@@ -177,6 +203,250 @@ namespace Tanrr.VAPlugin.BMSRadio
             return true;
         }
 
+        protected static bool ValidateVersion(dynamic vaProxy, JObject versionInfo, string loadType, out string verPlugin, out string verBMS)
+        {
+            verPlugin = string.Empty;
+            verBMS = string.Empty;
+
+            if (string.IsNullOrEmpty(loadType) || versionInfo == null )
+            {
+                Logger.Error(vaProxy, "Failed to load version information from JSON");
+                return false; 
+            }
+
+            try
+            {
+                verPlugin = (string)versionInfo["verPluginJSON"];
+                verBMS = (string)versionInfo["verBMSJSON"];
+                if (string.IsNullOrEmpty(verPlugin) || string.IsNullOrEmpty(verBMS))
+                {
+                    verPlugin = verBMS = string.Empty;
+                    Logger.Error(vaProxy, $"Failed to load version information from {loadType} JSON");
+                    return false;
+                }
+                Logger.JsonWrite(vaProxy, $"Loading JSON {loadType} file for plugin version {verPlugin} and BMS version {verBMS}");
+                if (!s_version.Equals(verPlugin))
+                { Logger.Warning(vaProxy, $"Plugin version {s_version} does not match {loadType} JSON version {verPlugin}"); }
+            }
+            catch (Exception e)
+            {
+                Logger.Error(vaProxy, $"Failed to load version information from {loadType} JSON - Exception thrown");
+                Logger.Error(vaProxy, e.Message);
+                return false;
+            }
+            return true;
+        }
+
+        // Convert JArray of string phrases, that must be in form "phrase1;phrase2;;phrase with spaces;foo" 
+        // with phrase NOT including beginning or ending semicolons, or double semicolons - spaces allowed if specified
+        // Puts pieces together separated by semicolons - does not add semicolons to the end
+        protected static bool BuildMatchingPhraseFromJArrayPhrases(dynamic vaProxy, JArray phrases, bool spacesAllowed, out string builtMatchPhrase)
+        {
+            builtMatchPhrase = string.Empty;
+            if (phrases == null || phrases.Count <= 0 )
+            { return false; }
+
+            for (int i = 0; i < phrases.Count; i++)
+            {
+                string phrase = phrases[i].ToString();
+                if (phrase == null)
+                {
+                    Logger.Error(vaProxy, "Error building matching phrase lists");
+                    return false;
+                }
+                else if (phrase == string.Empty)
+                { continue; /* empty allowed - just doesn't do anything */ }
+                else
+                {
+                    bool valid = true;
+                    // Validate
+                    if (phrase.Contains(";;"))
+                    {
+                        Logger.Error(vaProxy, "Double semicolon ;; not allowed in matching phrases");
+                        valid = false;
+                    }
+                    if (phrase.StartsWith(";"))
+                    {
+                        Logger.Error(vaProxy, "Beginning semicolon ; not allowed in matching phrases");
+                        valid = false;
+                    }
+                    if (phrase.EndsWith(";"))
+                    {
+                        Logger.Error(vaProxy, "Ending semicolon ; not allowed in matching phrases");
+                        valid = false;
+                    }
+                    if (!spacesAllowed && phrase.Contains(" "))
+                    {
+                        Logger.Error(vaProxy, "Spaces not allowed in specific phrases");
+                        valid = false;
+                    }
+                    if (!valid)
+                    {
+                        Logger.Error(vaProxy, $"Invalid phrase: {phrase}");
+                        return false;
+                    }
+                    // Should be good to go
+                    if (builtMatchPhrase.Length == 0)
+                    {   builtMatchPhrase += phrase; }
+                    else
+                    {   builtMatchPhrase += ";" + phrase; }
+
+                    continue;
+                }
+            }
+            return true;
+        }
+
+        protected static bool OneTimeCallsignLoad(dynamic vaProxy)
+        {
+            // LOAD OUR CALLSIGN INFO
+            // **DO NOT** set JBMSI_CALLSIGN_INITED - that should only be set by profile when it reinits to re-evaluate tokens in command phrases
+
+            if (GetNonNullBool(vaProxy, JBMSI_CallsignsLoaded))
+            {
+                Logger.Warning(vaProxy, "OneTimeCallsignLoad() called more than once - this should not happen");
+                // Just return success quietly since we should already be configured
+                return true;
+            }
+
+            // TODO - Separate out loading files into strings, parsing into JArray or JObject, and validating against schema - dupe of OneTimeLoad below
+
+            string appsDir = vaProxy.AppsDir;
+            if (string.IsNullOrEmpty(appsDir))
+            {
+                Logger.Error(vaProxy, "Invalid AppsDir - Cannot load menu info");
+                return false;
+            }
+            string csJsonPath = appsDir + "\\Tanrr.VAPlugin.BMSRadio\\Tanrr.VAPlugin.BMSRadio.Callsigns.json";
+            string csJsonSchemaPath = appsDir + "\\Tanrr.VAPlugin.BMSRadio\\Tanrr.VAPlugin.BMSRadio.Callsigns.Schema.json";
+            if (!ReadFileIntoString(vaProxy, csJsonPath, out string csJsonRead))
+            {
+                Logger.Error(vaProxy, "No json data read from " + csJsonPath);
+                return false;
+            }
+            if (!ReadFileIntoString(vaProxy, csJsonSchemaPath, out string csSchemaRead))
+            {
+                Logger.Error(vaProxy, "No schema data read from " + csJsonSchemaPath);
+                return false;
+            }
+
+            // Parse top level menu as array - If this fails, json isn't usable          
+            JObject csDeserialized = new JObject();
+            try
+            { csDeserialized = JObject.Parse(csJsonRead); }
+            catch
+            {
+                Logger.Error(vaProxy, "Failed to parse json " + csJsonPath + " to JObject");
+                return false;
+            }
+            if (Object.ReferenceEquals(csDeserialized, null))
+            {
+                Logger.Error(vaProxy, "Failed to parse json " + csJsonPath + " to JObject");
+                return false;
+            }
+
+            // Parse schema & verify menu json
+            JSchema csSchemaDeserialized = new JSchema();
+            try
+            { csSchemaDeserialized = JSchema.Parse(csSchemaRead); }
+            catch
+            {
+                Logger.Error(vaProxy, "Failed to parse schema " + csJsonSchemaPath);
+                return false;
+            }
+            if (Object.ReferenceEquals(csDeserialized, null))
+            {
+                Logger.Error(vaProxy, "Failed to parse schema " + csJsonSchemaPath);
+                return false;
+            }
+
+            IList<string> errorMsgs = new List<string>();
+            if (!csDeserialized.IsValid(csSchemaDeserialized, out errorMsgs) || csDeserialized.Count <= 1)
+            {
+                Logger.Error(vaProxy, "" + csJsonPath + " failed schema validation against " + csJsonSchemaPath + "or didn't contain menus");
+                if (errorMsgs != null)
+                {
+                    foreach (string msg in errorMsgs) { Logger.Error(vaProxy, "Schema Error: " + msg); }
+                }
+                return false;
+            }
+            Logger.JsonWrite(vaProxy, "Verified callsign JSON " + csJsonPath + "\n against JSON schema " + csJsonSchemaPath);
+
+            // Pull out the objects
+
+            // Verify and store version info from the JSON 
+            if (!ValidateVersion(vaProxy, (JObject)csDeserialized["version"], "callsign", out s_csVerPluginJSON, out s_csVerBMSJSON))
+            { return false; }
+
+            // Load flight info - callsign, number, position
+            try
+            {
+                JObject flightInfo = (JObject)csDeserialized["flightInfo"];
+                if (flightInfo != null)
+                {
+                    string callsignFlight = (string)flightInfo["callsignFlight"];
+                    string numberFlight = (string)flightInfo["numberFlight"];
+                    string posInFlight = (string)flightInfo["posInFlight"];
+                    if (string.IsNullOrEmpty(callsignFlight) || numberFlight == null || posInFlight == null)
+                    {
+                        Logger.Error(vaProxy, "Callsign JSON file doesn't have correct flightInfo section");
+                        return false;
+                    }
+                    vaProxy.SetText(JBMSI_Callsign, callsignFlight);
+                    if (numberFlight != string.Empty) { vaProxy.SetText(JBMSI_CallsignNum, numberFlight); }
+                    if (posInFlight != string.Empty) { vaProxy.SetText(JBMSI_CallsignPos, posInFlight); }
+                }
+                else
+                {
+                    Logger.Error(vaProxy, "Callsign JSON file doesn't contain flightInfo section");
+                    return false;
+                }
+
+                // Load all the other names/callsigns
+                // TODO - Add a duplicate checker for these - probably built into the BuildMatching
+                if ( !BuildMatchingPhraseFromJArrayPhrases(vaProxy, (JArray)csDeserialized["awacsNames"], spacesAllowed: false, builtMatchPhrase: out s_awacsNames) )
+                {   Logger.Error(vaProxy, "Failed to load AWACS callsigns from callsign JSON"); return false; }
+                if (!BuildMatchingPhraseFromJArrayPhrases(vaProxy, (JArray)csDeserialized["tankerNames"], spacesAllowed: false, builtMatchPhrase: out s_tankerNames))
+                {   Logger.Error(vaProxy, "Failed to load TANKER callsigns from callsign JSON"); return false; }
+                if (!BuildMatchingPhraseFromJArrayPhrases(vaProxy, (JArray)csDeserialized["jtacNames"], spacesAllowed: false, builtMatchPhrase: out s_jtacNames))
+                {   Logger.Error(vaProxy, "Failed to load JTAC callsigns from callsign JSON"); return false; }
+                if (!BuildMatchingPhraseFromJArrayPhrases(vaProxy, (JArray)csDeserialized["pilotNames"], spacesAllowed: false, builtMatchPhrase: out s_pilotCallsignsQuery))
+                { Logger.Error(vaProxy, "Failed to load PILOT callsigns from callsign JSON"); return false; }
+
+                // Target callsign groups can include duplicates callsigns from other target callsign groups
+                // For example, no JTAC callsign can match a TANKER callsign (or command phrases could have ambiguous matches)
+                // So check for duplicates between them
+                HashSet<string> phraseBucket = new HashSet<string>();
+                string csDupeTest = s_awacsNames + ";" + s_tankerNames + ";" + s_jtacNames;
+                // split string for delimiter char then check all odd-numbered entries (since it can't have a ';' at either end)
+                string [] phrasesSplit = csDupeTest.Split(';');
+                for (int iPhrase = 0; iPhrase < phrasesSplit.Length; iPhrase++)
+                {
+                    // Add all phrases as lower case since "Dupe" should match "dupe"
+                    if (iPhrase % 2 == 1 && !phraseBucket.Add(phrasesSplit[iPhrase].ToLowerInvariant()) )
+                    {
+                        Logger.Error(vaProxy, $"Duplicate callsign \"{phrasesSplit[iPhrase]}\" between AWACS, Tanker, and JTAC callsigns - ambiguous match - remove duplicate"); 
+                        return false;
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Logger.Error(vaProxy, "Exception working with callsign JSON file");
+                Logger.Error(vaProxy,e.Message);
+                return false;
+            }
+
+            vaProxy.SetText(JBMSI_CallsignList, s_pilotCallsignsQuery);
+            vaProxy.SetText(JBMSI_CallsignsAWACS, s_awacsNames);
+            vaProxy.SetText(JBMSI_CallsignsJTAC, s_jtacNames);
+            vaProxy.SetText(JBMSI_CallsignsTankers, s_tankerNames);
+
+            vaProxy.SetBoolean(JBMSI_CallsignsLoaded, true);
+
+            return true;
+        }
+
         protected static bool OneTimeMenuDataLoad(dynamic vaProxy)
         {
             if (GetNonNullBool(vaProxy, JBMSI_Inited))
@@ -203,7 +473,6 @@ namespace Tanrr.VAPlugin.BMSRadio
                 return false;
             }
 
-
             if ( !GetNonNullText(vaProxy, JBMSI_Version, out string versionProfile) )
             {
                 Logger.Error(vaProxy, "No version information available from VA Profile - Aborting load");
@@ -213,8 +482,8 @@ namespace Tanrr.VAPlugin.BMSRadio
             {   Logger.Warning(vaProxy, $"Plugin version {s_version} does not equal profile version {versionProfile}");   }
 
             // Look for our menu info json file and schema and load each into a string
-            string menuJsonPath = appsDir + "\\Tanrr.VAPlugin.BMSRadio\\Tanrr.VAPlugin.Radio.Menus.json";
-            string menuJsonSchemaPath = appsDir + "\\Tanrr.VAPlugin.BMSRadio\\Tanrr.VAPlugin.Radio.Schema.json";
+            string menuJsonPath = appsDir + "\\Tanrr.VAPlugin.BMSRadio\\Tanrr.VAPlugin.BMSRadio.Menus.json";
+            string menuJsonSchemaPath = appsDir + "\\Tanrr.VAPlugin.BMSRadio\\Tanrr.VAPlugin.BMSRadio.Menus.Schema.json";
             if (!ReadFileIntoString(vaProxy, menuJsonPath, out string menusJsonRead))
             {
                 Logger.Error(vaProxy, "No json data read from " + menuJsonPath);
@@ -265,44 +534,22 @@ namespace Tanrr.VAPlugin.BMSRadio
                 }
                 return false;
             }
-            Logger.Write(vaProxy, "Verified menu JSON against JSON schema" + menuJsonSchemaPath);
-            Logger.VerboseWrite(vaProxy, "Verified menu JSON " + menuJsonPath + "\n against JSON schema " + menuJsonSchemaPath);
+            Logger.JsonWrite(vaProxy, "Verified menu JSON " + menuJsonPath + "\n against JSON schema " + menuJsonSchemaPath);
 
-            // Load version info from the JSON
-            try
+            // Verify and store version info from the JSON 
+            if (!ValidateVersion(vaProxy, (JObject)menusDeserialized[0], "menus", out s_verPluginJSON, out s_verBMSJSON))
+            { return false; }
+            // Remove the first element of the JArray since it's not part of the menu
+            int cTest = menusDeserialized.Count;
+            menusDeserialized.RemoveAt(0);
+            if (cTest - 1 != menusDeserialized.Count)
             {
-                JObject versionInfo = (JObject)menusDeserialized.First();
-                if (versionInfo != null)
-                {
-                    s_verPluginJSON = (string)versionInfo["verPluginJSON"];
-                    s_verBMSJSON = (string)versionInfo["verBMSJSON"];
-                }
-                if (string.IsNullOrEmpty(s_verPluginJSON) || string.IsNullOrEmpty(s_verBMSJSON))
-                {
-                    s_verBMSJSON = s_verPluginJSON = string.Empty;
-                    Logger.Error(vaProxy, "Failed to load version information from JSON - possibly due to JSON from plugin ver 0.1.3 or earlier");
-                    return false;
-                }
-                // Remove the first element of the JArray since it's not part of the menu
-                int cTest = menusDeserialized.Count;
-                menusDeserialized.RemoveAt(0);
-                if (cTest - 1 != menusDeserialized.Count)
-                {
-                    Logger.Error(vaProxy, "Unexpected failure removing head item (ver info) from menusDeserialized");
-                    return false;
-                }
-                Logger.Write(vaProxy, $"Loading JSON menu file for plugin version {s_verPluginJSON} and BMS version {s_verBMSJSON}");
-                if (!s_version.Equals(s_verPluginJSON))
-                {   Logger.Warning(vaProxy, $"Plugin version {s_version} does not match JSON version {s_verPluginJSON}"); }
-            } 
-            catch (Exception e)
-            {
-                Logger.Error(vaProxy, "Failed to load version information from JSON - Exception thrown");
-                Logger.Error(vaProxy, e.Message);
+                Logger.Error(vaProxy, "Unexpected failure removing head item (ver info) from menusDeserialized");
                 return false;
             }
-            
-
+            Logger.JsonWrite(vaProxy, $"Loading JSON menu file for plugin version {s_verPluginJSON} and BMS version {s_verBMSJSON}");
+            if (!s_version.Equals(s_verPluginJSON))
+            {   Logger.Warning(vaProxy, $"Plugin version {s_version} does not match JSON version {s_verPluginJSON}"); }
 
             // Read through each menu and add details to our list
             s_menusAll = new Dictionary<string, MenuBMS>();
@@ -389,13 +636,19 @@ namespace Tanrr.VAPlugin.BMSRadio
                 }
             }
 
+            if (!OneTimeCallsignLoad(vaProxy))
+            {
+                Logger.Error(vaProxy, "Error loading callsign data");
+                return false;
+            }
+
             // Flag set while listing out possible menus to show user
             vaProxy.SetBoolean(JBMSI_ListingMenus, false);
 
             Logger.Write(vaProxy, "OneTimeMenuDataLoad completed successfully");
             vaProxy.SetBoolean(JBMSI_Inited, true);
             return true;
-         }
+         } // OneTimeMenuDataLoad()
 
 
         protected static MenuBMS GetMenuBMS(dynamic vaProxy, string menuFullID)
@@ -820,7 +1073,20 @@ namespace Tanrr.VAPlugin.BMSRadio
                     // ShowMenu will dismiss the current menu and kill the Wait For Menu Response handler
                     ShowMenu(vaProxy, menuUp: MenuUp, listingMenus: false);
                     break;
-                    
+
+                case "JBMS_SET_CALLSIGN":
+                    string callsign = vaProxy.Command.After();
+                    if (string.IsNullOrEmpty(callsign)) 
+                    {
+                        Logger.Warning(vaProxy, "JBMS_SET_CALLSIGN called without a suffix wildcard for callsign");
+                        return;
+                    }
+                    Logger.Write(vaProxy, $"Changing Callsign to: \"{callsign}\"");
+                    vaProxy.SetText( JBMSI_Callsign, callsign );
+                    // Note that changing callsign reloads profile so the callsign token can be re-evaluated into command phrases
+                    ExecuteCmdOnly(vaProxy, CmdJBMS_SetCallsign, waitForReturn: false, asSubCommand: true);
+                    break;
+
                 case "JBMS_LIST_MENUS":
                     // Will build a list of menus matching the users phrase and iterate through them, showing one at a time
                     // User can stop the listing while menus are up by:

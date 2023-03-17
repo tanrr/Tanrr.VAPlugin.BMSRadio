@@ -63,10 +63,16 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <None Include="packages.config" />
-    <Content Include="Tanrr.VAPlugin.Radio.Menus.json">
+    <Content Include="Tanrr.VAPlugin.BMSRadio.Menus.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Tanrr.VAPlugin.Radio.Schema.json">
+    <Content Include="Tanrr.VAPlugin.BMSRadio.Menus.Schema.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tanrr.VAPlugin.BMSRadio.Callsigns.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tanrr.VAPlugin.BMSRadio.Callsigns.Schema.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

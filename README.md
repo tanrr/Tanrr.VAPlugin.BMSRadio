@@ -1,6 +1,6 @@
 # Jeeves BMS Radio Menus (Tanrr.VAPlugin.BMSRadio) 
 
-v0.1.4  (tested with Falcon BMS 4.37.2 - for BMS 4.37.1 use plugin v0.1.2)
+v0.1.5  (tested with Falcon BMS 4.37.2 - for BMS 4.37.1 use plugin v0.1.2)
 
 Jeeves BMS Radio Menus is a simple but powerful plugin for VoiceAttack 
 to work with Falcon BMS radio menus. 
@@ -183,6 +183,8 @@ Changes to them could easily break the plugin.
 >JBMSI_LISTING_MENUS  INTERNAL, do not use
 >JBMSI_MENU_UP        INTERNAL, do not use
 >JBMSI_VERSION        INTERNAL, do not use
+>>JBMSI_CALLSIGN      INTERNAL, do not use
+>>JBMSI_CALLSIGN_SET  INTERNAL, do not use
 >>JBMSI_INITED        INTERNAL, do not use
 ```
 
@@ -296,8 +298,8 @@ This means you can have multiple simple non-shifted keys like *"aaa"*
 or a single keystroke or special key with modifiers, like *"[LCTRL]a"*. 
 (Unless they match a VA command as described later.) 
 
-You can change the *"JBMS Press Keys"* command in the VA profile by 
-adjusting the keypress and pause times.  Those times are set conservatively 
+You can change the *"JBMS Press Key Combo List"* command in the VA profile to 
+adjust keypress time and pause times.  Those times are set conservatively 
 long to work on all systems, so if you change the times make sure you 
 test that they work for busy multiplayer servers and your own system.
 
@@ -371,7 +373,8 @@ JSON file to have matching phrases.
 
 Though you can add your own commands directly to this JBMS Radio profile, 
 it is probably better to make your own separate profile and include it from this profile. 
-This can be done by editing the JBMS Radio profile, clicking OPTIONS, going to the *General* tab, and adding your profile to the *"Include Commands from Other Profiles" section. 
+This can be done by editing the JBMS Radio profile, clicking OPTIONS, going to 
+the *General* tab, and adding your profile to the *"Include Commands from Other Profiles" section. 
 
 Note that Voice Attack commands that call the *"Internal Reset Menu" command need 
 to have *"Allow Other Commands to Execute While This One is Running" checked.
