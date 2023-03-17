@@ -47,6 +47,12 @@
             { "type": "string" },
             { "maxLength": 10 }
           ]
+        },
+        "userField": {
+          "allOf": [
+            { "type": "string" },
+            { "maxLength": 250 }
+          ]
         }
       },
       "additionalProperties": false,

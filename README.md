@@ -1,6 +1,6 @@
 # Jeeves BMS Radio Menus (Tanrr.VAPlugin.BMSRadio) 
 
-v0.1.5  (tested with Falcon BMS 4.37.2 - for BMS 4.37.1 use plugin v0.1.2)
+v0.1.5 - tested with Falcon BMS 4.37.2 - (for BMS 4.37.1 use plugin v0.1.2)
 
 Jeeves BMS Radio Menus is a simple but powerful plugin for VoiceAttack 
 to work with Falcon BMS radio menus. 
@@ -9,16 +9,22 @@ It is a flexible solution with more features than simpler VA profiles,
 while being relatively fast and light weight.
 
 Users can easily call up radio menus by saying a menuTarget 
-such as "2" or "Flight" followed by an appropriate menuName, 
-such as "Combat 3."  The menu is displayed and the plugin 
-will listen for phrases that match the current menu's menu items.
-This lets users who are not familiar with the menus look through 
-them to make their choices, and will even warn them when 
-they ask for a menu that doesn't exist such as "Flight, Combat 3."
+such as *"2"* or *"Flight"* followed by an appropriate menuName, 
+such as *"Combat 3"*.  While the menu is displayed the plugin 
+listens for phrases that match its menu items.
+Thus users who are not familiar with the menus can look through 
+them to make their choices.
+
+Calls outside your flight are similar, but may not need the menu name. 
+For example, *"Tanker"* or *"Tower"* will just bring up the tanker or tower menu.
+
+As of v0.1.5 **you can now use over 150 callsigns for AWACS, tankers, JTAC and your own flight!** 
+Calls like *"Arco, Viper 2 - Request Flight Refueling"* just work. 
+You can change your own callsign on the fly by voice command.
 
 The system is designed for flexibility while remaining reasonably simple.
 It is easy to update JBMS to match updates to the game, 
-and to change the recognition phrases for menuTargets, menuNames, 
+to change the recognition phrases for menuTargets, menuNames, 
 and menuItems to work for you.  Additional ease of use features include 
 adding direct commands that don't leave menus up, as well as the ability 
 to have menu items call your own methods in the VoiceAttack profile. 
@@ -31,11 +37,11 @@ https://github.com/tanrr/Tanrr.VAPlugin.BMSRadio.
 
 ### **The extended functionality is what makes this useful:**
 
-- *All the menus and their data about key combinations are in a 
-human readable JSON file, so you can change any and all recognition 
-phrases. You can easily update the JSON to match changes to the 
-games menu items, or even add new menus as needed. 
-The VoiceAttack profile is relatively simple to modify to your needs.*
+- *Menus and their key combinations are in a human readable JSON file, 
+so you can change recognition phrases or keystrokes. 
+It's easy to update to match changes to menu items, 
+or add new menus as needed. 
+The VoiceAttack profile is relatively simple to modify.*
 
 - *Menu items can be configured to do keypresses or to call your 
 own named command in VA.* 
@@ -44,22 +50,36 @@ own named command in VA.*
 so you can add your own VA phrase to directly run that menu item 
 without waiting (say for "Bogey Dope").*
 
-- *Since the menuItem phrases in the JSON file are not 
-directly part of the VA profile, your profile command phrases 
-can duplicate menuItem phrases without a conflict. 
-For example, you can match the direct phrase "Attack My Target" 
+- *Your profile command phrases can duplicate menuItem phrases without a conflict. 
+For example, the VA profile can match the direct phrase "Attack My Target" 
 to execute the menu item for "Wingman, Combat Management 1" without 
-it causing problems for the "Attack My Target" menu items for Wingman, 
-Element, or Flight.*
+it causing problems for the "Attack My Target" menu items for Element or Flight.*
 
-- *A JSON schema is provided to validate the menu JSON file. 
-This is done automatically on program load, or you can manually 
-verify your changes match the schema as you edit the menu file by 
+- *MULTIPLE CALLSIGNS for pilots, AWACS, JTAC, and tankers are included 
+in a human readable JSON file. Any AWACS, JTAC, or tanker callsign will 
+match automatically, though you can still just say "Tanker" or "JTAC". 
+The default pilot callsign, flight number, and position in flight is set 
+and will be matched, but is not required.  **You can change your callsign, 
+flight number, and position on the fly by voice** picking from the list of
+valid callsigns. An example of use is below:*
+```
+    Arco, Viper 1 - Request Flight Refueling
+    Update Callsign Hunter 6
+        <<Say your flight position in Hunter 6 or say 'Skip'>>
+    Three
+        <<New Callsign Hunter 6 3, Reinitializing Profile>>
+    Tower, Hunter 6 3 - Emergency!
+    Axeman, Hunter 6 - Check In
+```
+
+- *JSON schemas are provided to validate the menu and callsign JSON files. 
+This is done automatically on program load.  A better option, though,
+is to manually verify your changes against the schema as you edit by 
 using a JSON schema validator like https://jsonmate.com/.*
 
 - *When the plugin loads the menu JSON it will check your phrases 
 to make sure you haven't generated duplicate or empty phrases 
-within each menu.*
+within each menu.  The callsign JSON is similarly checked.*
 
 - *To help learn the menus, ask the plugin to list menus by target or name.
 "List Wingman Combat Menus", "List ATC Menus", "List All Formation Menus", etc. 
@@ -71,6 +91,8 @@ The amount of time each menu is displayed when listing menus is adjustable in th
 "Push [Uniform;Victor] [1..20]" are included, to allow you to 
 quickly change between UHF and VHF presets.  You can also say 
 "Press [0..9]" to generate a keystroke for a number, or "Press Escape."*
+
+- *Logging levels can be set on the fly by voice with "Enable/Disable Menu/JSON/Struct/Verbose Logging"*
 
 ## **INSTALLATION**:
 
@@ -122,9 +144,7 @@ The relevant sections are:
 
 - 1.1 AIRBASE COMM PLAN: (ATC) Just after the 1.1.7 Contingencies section
 - 2.1.2 Your AI Wingmen/Element/Flight: The Wingman/Element & Flight radio menu
-- 2.2.1 Tactical Net: (AWACS)
-- 2.2.2 Tanker
-- 2.2.3 JTAC
+- 2.2.1 Tactical Net: (AWACS) ; - * 2.2.2 Tanker ; - * 2.2.3 JTAC
 
 ### Limitations
 
@@ -132,21 +152,21 @@ The relevant sections are:
   For newer versions of BMS, or if you have modified the menu 
   by changing the BMS **Data/Art/CkptArt/menu.dat** file, 
   update the JSON file to match your changes.
-- BMS menus, when disimissed, will briefly display the first menu 
-  for their group before closing.  ("Combat 1" if you were looking at "Formation 1"). 
-  This appears to be a BMS bug.
+- No callsigns for ATC/airports. A future possibility. 
+- No numbered callsigns are allowed (yet) for JTACs, AWACS, or tankers.
+- BMS menus, when disimissed, briefly display the first menu 
+  for their group before closing. This appears to be a BMS bug.
 - Plugin does not (yet) support comms menus being disabled with g_bDisableCommsMenu 1,
   nor does it support switching off the comms menu with the new chatline dot command 
   **".commsmenu 0"**.  Support may be added later.
-- Plugin and VA profile currently do not verify that BMS is the active window. 
-  If you are typing (or speaking with the speech recognition button down) this 
-  could cause invalid input.  This is planned to be changed in later versions to only
-  send keystrokes to BMS or to ignore input if BMS is not the active window.
+- Plugin and VA profile do not verify that BMS is the active window. 
+  Typing, or speaking with PTT button down, without BMS active 
+  could cause invalid input. This is planned to be handled better in later versions.
 - Plugin uses the default keys for BMS menus 
   (T for ATC; W/E/R for Wingman/Element/Flight, Q for AWACS, 
   Y for Tanker/JTAC).  If you have changed these shortcuts you should 
   edit the JSON to use your shortcuts.
-- Plugin's JSON files must be in UTF-8 format and DO NOT support UNICODE
+- Plugin's JSON files DO NOT support UNICODE
 - This plugin manages asynchronous states without calling into the BMS 
   code, and without locking data used by VoiceAttack (though it shares
   state variables with the VA profile).  
@@ -156,17 +176,18 @@ The relevant sections are:
 
 ### VoiceAttack Variables
 
-**\>JBMS** variables can be changed by the VA profile, 
+**\>JBMS** variables can be changed by the VA profile **CAREFULLY**, 
 but should only be used in the same way (to pass info to the plugin, 
-or check return states from the plugin).  
-Feel free to set the Boolean **_LOG** variables 
-(initialized in VA command *"JBMS Initial Load Init"*) to true 
-for additional logging, with slightly slower performance.
+or check return states from the plugin). 
+You can set the Boolean **_LOG** variables 
+(initialized in *"JBMS Initial Load Init"*) to true 
+for additional logging, or you can enable/disable them by voice.
 
 **\>JBMSI** internal variables should NOT be changed by the VA profile, 
-EXCEPT for the provided methods provided that use them. 
+**EXCEPT** for the provided methods provided that use them. 
 Changes to them could easily break the plugin.
 
+A partial list of variables:
 ```
 \>JBMS_JSON_LOG       Boolean for logging of JSON parsing
 \>JBMS_MENU_LOG       Boolean for logging of menu items (shows list of menu items in log)
@@ -180,17 +201,13 @@ Changes to them could easily break the plugin.
 >JBMSI_NO_SUCH_MENU   READ-ONLY - (Checked & set only by "JBMS Radio Menu Show" command)
 >JBMSI_MENU_RESPONSE  READ-ONLY - (Checked & set only by "JBMS Wait For Menu Response" command)
 
->JBMSI_LISTING_MENUS  INTERNAL, do not use
->JBMSI_MENU_UP        INTERNAL, do not use
->JBMSI_VERSION        INTERNAL, do not use
->>JBMSI_CALLSIGN      INTERNAL, do not use
->>JBMSI_CALLSIGN_SET  INTERNAL, do not use
->>JBMSI_INITED        INTERNAL, do not use
+>>JBMSI_CS_MATCH"           READ-ONLY - (Phrase matching callsign with optional flight #: "[Fiend;Fiend 3]")
+>>JBMSI_CS_MATCH_EMPTY_OK"  READ-ONLY;  (Allows matching callsign or nothing: "[Fiend;Fiend 3;]"
 ```
 
 ### JSON FORMAT:
 
-The JSON menu file **Tanrr.VAPlugin.Radio.Menus.json** is a top level 
+The JSON menu file **Tanrr.VAPlugin.BMSRadio.Menus.json** is a top level 
 array of menus. Each menu has the format shown below.
 
 **EXAMPLE JSON MENU:**
@@ -233,16 +250,31 @@ array of menus. Each menu has the format shown below.
   If you update the phrases in the VA profile, please update the matching 
   phrases in the JSON and vs. vs.
 
-**WORKING WITH MENU JSON and VOICEATTACK PROFILE:**
+**CALLSIGN JSON:** 
+The callsign JSON holds arrays of strings for AWACS, Tanker, JTAC, and pilot callsigns. 
+Just follow the format of the config file. Strings containing multiple callsigns 
+(no numbers or spaces allowed) are delimited by semicolons.  No semicolons allowed 
+at beginning or end of strings and no double semicolons. 
+Callsigns should not be duplicated between any groups. 
 
-The menu JSON menu file and schema file should have been installed to 
+Put your desired default callsignFlight, numberFlight, and posInFlight in the "flightInfo" section. 
+"callsignFlight" can not be an empty string nor can it contain spaces or semicolons. 
+numberFlight and PosInFlight can be empty strings, or can be a string holding a single digit, 
+1-9 for number and 1-4 for position.
+You can change all these on the fly with a voice command "Update Callsign Plasma 6" or similar.
+
+
+**EDITING JSON FILES:**
+
+The menu menu and callsign JSON and schema files are installed in 
 **..\VoiceAttack\Apps\Tanrr.VAPlugin.BMSRadio**. You can use an online 
-JSON schema validator, like https://jsonmate.com/ to validate the menu 
-JSON against the schema while you work on it.
+JSON schema validator, like https://jsonmate.com/ to validate changes you make to the 
+JSON menu/callsign files against their matching schema while you work on it.
 
-Menu JSON: **Tanrr.VAPlugin.Radio.Menus.json**
-
-Schema JSON: **Tanrr.VAPlugin.Radio.Schema.json**
+Menu JSON: **Tanrr.VAPlugin.BMSRadio.Menus.json**  
+Menu Schema JSON: **Tanrr.VAPlugin.BMSRadio.Menus.Schema.json**  
+Callsign JSON: **Tanrr.VAPlugin.BMSRadio.Callsigns.json**  
+Callsign Schema JSON: **Tanrr.VAPlugin.BMSRadio.Callsigns.Schema.json** 
 
 KEYSTROKES TO SHOW EACH MENU:
 
@@ -299,7 +331,8 @@ or a single keystroke or special key with modifiers, like *"[LCTRL]a"*.
 (Unless they match a VA command as described later.) 
 
 You can change the *"JBMS Press Key Combo List"* command in the VA profile to 
-adjust keypress time and pause times.  Those times are set conservatively 
+adjust keypress time and pause times - see the *"Press variable keys"* and *"Quick Input"* 
+calls within the command. Those times are set somewhat conservatively 
 long to work on all systems, so if you change the times make sure you 
 test that they work for busy multiplayer servers and your own system.
 
@@ -363,18 +396,15 @@ it is set in *"JBMS Wait For Menu Response"* command, within the
 Change it to whatever works for you.
 
 As mentioned earlier, you can change the timing for keypresses and pauses in the 
-*"JBMS Press Keys"* command.  Make sure you verify changes work for your system 
+*"JBMS Press Key Combo List"* command.  Make sure you verify changes work for your system 
 and the servers you play on.
-
-One word commands to bring up menus, such as "Tower" or "Tanker" have an 
-optional [Contact;] at the beginning of the phrase.  You can make that phrase 
-required by removing the brackets and the ';' if you like.  Please edit the 
-JSON file to have matching phrases.
 
 Though you can add your own commands directly to this JBMS Radio profile, 
 it is probably better to make your own separate profile and include it from this profile. 
 This can be done by editing the JBMS Radio profile, clicking OPTIONS, going to 
 the *General* tab, and adding your profile to the *"Include Commands from Other Profiles" section. 
+NOTE: This can strongly effect the accuracy of the VA profile by adding many or conflicting 
+commands, so make sure your additional profile is lightweight and does not include tons of commands.
 
 Note that Voice Attack commands that call the *"Internal Reset Menu" command need 
 to have *"Allow Other Commands to Execute While This One is Running" checked.
@@ -414,7 +444,7 @@ I have mine set very high, at 98, due to fan noise and a quiet voice.
    The minimum confidence level needed for a match. VA might recognize "Combat 1" 
    but have a low confidence because you didn't say it clearly. Run VA with "Show Confidence Level" enabled to see if how you should adjust this. I have mine at 35.
    
-   **NOTE 1:** This can also be set in a profiles options, or for a specific command.
+   **NOTE 1:** Minimum confidence level can also be set in a profiles options, or for a specific command
    
    **NOTE 2:** *"JBMS Wait For Menu Response"* VA Command specifically sets this very low, 
    as it is extremely likely, since you just called up a menu, that your next words will 
@@ -428,7 +458,7 @@ I have mine set very high, at 98, due to fan noise and a quiet voice.
 - Reject Pending Speech: OFF
 
 
-**MENUTARGET & MENUNAME ABBREVIATIONS (NOT REQUIRED BUT HELPFUL):**
+**MENUTARGET & MENUNAME ABBREVIATIONS USED FOR DIRECT COMMANDS (NOT REQUIRED BUT HELPFUL):**
 ```
 menuTarget abbreviations:
   W-ingman

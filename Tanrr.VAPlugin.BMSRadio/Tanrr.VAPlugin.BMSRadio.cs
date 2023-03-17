@@ -392,9 +392,42 @@ namespace Tanrr.VAPlugin.BMSRadio
                         Logger.Error(vaProxy, "Callsign JSON file doesn't have correct flightInfo section");
                         return false;
                     }
+                    if ( callsignFlight.Contains(";") || callsignFlight.Contains(" "))
+                    {
+                        Logger.Error(vaProxy, $"callsignFlight \"{callsignFlight}\" contains a semicolon or space which makes it invalid");
+                        return false;
+                    }
                     vaProxy.SetText(JBMSI_Callsign, callsignFlight);
-                    if (numberFlight != string.Empty) { vaProxy.SetText(JBMSI_CallsignNum, numberFlight); }
-                    if (posInFlight != string.Empty) { vaProxy.SetText(JBMSI_CallsignPos, posInFlight); }
+                    try
+                    {
+                        if (numberFlight != string.Empty)
+                        {
+                            int num = int.Parse(numberFlight);
+                            if (numberFlight.Length != 1 || num < 1 || num > 9)
+                            {
+                                Logger.Error(vaProxy, $"numbmerFlight \"{numberFlight}\" is not a valid string with a single digit 1-9");
+                                return false;
+                            }
+                            vaProxy.SetText(JBMSI_CallsignNum, numberFlight);
+                        }
+                        if (posInFlight != string.Empty)
+                        {
+                            int pos = int.Parse(posInFlight);
+                            if (numberFlight.Length != 1 || pos < 1 || pos > 4)
+                            {
+                                Logger.Error(vaProxy, $"posInFlight \"{posInFlight}\" is not a valid string with a single digit 1-4");
+                                return false;
+                            }
+                            vaProxy.SetText(JBMSI_CallsignPos, posInFlight);
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.Error(vaProxy, "Exception working with callsign JSON file");
+                        Logger.Error(vaProxy, e.Message);
+                        Logger.Error(vaProxy, "Callsign JSON file doesn't contain a valid numberFlight or posInFlight - they must be strings containing a single digit");
+                        return false;
+                    }
                 }
                 else
                 {
@@ -403,7 +436,6 @@ namespace Tanrr.VAPlugin.BMSRadio
                 }
 
                 // Load all the other names/callsigns
-                // TODO - Add a duplicate checker for these - probably built into the BuildMatching
                 if ( !BuildMatchingPhraseFromJArrayPhrases(vaProxy, (JArray)csDeserialized["awacsNames"], spacesAllowed: false, builtMatchPhrase: out s_awacsNames) )
                 {   Logger.Error(vaProxy, "Failed to load AWACS callsigns from callsign JSON"); return false; }
                 if (!BuildMatchingPhraseFromJArrayPhrases(vaProxy, (JArray)csDeserialized["tankerNames"], spacesAllowed: false, builtMatchPhrase: out s_tankerNames))
@@ -413,12 +445,12 @@ namespace Tanrr.VAPlugin.BMSRadio
                 if (!BuildMatchingPhraseFromJArrayPhrases(vaProxy, (JArray)csDeserialized["pilotNames"], spacesAllowed: false, builtMatchPhrase: out s_pilotCallsignsQuery))
                 { Logger.Error(vaProxy, "Failed to load PILOT callsigns from callsign JSON"); return false; }
 
-                // Target callsign groups can include duplicates callsigns from other target callsign groups
+                // Target callsign groups can't include duplicates callsigns from other target callsign groups
                 // For example, no JTAC callsign can match a TANKER callsign (or command phrases could have ambiguous matches)
                 // So check for duplicates between them
                 HashSet<string> phraseBucket = new HashSet<string>();
                 string csDupeTest = s_awacsNames + ";" + s_tankerNames + ";" + s_jtacNames;
-                // split string for delimiter char then check all odd-numbered entries (since it can't have a ';' at either end)
+                // split string for delimiter char then check all odd-numbered entries (since it won't have a ';' at either end)
                 string [] phrasesSplit = csDupeTest.Split(';');
                 for (int iPhrase = 0; iPhrase < phrasesSplit.Length; iPhrase++)
                 {
@@ -1061,10 +1093,6 @@ namespace Tanrr.VAPlugin.BMSRadio
                     break;
                 
                 case "JBMS_SHOW_MENU":
-                    // TEMP TEST TEMP TEST
-                    // PressKeyComboList(vaProxy, "\"Ok\";\"[LALT]F\";\"A\";\"?\"", waitForReturn: false);
-                    // break;
-
                     // If user asks for a different menu while listing menus, we need to cancel the listing first
                     if (GetNonNullBool(vaProxy, JBMSI_ListingMenus))
                     {
@@ -1072,19 +1100,6 @@ namespace Tanrr.VAPlugin.BMSRadio
                     }
                     // ShowMenu will dismiss the current menu and kill the Wait For Menu Response handler
                     ShowMenu(vaProxy, menuUp: MenuUp, listingMenus: false);
-                    break;
-
-                case "JBMS_SET_CALLSIGN":
-                    string callsign = vaProxy.Command.After();
-                    if (string.IsNullOrEmpty(callsign)) 
-                    {
-                        Logger.Warning(vaProxy, "JBMS_SET_CALLSIGN called without a suffix wildcard for callsign");
-                        return;
-                    }
-                    Logger.Write(vaProxy, $"Changing Callsign to: \"{callsign}\"");
-                    vaProxy.SetText( JBMSI_Callsign, callsign );
-                    // Note that changing callsign reloads profile so the callsign token can be re-evaluated into command phrases
-                    ExecuteCmdOnly(vaProxy, CmdJBMS_SetCallsign, waitForReturn: false, asSubCommand: true);
                     break;
 
                 case "JBMS_LIST_MENUS":

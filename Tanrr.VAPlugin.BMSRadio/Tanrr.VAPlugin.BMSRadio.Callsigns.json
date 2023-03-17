@@ -6,7 +6,8 @@
 	"flightInfo": {
 		"callsignFlight": "Viper",
 		"numberFlight": "1",
-		"posInFlight": "1"
+		"posInFlight": "1",
+		"userField": "User can update this field with their own notes"
 	},
 
 	"awacsNames": [ "Darkstar;Magic;Overlord;Sentry" ],
@@ -41,16 +42,16 @@
 
 	"theatersTEMP": [
 		{
-			"map": "korea",
-			"names": [ "kutaisi", "brinder", "foo" ]
+			"map": "Korea",
+			"names": [ "Kunsan", "Pyongtaek", "Sachon", "Taejon" ]
 		},
 		{
-			"map": "balkans",
-			"names": [ "nellis", "Krycheck" ]
+			"map": "Balkans",
+			"names": [ "Dubrovnik", "Split", "Zagreb" ]
 		},
 		{
-			"map": "israel",
-			"names": [ "nellis", "Krycheck" ]
+			"map": "Israel",
+			"names": [ "Ben Gurion", "Haifa", "Ramon" ]
 		}
 	]
 }
