@@ -77,7 +77,8 @@ namespace Tanrr.VAPlugin.BMSRadio
         protected const string JBMSI_CallsignList =   ">>JBMSI_CALLSIGN_LIST"; // Semicolon delimited list of all pilot callsigns we're allowed to match
         protected const string JBMSI_CallsignsLoaded= ">>JBMSI_CALLSIGNS_LOADED"; // Boolean set after plugin loads callsigns from files
         protected const string JBMSI_CallsignsInited= ">>JBMSI_CALLSIGNS_INITED"; // Boolean set AFTER profile RE-init refreshes command phrases using >>JBMSI_CALLSIGN or >>JBMSI_CALLSIGN_LIST
-  
+
+        protected const string JBMSI_Init_Error = ">>JBMSI_INIT_ERROR";     // Failure during init, Don't try to reload again
         protected const string JBMSI_Inited = ">>JBMSI_INITED";             // Plugin initialized - stays set when switching profiles, unset when VA quits
 
 
@@ -904,15 +905,22 @@ namespace Tanrr.VAPlugin.BMSRadio
         {
             // Main method VoiceAttack profile calls into, with vaProxy.Context set to the command to do
 
+            // Don't allow invoke if we failed during init already
+            if (GetNonNullBool(vaProxy, JBMSI_Init_Error))
+            {   return; }
+
             // Init if this is our first call
             if (!GetNonNullBool(vaProxy, JBMSI_Inited))
             {
                 try
                 {
                     OneTimeMenuDataLoad(vaProxy);
-                    // If we failed to init, it should already be logged, so just return
+                    // If we failed to init, it should already be logged, so set >>JBMSI_INIT_ERROR so profile won't keep trying to load us and return
                     if (!GetNonNullBool(vaProxy, JBMSI_Inited))
+                    {
+                        vaProxy.SetBoolean(JBMSI_Init_Error, true);
                         return;
+                    }
                 }
                 catch (Exception e)
                 {
@@ -923,6 +931,7 @@ namespace Tanrr.VAPlugin.BMSRadio
                     vaProxy.WriteToLog("JeevesBMSRadio: ERROR INIT: ", "Red");
                     vaProxy.WriteToLog("EXCEPTION: " + e.Message, "Red");
                     vaProxy.WriteToLog("JeevesBMSRadio: ERROR INIT: ", "Red");
+                    vaProxy.SetBoolean(JBMSI_Init_Error, true);
                     return;
                 }
             }
