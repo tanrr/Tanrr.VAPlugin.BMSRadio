@@ -1154,7 +1154,7 @@ namespace Tanrr.VAPlugin.BMSRadio
 
                         bool ExecOK = false;
                         // Now we know the specific menu and which menu item, so we can bring up the menu 
-                        ExecOK = ExecuteCmdOrKeys(vaProxy, menuForDC.MenuShow, waitForReturn: true);
+                        ExecOK = PressKeyComboList(vaProxy, menuForDC.MenuShow, /* waitForReturn */ true);
                         if (!ExecOK) 
                         {
                             Logger.Error(vaProxy, "JBMS_DIRECT_CMD for \"" + dirCmd + "\" failed to bring up associated menu");
