@@ -1,6 +1,6 @@
 # Jeeves BMS Radio Menus (Tanrr.VAPlugin.BMSRadio) 
 
-v0.1.5 - tested with Falcon BMS 4.37.2 - (for BMS 4.37.1 use plugin v0.1.2)
+v0.1.6 - tested with Falcon BMS 4.37.2 - (for BMS 4.37.1 use plugin v0.1.2)
 
 Jeeves BMS Radio Menus is a simple but powerful plugin for VoiceAttack 
 to work with Falcon BMS radio menus. 
@@ -57,19 +57,20 @@ it causing problems for the "Attack My Target" menu items for Element or Flight.
 
 - *MULTIPLE CALLSIGNS for pilots, AWACS, JTAC, and tankers are included 
 in a human readable JSON file. Any AWACS, JTAC, or tanker callsign will 
-match automatically, though you can still just say "Tanker" or "JTAC". 
+match automatically and can be used with numbers (but not position number), 
+though you can still just say "Tanker" or "JTAC". 
 The default pilot callsign, flight number, and position in flight is set 
-and will be matched, but is not required.  **You can change your callsign, 
+and will be matched, but is not required. **You can change your callsign, 
 flight number, and position on the fly by voice** picking from the list of
 valid callsigns. An example of use is below:*
 ```
-    Arco, Viper 1 - Request Flight Refueling
+    Arco 3, Viper 1 - Request Flight Refueling
     Update Callsign Hunter 6
         <<Say your flight position in Hunter 6 or say 'Skip'>>
     Three
         <<New Callsign Hunter 6 3, Reinitializing Profile>>
     Tower, Hunter 6 3 - Emergency!
-    Axeman, Hunter 6 - Check In
+    Axeman 2, Hunter 6 - Check In
 ```
 
 - *JSON schemas are provided to validate the menu and callsign JSON files. 
@@ -120,7 +121,10 @@ initialize with the newer version of the plugin
 under **..\VoiceAttack\Apps\Tanrr.VAPlugin.BMSRadio**.
 3. **IMPORTANT**: From the **Tanrr.VAPlugin.BMSRadio** folder, 
 **COPY** the **Newtonsoft.Json.dll** file into the 
-**..\VoiceAttack\Shared\Assemblies** folder.
+**..\VoiceAttack\Shared\Assemblies** folder.  
+If you have different versions of **Newtonsoft.Json.dll** installed, 
+you may need to also copy **VoiceAttac.exe.config** from the plugin 
+folder to the folder that **VoiceAttack.exe** is in.
 4. Launch VoiceAttack and import **Jeeves BMS Radio Menus Profile.vap**
 5. Shut down, then relaunch VoiceAttack, so the updated profile 
 can initialize the updated plugin
@@ -131,10 +135,30 @@ of F24 (hold to listen) for VoiceAttack. You will want to change
 the hotkeys to whatever keyboard keys or game controller buttons you use. 
 Hotkeys can be set globally (VoiceAttack Settings, Hotkeys) 
 or just for the profile (Edit Profile, Options, Profile Hotkeys).
+8. Optionally restrict plugin from generating keystrokes if BMS does not have focus. 
+See *Restricting Plugin when BMS Not Active*
 
 \*\* *See recommended VoiceAttack settings at the end of this document* \*\*
 
 ## DETAILS:
+
+### Restricting Plugin when BMS Not Active
+
+The plugin can listen for application focus changes so if you alt+tab away 
+from BMS it can stop sending keystrokes until BMS has focus again. To allow 
+the plugin to catch app focus changes, Select **"Enable Auto Profile Switching"** 
+in VoiceAttack Settings, General Tab and set **>JBMS_KEYS_ONLY_TO_BMS** to true 
+in *JBMS Initial Load Init* in VA profile. You will need to restart VoiceAttack
+after this for the plugin to get focus change events.
+
+You can change enable or disable the focus requirement with the voice command 
+*"Enable/Disable B M S Focus Only"*.
+
+Note that this isn't a perfect solution, but it should avoid most problems.
+If a menu was up, or you were listing menus, when you alt-tabbed away 
+the plugin will stop listening for menu items or iterating menus. 
+You can still say *"Press [0..9]"* to choose a menu item for a menu that is up, 
+or just say *"Cancel"* or *"Reset Menu"* to bring it down.
 
 ### BMS Menus
 
@@ -153,25 +177,22 @@ The relevant sections are:
   by changing the BMS **Data/Art/CkptArt/menu.dat** file, 
   update the JSON file to match your changes.
 - No callsigns for ATC/airports. A future possibility. 
-- No numbered callsigns are allowed (yet) for JTACs, AWACS, or tankers.
+- Though flight/unit numbers are supported for JTACs, AWACS and tankers, position numbers 
+  are not. *"Arco 2"* is okay but *"Arco 2-1"* is not.
 - BMS menus, when disimissed, briefly display the first menu 
   for their group before closing. This appears to be a BMS bug.
 - Plugin does not (yet) support comms menus being disabled with g_bDisableCommsMenu 1,
   nor does it support switching off the comms menu with the new chatline dot command 
   **".commsmenu 0"**.  Support may be added later.
-- Plugin and VA profile do not verify that BMS is the active window. 
-  Typing, or speaking with PTT button down, without BMS active 
-  could cause invalid input. This is planned to be handled better in later versions.
 - Plugin uses the default keys for BMS menus 
   (T for ATC; W/E/R for Wingman/Element/Flight, Q for AWACS, 
   Y for Tanker/JTAC).  If you have changed these shortcuts you should 
   edit the JSON to use your shortcuts.
 - Plugin's JSON files DO NOT support UNICODE
-- This plugin manages asynchronous states without calling into the BMS 
-  code, and without locking data used by VoiceAttack (though it shares
-  state variables with the VA profile).  
+- The plugin manages state without calling into BMS or locking data. 
+  It does not get instant notification of window focus changes. 
   This greatly simplifies the plugin, but it is possible for it to get out
-  of sync. If it is incorrectly displaying a menu, or listing menus 
+  of sync. If it is incorrectly displaying a menu, or listing menus, 
   just say *"Reset Menu"*, *"Cancel Menu*" or even just *"Press Escape"* to reset.
 
 ### VoiceAttack Variables
@@ -193,6 +214,9 @@ A partial list of variables:
 \>JBMS_MENU_LOG       Boolean for logging of menu items (shows list of menu items in log)
 \>JBMS_STRUCT_LOG     Boolean for logging of data structures manipulation
 \>JBMS_VERBOSE_LOG    Boolean for more verbose general logging
+
+\>JBMS_KEYS_ONLY_TO_BMS  User set boolean to restrict keystrokes if BMS does not have focus
+\>JBMSI_FOCUS_BMS        Boolean usually set to true if BMS has focus
 
 >JBMS_MENU_TGT	   ONLY to set menuTarget before calling plugin w/ context "JBMS_SHOW_MENU"
 >JBMS_MENU_NAME	   ONLY to set menuName before calling plugin w/ context "JBMS_SHOW_MENU"

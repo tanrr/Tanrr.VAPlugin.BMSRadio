@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using System.CodeDom;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +12,9 @@ using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
 using System.Runtime.CompilerServices;
 using System.Dynamic;
+using System.Runtime.InteropServices.ComTypes;
+using System.Text.RegularExpressions;
+using System.Runtime.InteropServices;
 
 
 namespace Tanrr.VAPlugin.BMSRadio
@@ -33,7 +37,7 @@ namespace Tanrr.VAPlugin.BMSRadio
     {
         // Jeeves BMS Radio VoiceAttack Plugin
 
-        protected static string s_version = "v0.1.5";
+        protected static string s_version = "v0.1.6";
         protected static string s_verPluginJSON = string.Empty;
         protected static string s_verBMSJSON = string.Empty;
         protected static string s_csVerPluginJSON = string.Empty;
@@ -83,11 +87,12 @@ namespace Tanrr.VAPlugin.BMSRadio
 
 
         // VoiceAttack command phrases to execute from plugin
-        protected const string CmdJBMS_WaitForMenuResponse = "JBMS Wait For Menu Response";
-        protected const string CmdJBMS_CloseMenu = "JBMS Close Menu";
-        protected const string CmdJBMS_PressKeyComboList = "JBMS Press Key Combo List";
-        protected const string CmdJBMS_KillWaitForMenuResponse = "JBMS Kill Command Wait For Menu Response";
-        protected const string CmdJBMS_SetCallsign = "JBMS Set Callsign";
+        protected const string CmdJBMS_WaitForMenuResponse =    "JBMS Wait For Menu Response";
+        protected const string CmdJBMS_CloseMenu =              "JBMS Close Menu";
+        protected const string CmdJBMS_CloseMenuAlwaysTgtBMS =  "JBMS Close Menu Always Target BMS";
+        protected const string CmdJBMS_PressKeyComboList =      "JBMS Press Key Combo List";
+        protected const string CmdJBMS_KillWaitForMenuResponse= "JBMS Kill Command Wait For Menu Response";
+        protected const string CmdJBMS_SetCallsign =            "JBMS Set Callsign";
 
         protected const string JBMS_MenuTimeout = "_JBMS_MENU_TIMEOUT";     // Possible JBMSI_MenuResponse;
 
@@ -99,7 +104,17 @@ namespace Tanrr.VAPlugin.BMSRadio
         protected static string s_jtacNames = string.Empty;    
         protected static string s_pilotCallsignsQuery = string.Empty;
 
-    public static string VA_DisplayName()
+        protected const string JBMS_KeysOnlyToBMS = ">JBMS_KEYS_ONLY_TO_BMS";    // User changeable value for whether keystrokes are not sent if Falcon BMS does not have focus
+        protected const string JBMSI_FocusBMS = ">JBMSI_FOCUS_BMS";                // Set to TRUE by event handlers or init when BMS has focus
+
+        protected const string JBMS_ProcNameFalconBMS = "Falcon BMS";
+        private static dynamic s_proxy = null;   // cached reference to the proxy object for event handlers
+
+        protected static Assembly s_assemblyJson = null;
+        protected static Assembly s_assemblyJsonSchema = null;
+
+
+        public static string VA_DisplayName()
             => $"Jeeves BMS Radio Plugin for VoiceAttack {s_version} Beta";  // Displayed in VA dropdowns and log
 
         public static string VA_DisplayInfo()
@@ -115,6 +130,12 @@ namespace Tanrr.VAPlugin.BMSRadio
             // which has a "Wait for Spoken Response" command (with a timeout) - VA will stop that command on its own
 
             // TODO - Revisit this if major code or logic changes happen to make sure it's still not needed
+
+            if (s_proxy != null)
+            {
+                // Stop any current LISTING of menus (resets static variables so iteration will stop)
+                ResetListMenusNOKEYS(s_proxy);
+            }
         }
 
         protected static bool GetNonNullBool(dynamic vaProxy, string propName)
@@ -143,7 +164,8 @@ namespace Tanrr.VAPlugin.BMSRadio
             return ((IsMenuUp == menuUp) && (!noErrorsAllowed || !HasErrors));
         }
 
-        protected static void ResetMenuState(dynamic vaProxy, bool onlyUpAndErrors = false, bool killWaitForMenu = true)
+        // Note that (per the method name) this method should NOT cause any keypresses, as it may be called when BMS does not have focus
+        protected static void ResetMenuStateNOKEYS(dynamic vaProxy, bool onlyUpAndErrors = false, bool killWaitForMenu = true)
         {
             // Resets our stored menu states, and cancels any pending Wait for Response in the VA profile
             // Clearing menu target and name can be overridden if needed
@@ -168,17 +190,69 @@ namespace Tanrr.VAPlugin.BMSRadio
 
         protected static void CloseMenu(dynamic vaProxy, bool pressEscape = true, bool onlyUpAndErrors = false)
         {
-            // Tell VA to execute close them menu with ESC, but NOT call back plugin with "JBMS_RESET_MENU_STATE"
+            // Tell VA to execute close the menu with ESC, but NOT call back plugin with "JBMS_RESET_MENU_STATE"
             if (pressEscape)
             {   vaProxy.Command.Execute(CmdJBMS_CloseMenu, WaitForReturn: true, AsSubcommand: true);    }
-            ResetMenuState(vaProxy, onlyUpAndErrors);
+            ResetMenuStateNOKEYS(vaProxy, onlyUpAndErrors);
         }
 
         public static void VA_Init1(dynamic vaProxy)
         {
             // Called once on VA load, and it is called asynchronously.
             // Since this is called BEFORE our profile loads and calls us, will should wait till we get hit with VA_Invoke1 to do our initialization
+            // But do cache the proxy and set up any event handlers here
+            s_proxy = vaProxy;
+            s_proxy.ApplicationFocusChanged += new Action<System.Diagnostics.Process, String>(AppFocusChanged);
         }
+
+        protected static void SafeCleanupWithoutFocus(dynamic vaProxy)
+        {
+            // Called only when BMS does NOT have focus, but previously might have had focus
+            // Can only do "safe" things like changing variables, not keypresses or similar
+
+            // If Listing Menus, reset the variables that keep us iterating through menus
+            if (GetNonNullBool(vaProxy, JBMSI_ListingMenus))
+            { ResetListMenusNOKEYS(vaProxy); }
+
+            // If we currently have a menu up, clean up what we can
+            if (GetNonNullBool(vaProxy, JBMSI_MenuUp))
+            {
+                // DON'T Send ESC to BMS since that could change focus during a focus change, causing this to be called again, etc.
+                // Just reset menu state and kill Wait for Menu Response Listening - not optimal as leaves the menu up, but ok
+                // NOTE: This doesn't appear to be safe to call (with killWaitForMenu) from the event handler
+                ResetMenuStateNOKEYS(vaProxy, onlyUpAndErrors: false, killWaitForMenu: true);
+            }
+        }
+
+        // Called up to 0.25 seconds AFTER there is a change of focus
+        protected static void AppFocusChanged(System.Diagnostics.Process pFocus, String windowTitle)
+        {
+            // Bail if no valid proxy, or no focus, or if we haven't finished being initialized
+            if (s_proxy == null || pFocus == null)
+            { return; }
+
+            string procActive = pFocus.ProcessName;
+            if (!string.IsNullOrEmpty(procActive))
+            {
+                bool prevActiveBMS = GetNonNullBool(s_proxy, JBMSI_FocusBMS);
+                bool curActiveBMS = procActive.Equals(JBMS_ProcNameFalconBMS, s_strComp);
+                s_proxy.SetBoolean(JBMSI_FocusBMS, curActiveBMS);
+
+                // TODO - Though only setting variables and stopping listen command, this can cause VA to hang
+                // So, don't do anything else here.  If we get invoked, we'll call SafeCleanup then
+                /*
+                // If we haven't been fully initialized, don't do anything with our member functions
+                if (!GetNonNullBool(s_proxy, JBMSI_Inited))
+                { return; }
+
+                if (prevActiveBMS && !curActiveBMS)
+                {
+                    SafeCleanupWithoutFocus(s_proxy);
+                }
+                */
+            }
+        }
+
 
         public static void VA_Exit1(dynamic vaProxy)
         {
@@ -297,6 +371,7 @@ namespace Tanrr.VAPlugin.BMSRadio
             }
             return true;
         }
+
 
         protected static bool OneTimeCallsignLoad(dynamic vaProxy)
         {
@@ -478,6 +553,29 @@ namespace Tanrr.VAPlugin.BMSRadio
             vaProxy.SetBoolean(JBMSI_CallsignsLoaded, true);
 
             return true;
+        } // OneTimeCallsignLoad()
+
+        protected static void ListNewtonsoftAssemblies(dynamic vaProxy, string note = null)
+        {
+            if (!string.IsNullOrEmpty(note))
+            {   vaProxy.WriteToLog(note, "Purple");}
+
+            // This should give us the actual assemblies loaded
+            Assembly[] loadedAssemblies = AppDomain.CurrentDomain.GetAssemblies();
+
+            if (loadedAssemblies == null) { return; }
+
+            for (int i=0; i<loadedAssemblies.Length; i++)
+            {
+                Assembly assembly = loadedAssemblies[i];
+
+                string assName = assembly.FullName;
+                if (assName.Contains("Newtonsoft"))
+                {
+                    string assPath = assembly.Location;
+                    vaProxy.WriteToLog($"LOADED: {assName} from {assPath}", "Purple");
+                }
+            }
         }
 
         protected static bool OneTimeMenuDataLoad(dynamic vaProxy)
@@ -488,7 +586,7 @@ namespace Tanrr.VAPlugin.BMSRadio
                 // Don't try to reinitialize - just return success quietly since we should already be configured
                 return true;
             }
-
+            
             // Configure logger
             Logger.Prefix = "JeevesBMSRadio: ";
             Logger.WarningPrefix = "JeevesBMSRadio: WARNING: ";
@@ -557,6 +655,7 @@ namespace Tanrr.VAPlugin.BMSRadio
                 Logger.Error(vaProxy, "Failed to parse schema " + menuJsonSchemaPath);
                 return false;
             }
+
             IList<string> errorMsgs = new List<string>();
             if (!menusDeserialized.IsValid(menuSchemaDeserialized, out errorMsgs) || menusDeserialized.Count <= 1)
             {
@@ -761,7 +860,6 @@ namespace Tanrr.VAPlugin.BMSRadio
         {
             // Like PressKeyComboList, but for a single unquoted string that is not comma delimited - can handle modifiers or multiple keys but not both
             // TODO: May need to change this to handle Unicode or language variations
-            // TODO: May need to change this to allow keys with modifiers to be sent: ie LCTRL+LSHIFT+T followed by CMD+C etc.
             if (!string.IsNullOrEmpty(keyComboSingle))
             {
                 vaProxy.Command.Execute(CmdJBMS_PressKeyComboList, WaitForReturn: waitForReturn, AsSubcommand: asSubCommand, PassedText: $@"""{keyComboSingle}""");
@@ -774,7 +872,6 @@ namespace Tanrr.VAPlugin.BMSRadio
         {
             // Sends the passed keyComboList (semicolon delimited quoated strings) to VA to press those keys in sequence
             // TODO: May need to change this to handle Unicode or language variations
-            // TODO: May need to change this to allow keys with modifiers to be sent: ie LCTRL+LSHIFT+T followed by CMD+C etc.
             if (!string.IsNullOrEmpty(keyComboList))
             {
                 vaProxy.Command.Execute(CmdJBMS_PressKeyComboList, WaitForReturn: waitForReturn, AsSubcommand: asSubCommand, PassedText: keyComboList);
@@ -794,12 +891,14 @@ namespace Tanrr.VAPlugin.BMSRadio
             {   return PressKeyComboSingle(vaProxy, cmdOrKeys, waitForReturn, asSubCommand);    }
         }
 
-        protected static void ResetListMenus(dynamic vaProxy)
+        // Note (per method name) this method should NOT cause any keypresses
+        protected static void ResetListMenusNOKEYS(dynamic vaProxy)
         {
             // Clear our "Listing Menus" state, but doesn't bring down the current menu
             vaProxy.SetBoolean(JBMSI_ListingMenus, false);
             s_menusToList = null;
             s_indexMenuToList = -1;
+
         }
         protected static void ListMenus(dynamic vaProxy)
         {
@@ -810,7 +909,7 @@ namespace Tanrr.VAPlugin.BMSRadio
             if (s_menusToList == null || !GetNonNullBool(vaProxy, JBMSI_ListingMenus))
             {
                 Logger.Warning(vaProxy, "ListMenus called when not in proper listing state");
-                ResetListMenus(vaProxy); ;
+                ResetListMenusNOKEYS(vaProxy); ;
                 return;
             }
 
@@ -822,7 +921,7 @@ namespace Tanrr.VAPlugin.BMSRadio
                 {
                     Logger.Warning(vaProxy, "ListMenus at end of list, but last menu not closed properly");
                 }
-                ResetListMenus(vaProxy); ;
+                ResetListMenusNOKEYS(vaProxy); ;
                 return;
             }
 
@@ -837,7 +936,7 @@ namespace Tanrr.VAPlugin.BMSRadio
             else
             {
                 Logger.Error(vaProxy, "JBMS_LIST_MENUS failed to get correct menu info");
-                ResetListMenus(vaProxy); ;
+                ResetListMenusNOKEYS(vaProxy); ;
                 return;
             }
 
@@ -866,7 +965,7 @@ namespace Tanrr.VAPlugin.BMSRadio
                 vaProxy.Command.Execute(CmdJBMS_KillWaitForMenuResponse, WaitForReturn: true, AsSubcommand: true);
                 vaProxy.Command.Execute(CmdJBMS_CloseMenu, WaitForReturn: true, AsSubcommand: true);
                 // Reset just the menu state related to it being up or having errors - already killed the "Wait For Menu Response"
-                ResetMenuState(vaProxy, onlyUpAndErrors: true, killWaitForMenu: false);
+                ResetMenuStateNOKEYS(vaProxy, onlyUpAndErrors: true, killWaitForMenu: false);
             }
 
             PressKeyComboList(vaProxy, Menu.MenuShow, /* waitForReturn */ true);
@@ -912,6 +1011,10 @@ namespace Tanrr.VAPlugin.BMSRadio
             // Init if this is our first call
             if (!GetNonNullBool(vaProxy, JBMSI_Inited))
             {
+                // Log which Newtonsoft assemblies are loaded  - Do before OneTimeMenuDataLoad() which could fail with mismatched JSON/Schema versions, 
+                // Note that we may get more than one version of Newtonsoft.Json.dll and this will help track it down
+                ListNewtonsoftAssemblies(vaProxy, "JBMS Newtonsoft Assemblies:");
+
                 try
                 {
                     OneTimeMenuDataLoad(vaProxy);
@@ -926,13 +1029,53 @@ namespace Tanrr.VAPlugin.BMSRadio
                 {
                     // If an exception was thrown we might not even have Logger() inited, so log directly through vaProxy
                     // Most likely cause is not having the correct version of Newtonsoft.Json.dll as needed by Newtonsoft.Json.Schema.dll
+
                     vaProxy.WriteToLog("JeevesBMSRadio: ERROR INIT: ", "Red");
+                    vaProxy.WriteToLog("JeevesBMSRadio: ERROR INIT: If Newtonsoft.Json.dll already copied, try copying VoiceAttack.exe.config from plugin folder to VoiceAttack.exe's folder", "Red");
+                    vaProxy.WriteToLog("JeevesBMSRadio: ERROR INIT: or if error involves Newtonsoft.Json.Schema.SchemaExtensions.IsValid() might be older version of Newtonsoft.Json.dll installed", "Red");
                     vaProxy.WriteToLog("JeevesBMSRadio: ERROR INIT: Did you forget to copy Newtonsoft.Json.dll to the VoiceAttack\\Shared\\Assemblies folder?", "Red");
                     vaProxy.WriteToLog("JeevesBMSRadio: ERROR INIT: ", "Red");
                     vaProxy.WriteToLog("EXCEPTION: " + e.Message, "Red");
                     vaProxy.WriteToLog("JeevesBMSRadio: ERROR INIT: ", "Red");
                     vaProxy.SetBoolean(JBMSI_Init_Error, true);
                     return;
+                }
+            }
+
+            // Our AppFocusChanged() is called by VA when active window changes, but it only polls every 1/4 second
+            // AND if the user doesn't have VoiceAttack's "Auto Profile Switching" enabled no event polling is done
+            // Thus better to do a focus check each time the plugin is called from the profile
+            string procActive = vaProxy.Utility.ActiveWindowProcessName();
+            bool procActiveBMS = false;
+            bool keysOnlyToBMS = GetNonNullBool(vaProxy, JBMS_KeysOnlyToBMS);
+            if (!string.IsNullOrEmpty(procActive))
+            {
+                procActiveBMS = procActive.Equals(JBMS_ProcNameFalconBMS, s_strComp);
+                vaProxy.SetBoolean(JBMSI_FocusBMS, procActiveBMS);
+
+                if (vaProxy.Context == "JBMS_CHECK_BMS_FOCUS")
+                {
+                    // We were only called to check if BMS had the focus, so return
+                    return;
+                }
+
+                    if (!procActiveBMS)
+                {   
+                    if (!procActiveBMS && keysOnlyToBMS)
+                    {
+                        // Init is done on first call into invoke, above, so nothing to do and don't need to log a warning
+                        if (vaProxy.Context == "JBMS_DO_INIT")
+                        { return; }
+
+                        // If BMS had focus but has now lost focus cleanup menu state and stop any listening
+                        // Note this could possibly muck up valid calls to the plugin,
+                        // but erring on side of cleaning up vs leaving plugin listening while other app has focus
+                        // TODO - Change to VerboseWrite before releasing
+                        Logger.Write(vaProxy, $"Plugin invoked with context=\"{vaProxy.Context}\" when Falcon BMS does not have focus and >JBMSI_KEYS_ONLY_TO_BMS true");
+                        Logger.Write(vaProxy, "Cleaning up any left over menu state and listing menu state and exiting");
+                        SafeCleanupWithoutFocus(vaProxy);
+                        return;
+                    }
                 }
             }
 
@@ -956,9 +1099,9 @@ namespace Tanrr.VAPlugin.BMSRadio
                     Logger.VerboseWrite(vaProxy, "JBMS_RESET_MENU_STATE - ESC should have been pressed already");
                     // If we're in the process of listing menus, reset the listing so we won't continue showing them
                     if ( GetNonNullBool(vaProxy, JBMSI_ListingMenus) )
-                    {   ResetListMenus(vaProxy);    }
+                    {   ResetListMenusNOKEYS(vaProxy);    }
                     // ResetMenuState will kill the current Wait For Menu Response, if it is running
-                    ResetMenuState(vaProxy, onlyUpAndErrors: false, killWaitForMenu: true);
+                    ResetMenuStateNOKEYS(vaProxy, onlyUpAndErrors: false, killWaitForMenu: true);
                     break;
 
                 case "JBMS_RELOAD_LOG_SETTINGS":
@@ -982,6 +1125,13 @@ namespace Tanrr.VAPlugin.BMSRadio
                     // No special check of JBMSI_ListingMenus needed since if listing has a menu up this will exit(break)
                     string dirCmd = vaProxy.GetText(JBMS_DirectCmd);
                     Logger.Write(vaProxy, "JBMS_DIRECT_CMD for " + dirCmd);
+
+                    if (!procActiveBMS && keysOnlyToBMS)
+                    {
+                        Logger.VerboseWrite(vaProxy, "Exiting since BMS does not have focus and >JBMS_KEYS_ONLY_TO_BMS = true");
+                        break;
+                    }
+
                     vaProxy.SetText(JBMS_DirectCmd, string.Empty);
                     if (string.IsNullOrEmpty(dirCmd))
                     {
@@ -1027,6 +1177,15 @@ namespace Tanrr.VAPlugin.BMSRadio
                     break;
 
                 case "JBMS_HANDLE_MENU_RESPONSE":
+
+                    if (!procActiveBMS && keysOnlyToBMS)
+                    {
+                        Logger.Warning(vaProxy, "JBMS_HANDLE_MENU_RESPONSE received while BMS does not have focus and >JBMS_KEYS_ONLY_TO_BMS = true");
+                        Logger.Warning(vaProxy, "Unexpected since menu listening is stopped when BMS loses focus");
+                        Logger.Warning(vaProxy, "- Possible user does not have VoiceAttack Option \"Auto Profile Switching\" Enabled?");
+                        break;
+                    }
+
                     // Handle a valid, invalid, or timeout response from VA profile's CmdJBMS_WaitForMenuResponse
                     // Supports JBMSI_ListingMenus case internally (either continuing or cancelling)
                     string MenuResponse = vaProxy.GetText(JBMSI_MenuResponse);
@@ -1051,7 +1210,7 @@ namespace Tanrr.VAPlugin.BMSRadio
                                 {
                                     // Since we're actually handling a command, stop listing out menus
                                     Logger.VerboseWrite(vaProxy, "Stopping listing menus since command received"); 
-                                    ResetListMenus(vaProxy);
+                                    ResetListMenusNOKEYS(vaProxy);
                                 }
 
                                 // NOTE: If MenuItemExecute is NOT just a keystroke that will close the menu, but is instead a VA command phrase
@@ -1061,7 +1220,7 @@ namespace Tanrr.VAPlugin.BMSRadio
 
                                 // Passing key/cmd should have brought down menu, so only reset our menu state - don't press escape
                                 // Since we're being passed the menu response by CmdJBMS_WaitForMenuResponse we don't need to kill it
-                                ResetMenuState(vaProxy, onlyUpAndErrors: false, killWaitForMenu: false);
+                                ResetMenuStateNOKEYS(vaProxy, onlyUpAndErrors: false, killWaitForMenu: false);
                                 MenuUp = false;
                             }
                             else
@@ -1085,7 +1244,7 @@ namespace Tanrr.VAPlugin.BMSRadio
                         if (!VerifyMenuState(vaProxy, menuUp: false, noErrorsAllowed: true))
                         {
                             Logger.Warning(vaProxy, "ERROR: Expected menu to be in non-error closed state after JBMS_HANDLE_MENU_RESPONSE");
-                            ResetMenuState(vaProxy);
+                            ResetMenuStateNOKEYS(vaProxy);
                         }
                     }
 
@@ -1102,10 +1261,15 @@ namespace Tanrr.VAPlugin.BMSRadio
                     break;
                 
                 case "JBMS_SHOW_MENU":
+                    if (!procActiveBMS && keysOnlyToBMS)
+                    {
+                        Logger.VerboseWrite(vaProxy, "JBMS_SHOW_MENU received - Exiting since BMS does not have focus and >JBMS_KEYS_ONLY_TO_BMS = true");
+                        break;
+                    }
                     // If user asks for a different menu while listing menus, we need to cancel the listing first
                     if (GetNonNullBool(vaProxy, JBMSI_ListingMenus))
                     {
-                        ResetListMenus(vaProxy);
+                        ResetListMenusNOKEYS(vaProxy);
                     }
                     // ShowMenu will dismiss the current menu and kill the Wait For Menu Response handler
                     ShowMenu(vaProxy, menuUp: MenuUp, listingMenus: false);
@@ -1118,6 +1282,12 @@ namespace Tanrr.VAPlugin.BMSRadio
                     // - Saying a phrase to bring up some other menu
                     // - Saying "Cancel", or "Reset Menu", or similar
                     // - Pressing a key such as ESC or a number key that brings down the current menu
+
+                    if (!procActiveBMS && keysOnlyToBMS)
+                    {
+                        Logger.Warning(vaProxy, "JBMS_LIST_MENUS received - Exiting since BMS does not have focus and >JBMS_KEYS_ONLY_TO_BMS = true");
+                        break;
+                    }
 
                     if (GetNonNullBool(vaProxy, JBMSI_ListingMenus))
                     {
