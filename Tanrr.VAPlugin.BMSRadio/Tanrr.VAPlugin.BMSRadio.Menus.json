@@ -1,6 +1,6 @@
 [
 	{
-		"verPluginJSON": "v0.1.6",
+		"verPluginJSON": "v0.1.7",
 		"verBMSJSON": "4.37.2",
 		"userField": "User can update this field with their own notes"
 	},
@@ -9,18 +9,19 @@
 		"targetPhrases": "Wingman;2",
 		"menuName": "Combat 1",
 		"menuNamePhrases": "Combat [Management;] 1",
+		"directMenuGroup": "",
 		"menuShow": [ "w" ],
 
 		"menuItems": [
-			[ "Attack My Target", "1", "JBMS-WC1-ATTACK-TGT" ],
+			[ "Attack [My;That] Target", "1", "JBMS-WC1-ATTACK-TGT" ],
 			[ "Buddy Spike", "2" ],
 			[ "Raygun;Ray Gun", "3" ],
-			[ "Weapons Free [Air;A A;]", "4" ],
-			[ "Weapons Free [Ground;A Gee]", "5" ],
-			[ "Weapons Hold", "6" ],
-			[ "Check Your Six", "7" ],
+			[ "Weapons Free [Air;Air to Air;A A;]; Fire at Will [Air;Air to Air;A A;]", "4" ],
+			[ "Weapons Free [Air to;] [Ground;A Gee] ; Fire at Will [Air to;] [Ground;A Gee]", "5" ],
+			[ "Weapons [Hold;Tight] ; [Cease;Hold] Fire", "6" ],
+			[ "Check [Your;] Six", "7" ],
 			[ "[Clear;Check] My Six", "8" ],
-			[ "Attack Targets", "9" ]
+			[ "Attack Targets ; Attack Collateral [Targets;]", "9" ]
 		]
 	},
 	{
@@ -28,18 +29,19 @@
 		"targetPhrases": "Element;3",
 		"menuName": "Combat 1",
 		"menuNamePhrases": "Combat [Management;] 1",
+		"directMenuGroup": "",
 		"menuShow": [ "e" ],
 
 		"menuItems": [
-			[ "Attack My Target", "1" ],
+			[ "Attack [My;That] Target", "1" ],
 			[ "Buddy Spike", "2" ],
 			[ "Raygun;Ray Gun", "3" ],
-			[ "Weapons Free [Air;A A;]", "4" ],
-			[ "Weapons Free [Ground;A Gee]", "5" ],
-			[ "Weapons Hold", "6" ],
-			[ "Check Your Six", "7" ],
+			[ "Weapons Free [Air;Air to Air;A A;]; Fire at Will [Air;Air to Air;A A;]", "4" ],
+			[ "Weapons Free [Air to;] [Ground;A Gee] ; Fire at Will [Air to;] [Ground;A Gee]", "5" ],
+			[ "Weapons [Hold;Tight] ; [Cease;Hold] Fire", "6" ],
+			[ "Check [Your;] Six", "7" ],
 			[ "[Clear;Check] My Six", "8" ],
-			[ "Attack Targets", "9" ]
+			[ "Attack Targets ; Attack Collateral [Targets;]", "9" ]
 		]
 	},
 	{
@@ -47,18 +49,19 @@
 		"targetPhrases": "Flight",
 		"menuName": "Combat 1",
 		"menuNamePhrases": "Combat [Management;] 1",
+		"directMenuGroup": "",
 		"menuShow": [ "r" ],
 
 		"menuItems": [
-			[ "Attack My Target", "1" ],
+			[ "Attack [My;That] Target", "1" ],
 			[ "Buddy Spike", "2" ],
 			[ "Raygun;Ray Gun", "3" ],
-			[ "Weapons Free [Air;A A;]", "4" ],
-			[ "Weapons Free [Ground;A Gee]", "5" ],
-			[ "Weapons Hold", "6" ],
-			[ "Check Your Six", "7" ],
+			[ "Weapons Free [Air;Air to Air;A A;]; Fire at Will [Air;Air to Air;A A;]", "4" ],
+			[ "Weapons Free [Air to;] [Ground;A Gee] ; Fire at Will [Air to;] [Ground;A Gee]", "5" ],
+			[ "Weapons [Hold;Tight] ; [Cease;Hold] Fire", "6" ],
+			[ "Check [Your;] Six", "7" ],
 			[ "[Clear;Check] My Six", "8" ],
-			[ "Attack Targets", "9" ]
+			[ "Attack Targets ; Attack Collateral [Targets;]", "9" ]
 		]
 	},
 	{
@@ -66,16 +69,17 @@
 		"targetPhrases": "Wingman;2",
 		"menuName": "Combat 2",
 		"menuNamePhrases": "Combat [Management;] 2",
+		"directMenuGroup": "",
 		"menuShow": [ "ww" ],
 
 		"menuItems": [
-			[ "Rejoin", "1" ],
+			[ "Rejoin ; [Go;Get;] Back in Formation", "1" ],
 			[ "Split Wing", "2" ],
 			[ "Glue Wing", "3" ],
-			[ "Drop Stores;Emergency Jettison", "4" ],
+			[ "[Dump;Drop] Stores ; Emergency Jettison", "4" ],
 			[ "Data Link Ground Target", "5" ],
-			[ "Go Shooter", "6" ],
-			[ "Go Cover", "7" ]
+			[ "[You Are;Go] Shooter", "6" ],
+			[ "Go Cover ; Cover Me ; You Are Cover", "7" ]
 		]
 	},
 	{
@@ -83,11 +87,12 @@
 		"targetPhrases": "Element;3",
 		"menuName": "Combat 2",
 		"menuNamePhrases": "Combat [Management;] 2",
+		"directMenuGroup": "",
 		"menuShow": [ "ee" ],
 
 		"menuItems": [
-			[ "Rejoin", "1" ],
-			[ "Drop Stores;Emergency Jettison", "2" ],
+			[ "Rejoin ; [Go;Get;] Back in Formation", "1" ],
+			[ "[Dump;Drop] Stores ; Emergency Jettison", "2" ],
 			[ "Data Link Ground Target", "3" ]
 		]
 	},
@@ -96,11 +101,12 @@
 		"targetPhrases": "Flight",
 		"menuName": "Combat 2",
 		"menuNamePhrases": "Combat [Management;] 2",
+		"directMenuGroup": "",
 		"menuShow": [ "rr" ],
 
 		"menuItems": [
-			[ "Rejoin", "1" ],
-			[ "Drop Stores;Emergency Jettison", "2" ],
+			[ "Rejoin ; [Go;Get;] Back in Formation", "1" ],
+			[ "[Dump;Drop] Stores ; Emergency Jettison", "2" ],
 			[ "Data Link Ground Target", "3" ]
 		]
 	},
@@ -109,17 +115,18 @@
 		"targetPhrases": "Wingman;2",
 		"menuName": "Combat 3",
 		"menuNamePhrases": "Combat [Management;] 3",
+		"directMenuGroup": "",
 		"menuShow": [ "www" ],
 
 		"menuItems": [
-			[ "Offensive Pursuit", "1" ],
+			[ "Offensive [Engagement;Pursuit;] ; Go Offensive", "1" ],
 			[ "Offensive Split", "2" ],
-			[ "Beam Deploy", "3" ],
-			[ "Grinder", "4" ],
-			[ "Wide Azimuth", "5" ],
-			[ "Short Azimuth", "6" ],
-			[ "Sweep", "7" ],
-			[ "[Defensive", "8" ]
+			[ "Beam Deploy ; Deploy Beam ; Bracket Go ; Go Bracket [Now;]", "3" ],
+			[ "[Go;Make it;Set Up;] Grinder", "4" ],
+			[ "[Go;] Wide Azimuth", "5" ],
+			[ "[Go;] Short Azimuth", "6" ],
+			[ "[Go;] Sweep", "7" ],
+			[ "[Go;] [Defensive;Out] ; [Go;Turn] Cold", "8" ]
 		]
 	},
 	{
@@ -127,17 +134,18 @@
 		"targetPhrases": "Element;3",
 		"menuName": "Combat 3",
 		"menuNamePhrases": "Combat [Management;] 3",
+		"directMenuGroup": "",
 		"menuShow": [ "eee" ],
 
 		"menuItems": [
-			[ "Offensive Pursuit", "1" ],
+			[ "Offensive [Engagement;Pursuit;] ; Go Offensive", "1" ],
 			[ "Offensive Split", "2" ],
-			[ "Beam Deploy", "3" ],
-			[ "Grinder", "4" ],
-			[ "Wide Azimuth", "5" ],
-			[ "Short Azimuth", "6" ],
-			[ "Sweep", "7" ],
-			[ "[Defensive", "8" ]
+			[ "Beam Deploy ; Deploy Beam ; Bracket Go ; Go Bracket [Now;]", "3" ],
+			[ "[Go;Make it;Set Up;] Grinder", "4" ],
+			[ "[Go;] Wide Azimuth", "5" ],
+			[ "[Go;] Short Azimuth", "6" ],
+			[ "[Go;] Sweep", "7" ],
+			[ "[Go;] [Defensive;Out] ; [Go;Turn] Cold", "8" ]
 		]
 	},
 	{
@@ -145,19 +153,20 @@
 		"targetPhrases": "Wingman;2",
 		"menuName": "Mission",
 		"menuNamePhrases": "Mission [Management;] [1;]",
+		"directMenuGroup": "",
 		"menuShow": [ "wwww" ],
 
 		"menuItems": [
-			[ "Resume Mission", "1" ],
+			[ "[Resume;Continue] [Mission;]", "1" ],
 			[ "Return To Base;R T B;Are Tea Bee", "2" ],
-			[ "Nose Cold;Snooze Radar", "3" ],
-			[ "Nose Hot;Activate Radar", "4" ],
-			[ "Say Position", "5" ],
-			[ "[Say;] Damage Report", "6" ],
-			[ "Say Status", "7" ],
-			[ "Say [Fuel;] State", "8" ],
-			[ "Say Weapons State", "9" ],
-			[ "Take [The;] Lead", "0" ]
+			[ "[Go;] Nose Cold;Snooze Radar", "3" ],
+			[ "[Go;] Nose Hot ; Activate Radar ; Go Active [Radar;]", "4" ],
+			[ "[Say;] [Position;Posit]", "5" ],
+			[ "[Say;] Damage [Report;]", "6" ],
+			[ "[Say;] Status", "7" ],
+			[ "[Say;] [Fuel;Fuel State;State]", "8" ],
+			[ "[Say;] Weapons [State;Status;] ; [Op;Ops] Check", "9" ],
+			[ "Take [the;] Lead ; [Go;] Lead [Formation;]", "0" ]
 		]
 	},
 	{
@@ -165,18 +174,19 @@
 		"targetPhrases": "Element;3",
 		"menuName": "Mission",
 		"menuNamePhrases": "Mission [Management;] [1;]",
+		"directMenuGroup": "",
 		"menuShow": [ "eeee" ],
 
 		"menuItems": [
-			[ "Resume Mission", "1" ],
+			[ "[Resume;Continue] [Mission;]", "1" ],
 			[ "Return To Base;R T B;Are Tea Bee", "2" ],
-			[ "Nose Cold;Snooze Radar", "3" ],
-			[ "Nose Hot;Activate Radar", "4" ],
-			[ "Say Position", "5" ],
-			[ "[Say;] Damage Report", "6" ],
-			[ "Say Status", "7" ],
-			[ "Say [Fuel;] State", "8" ],
-			[ "Say Weapons State", "9" ]
+			[ "[Go;] Nose Cold;Snooze Radar", "3" ],
+			[ "[Go;] Nose Hot ; Activate Radar ; Go Active [Radar;]", "4" ],
+			[ "[Say;] [Position;Posit]", "5" ],
+			[ "[Say;] Damage [Report;]", "6" ],
+			[ "[Say;] Status", "7" ],
+			[ "[Say;] [Fuel;Fuel State;State]", "8" ],
+			[ "[Say;] Weapons [State;Status;] ; [Op;Ops] Check", "9" ]
 		]
 	},
 	{
@@ -184,18 +194,19 @@
 		"targetPhrases": "Flight",
 		"menuName": "Mission",
 		"menuNamePhrases": "Mission [Management;] [1;]",
+		"directMenuGroup": "",
 		"menuShow": [ "rrr" ],
 
 		"menuItems": [
-			[ "Resume Mission", "1" ],
+			[ "[Resume;Continue] [Mission;]", "1" ],
 			[ "Return To Base;R T B;Are Tea Bee", "2" ],
-			[ "Nose Cold;Snooze Radar", "3" ],
-			[ "Nose Hot;Activate Radar", "4" ],
-			[ "Say Position", "5" ],
-			[ "[Say;] Damage Report", "6" ],
-			[ "Say Status", "7" ],
-			[ "Say [Fuel;] State", "8" ],
-			[ "Say Weapons State", "9" ]
+			[ "[Go;] Nose Cold;Snooze Radar", "3" ],
+			[ "[Go;] Nose Hot ; Activate Radar ; Go Active [Radar;]", "4" ],
+			[ "[Say;] [Position;Posit]", "5" ],
+			[ "[Say;] Damage [Report;]", "6" ],
+			[ "[Say;] Status", "7" ],
+			[ "[Say;] [Fuel;Fuel State;State]", "8" ],
+			[ "[Say;] Weapons [State;Status;] ; [Op;Ops] Check", "9" ]
 		]
 	},
 	{
@@ -203,19 +214,20 @@
 		"targetPhrases": "Wingman;2",
 		"menuName": "Formation 1",
 		"menuNamePhrases": "Formation [Management;] 1",
+		"directMenuGroup": "",
 		"menuShow": [ "wwwww" ],
 
 		"menuItems": [
-			[ "Close Up", "1" ],
-			[ "Switch Side", "2" ],
+			[ "Close Up ; Bring it In ; Make it Close", "1" ],
+			[ "[Go;Switch] [Left;Right;] [Side;Sides] ; Shackle [Now;]", "2" ],
 			[ "Break Right", "3" ],
 			[ "Break Left", "4" ],
 			[ "Stack High", "5" ],
 			[ "Stack Level", "6" ],
 			[ "Stack Low", "7" ],
-			[ "Go Deck", "8" ],
-			[ "Flex", "9" ],
-			[ "Kick Out", "0" ]
+			[ "[Go;] [Deck;Low Level]", "8" ],
+			[ "[Go;] Flex", "9" ],
+			[ "Kick Out ; Stay Back", "0" ]
 		]
 	},
 	{
@@ -223,19 +235,20 @@
 		"targetPhrases": "Element;3",
 		"menuName": "Formation 1",
 		"menuNamePhrases": "Formation [Management;] 1",
+		"directMenuGroup": "",
 		"menuShow": [ "eeeee" ],
 
 		"menuItems": [
-			[ "Close Up", "1" ],
-			[ "Switch Side", "2" ],
+			[ "Close Up ; Bring it In ; Make it Close", "1" ],
+			[ "[Go;Switch] [Left;Right;] [Side;Sides] ; Shackle [Now;]", "2" ],
 			[ "Break Right", "3" ],
 			[ "Break Left", "4" ],
 			[ "Stack High", "5" ],
 			[ "Stack Level", "6" ],
 			[ "Stack Low", "7" ],
-			[ "Go Deck", "8" ],
-			[ "Flex", "9" ],
-			[ "Kick Out", "0" ]
+			[ "[Go;] [Deck;Low Level]", "8" ],
+			[ "[Go;] Flex", "9" ],
+			[ "Kick Out ; Stay Back", "0" ]
 		]
 	},
 	{
@@ -243,19 +256,20 @@
 		"targetPhrases": "Flight",
 		"menuName": "Formation 1",
 		"menuNamePhrases": "Formation [Management;] 1",
+		"directMenuGroup": "",
 		"menuShow": [ "rrrr" ],
 
 		"menuItems": [
-			[ "Close Up", "1" ],
-			[ "Switch Side", "2" ],
+			[ "Close Up ; Bring it In ; Make it Close", "1" ],
+			[ "[Go;Switch] [Left;Right;] [Side;Sides] ; Shackle [Now;]", "2" ],
 			[ "Break Right", "3" ],
 			[ "Break Left", "4" ],
 			[ "Stack High", "5" ],
 			[ "Stack Level", "6" ],
 			[ "Stack Low", "7" ],
-			[ "Go Deck", "8" ],
-			[ "Flex", "9" ],
-			[ "Kick Out", "0" ]
+			[ "[Go;] [Deck;Low Level]", "8" ],
+			[ "[Go;] Flex", "9" ],
+			[ "Kick Out ; Stay Back", "0" ]
 		]
 	},
 	{
@@ -263,18 +277,19 @@
 		"targetPhrases": "Wingman;2",
 		"menuName": "Formation 2",
 		"menuNamePhrases": "Formation [Management;] 2",
+		"directMenuGroup": "",
 		"menuShow": [ "wwwwww" ],
 
 		"menuItems": [
-			[ "Go Wedge", "1" ],
-			[ "Go Trail", "2" ],
-			[ "Go Ladder", "3" ],
-			[ "Go Stack", "4" ],
-			[ "Go Fluid [Four;]", "5" ],
-			[ "Go [Combat;] Spread", "6" ],
-			[ "Go Arrow Head", "7" ],
-			[ "Go Higher", "8" ],
-			[ "Go Lower", "9" ]
+			[ "[Go;Rejoin;Cleared;Make It;] Wedge", "1" ],
+			[ "[Go;Rejoin;Cleared;Make It;] Trail", "2" ],
+			[ "[Go;Rejoin;Cleared;Make It;] Ladder", "3" ],
+			[ "[Go;Rejoin;Cleared;Make It;] Stack", "4" ],
+			[ "[Go;Rejoin;Cleared;Make It;] Fluid [Four;]", "5" ],
+			[ "[Go;Rejoin;Cleared;Make It;] [Combat;] Spread", "6" ],
+			[ "[Go;Rejoin;Cleared;Make It;] Arrow Head", "7" ],
+			[ "[Go;Make It;] Higher ; Increase Altitude", "8" ],
+			[ "[Go;Make It;] Lower ; Decrease Altitude", "9" ]
 		]
 	},
 	{
@@ -282,18 +297,19 @@
 		"targetPhrases": "Element;3",
 		"menuName": "Formation 2",
 		"menuNamePhrases": "Formation [Management;] 2",
+		"directMenuGroup": "",
 		"menuShow": [ "eeeeee" ],
 
 		"menuItems": [
-			[ "Go Wedge", "1" ],
-			[ "Go Trail", "2" ],
-			[ "Go Ladder", "3" ],
-			[ "Go Stack", "4" ],
-			[ "Go Fluid [Four;]", "5" ],
-			[ "Go [Combat;] Spread", "6" ],
-			[ "Go Arrow Head", "7" ],
-			[ "Go Higher", "8" ],
-			[ "Go Lower", "9" ]
+			[ "[Go;Rejoin;Cleared;Make It;] Wedge", "1" ],
+			[ "[Go;Rejoin;Cleared;Make It;] Trail", "2" ],
+			[ "[Go;Rejoin;Cleared;Make It;] Ladder", "3" ],
+			[ "[Go;Rejoin;Cleared;Make It;] Stack", "4" ],
+			[ "[Go;Rejoin;Cleared;Make It;] Fluid [Four;]", "5" ],
+			[ "[Go;Rejoin;Cleared;Make It;] [Combat;] Spread", "6" ],
+			[ "[Go;Rejoin;Cleared;Make It;] Arrow Head", "7" ],
+			[ "[Go;Make It;] Higher ; Increase Altitude", "8" ],
+			[ "[Go;Make It;] Lower ; Decrease Altitude", "9" ]
 		]
 	},
 	{
@@ -301,18 +317,19 @@
 		"targetPhrases": "Flight",
 		"menuName": "Formation 2",
 		"menuNamePhrases": "Formation [Management;] 2",
+		"directMenuGroup": "",
 		"menuShow": [ "rrrrr" ],
 
 		"menuItems": [
-			[ "Go Wedge", "1" ],
-			[ "Go Trail", "2" ],
-			[ "Go Ladder", "3" ],
-			[ "Go Stack", "4" ],
-			[ "Go Fluid [Four;]", "5" ],
-			[ "Go [Combat;] Spread", "6" ],
-			[ "Go Arrow Head", "7" ],
-			[ "Go Box", "8" ],
-			[ "Go Res Cell", "9" ]
+			[ "[Go;Rejoin;Cleared;Make It;] Wedge", "1" ],
+			[ "[Go;Rejoin;Cleared;Make It;] Trail", "2" ],
+			[ "[Go;Rejoin;Cleared;Make It;] Ladder", "3" ],
+			[ "[Go;Rejoin;Cleared;Make It;] Stack", "4" ],
+			[ "[Go;Rejoin;Cleared;Make It;] Fluid [Four;]", "5" ],
+			[ "[Go;Rejoin;Cleared;Make It;] [Combat;] Spread", "6" ],
+			[ "[Go;Rejoin;Cleared;Make It;] Arrow Head", "7" ],
+			[ "[Go;Rejoin;Cleared;Make It;] Box", "8" ],
+			[ "[Go;Rejoin;Cleared;Make It;] Res Cell", "9" ]
 		]
 	},
 	{
@@ -320,17 +337,18 @@
 		"targetPhrases": "Flight",
 		"menuName": "Formation 3",
 		"menuNamePhrases": "Formation [Management;] 3",
+		"directMenuGroup": "",
 		"menuShow": [ "rrrrrr" ],
 
 		"menuItems": [
-			[ "Go Vick", "1" ],
-			[ "Go Line Abreast", "2" ],
-			[ "Go Finger Four", "3" ],
-			[ "Go Echelon Left", "4" ],
-			[ "Go Echelon Right", "5" ],
-			[ "Go Diamond", "6" ],
-			[ "Go Higher", "7" ],
-			[ "Go Lower", "8" ]
+			[ "[Go;Rejoin;Cleared;Make It;] Vick", "1" ],
+			[ "[Go;Rejoin;Cleared;Make It;] Line Abreast", "2" ],
+			[ "[Go;Rejoin;Cleared;Make It;] Finger Four", "3" ],
+			[ "[Go;Rejoin;Cleared;Make It;] Echelon Left", "4" ],
+			[ "[Go;Rejoin;Cleared;Make It;] Echelon Right", "5" ],
+			[ "[Go;Rejoin;Cleared;Make It;] Diamond", "6" ],
+			[ "[Go;Make It;] Higher ; Increase Altitude", "7" ],
+			[ "[Go;Make It;] Lower ; Decrease Altitude", "8" ]
 		]
 	},
 	{
@@ -338,14 +356,15 @@
 		"targetPhrases": "Wingman;2",
 		"menuName": "Miscellaneous",
 		"menuNamePhrases": "[Miscellaneous;Misk] [1;]",
+		"directMenuGroup": "",
 		"menuShow": [ "wwwwwww" ],
 
 		"menuItems": [
 			[ "Fence In", "1" ],
 			[ "Fence Out", "2" ],
-			[ "Lights [S O P;Ess Oh Pea]", "3" ],
-			[ "Music On", "4" ],
-			[ "Music Off", "5" ],
+			[ "[Set;] Lights [S O P;Ess Oh Pea;]", "3" ],
+			[ "[E C M;Music] [On;]", "4" ],
+			[ "[E C M;Music] Off", "5" ],
 			[ "[Turn;] Smoke On", "6" ],
 			[ "[Turn;] Smoke Off", "7" ],
 			[ "[Switch;Push] [Flight;] Uniform", "8" ],
@@ -358,14 +377,15 @@
 		"targetPhrases": "Element;3",
 		"menuName": "Miscellaneous",
 		"menuNamePhrases": "[Miscellaneous;Misk] [1;]",
+		"directMenuGroup": "",
 		"menuShow": [ "eeeeeee" ],
 
 		"menuItems": [
 			[ "Fence In", "1" ],
 			[ "Fence Out", "2" ],
-			[ "Lights [S O P;Ess Oh Pea]", "3" ],
-			[ "Music On", "4" ],
-			[ "Music Off", "5" ],
+			[ "[Set;] Lights [S O P;Ess Oh Pea;]", "3" ],
+			[ "[E C M;Music] [On;]", "4" ],
+			[ "[E C M;Music] Off", "5" ],
 			[ "[Turn;] Smoke On", "6" ],
 			[ "[Turn;] Smoke Off", "7" ],
 			[ "[Switch;Push] [Flight;] Uniform", "8" ],
@@ -378,14 +398,15 @@
 		"targetPhrases": "Flight",
 		"menuName": "Miscellaneous",
 		"menuNamePhrases": "[Miscellaneous;Misk] [1;]",
+		"directMenuGroup": "",
 		"menuShow": [ "rrrrrrr" ],
 
 		"menuItems": [
 			[ "Fence In", "1", "JBMS-FX1-FENCE-IN" ],
 			[ "Fence Out", "2" ],
-			[ "Lights [S O P;Ess Oh Pea]", "3" ],
-			[ "Music On", "4" ],
-			[ "Music Off", "5" ],
+			[ "[Set;] Lights [S O P;Ess Oh Pea;]", "3" ],
+			[ "[E C M;Music] [On;]", "4" ],
+			[ "[E C M;Music] Off", "5" ],
 			[ "[Turn;] Smoke On", "6" ],
 			[ "[Turn;] Smoke Off", "7" ],
 			[ "[Switch;Push] [Flight;] Uniform", "DC Push Flight Uniform" ],
@@ -398,11 +419,12 @@
 		"targetPhrases": "Wingman;2",
 		"menuName": "Runway",
 		"menuNamePhrases": "Runway [Line Up;]",
+		"directMenuGroup": "",
 		"menuShow": [ "wwwwwwww" ],
 
 		"menuItems": [
-			[ "Single Ship", "1" ],
-			[ "Element", "2" ]
+			[ "[Line Up;] Single Ship", "1" ],
+			[ "[Line Up;] Element [Left;Right;]", "2" ]
 		]
 	},
 	{
@@ -410,14 +432,15 @@
 		"targetPhrases": "Flight",
 		"menuName": "Runway",
 		"menuNamePhrases": "Runway [Line Up;]",
+		"directMenuGroup": "",
 		"menuShow": [ "rrrrrrrr" ],
 
 		"menuItems": [
-			[ "Single Ship", "1" ],
-			[ "Element", "2" ],
-			[ "Four Ship Three in the slot", "3" ],
-			[ "Four Ship Four in the slot", "4" ],
-			[ "Echelon", "5" ]
+			[ "[Line Up;] Single Ship", "1" ],
+			[ "[Line Up;] Element [Left;Right;]", "2" ],
+			[ "[Line Up;] Four Ship Three [in;] [The Slot;]", "3" ],
+			[ "[Line Up;] Four Ship Four [in;] [The Slot;]", "4" ],
+			[ "[Line Up;] Echelon [Left;Right;]", "5" ]
 		]
 	},
 	{
@@ -425,16 +448,17 @@
 		"targetPhrases": "[Contact;] Ground",
 		"menuName": "Ground",
 		"menuNamePhrases": "Ground;Chief",
+		"directMenuGroup": "",
 		"menuShow": [ "t" ],
 
 		"menuItems": [
 			[ "[Install;Remove] [E P U;Eee Pea You] Safety Pin", "1" ],
-			[ "[Install;Remove] Chocks", "2" ],
-			[ "Request [Taxi;Taxiing] [for;] Departure", "3" ],
-			[ "Request [Taxi;Taxiing] [Back;] to Ramp", "4" ],
-			[ "Request Hot Pit Refuel", "5" ],
-			[ "Say Again", "6" ],
-			[ "Request [J F S;Jay Eff Ess] Recharge", "7" ]
+			[ "[Install;Remove] [Wheel;] Chocks", "2" ],
+			[ "[Request;] [Taxi;Taxiing] [for;to;] Departure", "3" ],
+			[ "[Request;] [Taxi;Taxiing] [Back;] to Ramp", "4" ],
+			[ "[Request;] Hot Pit [Refuel;Refueling]", "5" ],
+			[ "Say Again;Repeat Message;Repeat Last", "6" ],
+			[ "Request [J F S;Jay Eff Ess] Recharge ; Recharge [the;] [J F S;Jay Eff Ess] [Bottles;]", "7" ]
 		]
 	},
 	{
@@ -442,17 +466,18 @@
 		"targetPhrases": "[Contact;] Tower",
 		"menuName": "Tower",
 		"menuNamePhrases": "Tower;Traffic",
+		"directMenuGroup": "",
 		"menuShow": [ "tt" ],
 
 		"menuItems": [
-			[ "[Ready for;Request] Departure", "1" ],
-			[ "Request Landing", "2" ],
-			[ "Request Formation Landing", "3" ],
-			[ "Report On Final", "4" ],
-			[ "Report Overhead Break", "5", "JBMS-TT-REPORT-OHB" ],
-			[ "[Declare;] Emergency", "6" ],
-			[ "Abort", "7" ],
-			[ "Say Again", "8" ]
+			[ "[Request Departure;Holding Short] [Runway;] [0 1; 0 2; 0 3; 0 4; 0 5; 0 6; 0 7; 0 8; 0 9; 0 niner; 1 0; 1 1; 1 2; 1 3; 1 4; 1 5; 1 6; 1 7; 1 8; 1 9; 2 0; 2 1; 2 2; 2 3; 2 4; 2 5; 2 6; 2 7; 2 8; 2 9; 2 niner; 3 0; 3 1; 3 2; 3 3; 3 4; 3 5; 3 6;]", "1" ],
+			[ "Request Landing [Runway;] [0 1; 0 2; 0 3; 0 4; 0 5; 0 6; 0 7; 0 8; 0 9; 0 niner; 1 0; 1 1; 1 2; 1 3; 1 4; 1 5; 1 6; 1 7; 1 8; 1 9; 2 0; 2 1; 2 2; 2 3; 2 4; 2 5; 2 6; 2 7; 2 8; 2 9; 2 niner; 3 0; 3 1; 3 2; 3 3; 3 4; 3 5; 3 6;]", "2" ],
+			[ "[Request;] Formation Landing", "3" ],
+			[ "[Report;] On Final [Runway;] [0 1; 0 2; 0 3; 0 4; 0 5; 0 6; 0 7; 0 8; 0 9; 0 niner; 1 0; 1 1; 1 2; 1 3; 1 4; 1 5; 1 6; 1 7; 1 8; 1 9; 2 0; 2 1; 2 2; 2 3; 2 4; 2 5; 2 6; 2 7; 2 8; 2 9; 2 niner; 3 0; 3 1; 3 2; 3 3; 3 4; 3 5; 3 6;]", "4" ],
+			[ "[Report;Reporting;In;] [the;] [Overhead;] [Left;Right;] Break", "5", "JBMS-TT-REPORT-OHB" ],
+			[ "[Declare;Declaring;Request] Emergency [Landing;]", "6" ],
+			[ "[Abort;Aborting] [the;] [Approach;] ; [Is;] Going Around ; [Is;] On the Go", "7" ],
+			[ "Say Again;Repeat Message;Repeat Last", "8" ]
 		]
 	},
 	{
@@ -460,16 +485,17 @@
 		"targetPhrases": "[Contact;] Approach 1",
 		"menuName": "Approach 1",
 		"menuNamePhrases": "[Contact;] Approach 1",
+		"directMenuGroup": "Approach",
 		"menuShow": [ "ttt" ],
 
 		"menuItems": [
-			[ "Request [Vector for;Vectors for;] Visual Approach", "1" ],
-			[ "Request [Vector for;Vectors for;] Visual Approach Heavy", "2" ],
-			[ "Request [Vector for;Vectors for;] Instrument Approach", "3" ],
-			[ "Request [Vector for;Vectors for;] Instrument Approach Heavy", "4" ],
-			[ "Request Overhead Approach", "5" ],
-			[ "Request Unrestricted Approach", "6" ],
-			[ "Request Unrestricted Approach Heavy", "7" ]
+			[ "Request [Vector;Vectors;] [for;] [Visual;Straight In] [Approach;]", "1" ],
+			[ "Request [Vector;Vectors;] [for;] Heavy [Visual;Straight In] [Approach;] ; Request [Vector;Vectors;] [for;] [Visual;Straight In] [Approach;] Heavy", "2" ],
+			[ "Request [Vector;Vectors;] [for;] [Instrument;I L S;Eye Ell Ess;Tacan;Radar;Precision] [Approach;]", "3" ],
+			[ "Request [Vector;Vectors;] [for;] [Instrument;I L S;Eye Ell Ess;Tacan;Radar;Precision] [Approach;] Heavy ; Request [Vector;Vectors;] [for;] Heavy [Instrument;I L S;Eye Ell Ess;Tacan;Radar;Precision] [Approach;]", "4" ],
+			[ "Request Overhead [Approach;] ; [Request;Proceeding to;] Initial", "5" ],
+			[ "Request [Unrestricted;Free] [Approach;]", "6" ],
+			[ "Request [Unrestricted;Free] [Approach;] Heavy ; Request Heavy [Unrestricted;Free] [Approach;]", "7" ]
 		]
 	},
 	{
@@ -477,13 +503,14 @@
 		"targetPhrases": "[Contact;] Approach 2",
 		"menuName": "Approach 2",
 		"menuNamePhrases": "[Contact;] Approach 2",
+		"directMenuGroup": "Approach",
 		"menuShow": [ "tttt" ],
 
 		"menuItems": [
 			[ "[Declare;] Emergency", "1" ],
-			[ "Abort", "2" ],
-			[ "Traffic in Sight", "3" ],
-			[ "Say Again", "4" ]
+			[ "[Abort;Aborting] [the;] [Approach;] ; [Is;] Going Around ; [Is;] On the Go", "2" ],
+			[ "Traffic in Sight;Visual Traffic", "3" ],
+			[ "Say Again;Repeat Message;Repeat Last", "4" ]
 		]
 	},
 	{
@@ -491,10 +518,11 @@
 		"targetPhrases": "[Contact;] Departure",
 		"menuName": "Departure",
 		"menuNamePhrases": "Departure",
+		"directMenuGroup": "",
 		"menuShow": [ "ttttt" ],
 
 		"menuItems": [
-			[ "[Report;] Airborne", "1" ]
+			[ "[Airborn;Report Airborne;Checking In] [1..9;] [thousand;] ", "1" ]
 		]
 	},
 	{
@@ -502,14 +530,15 @@
 		"targetPhrases": "[Contact;] Common",
 		"menuName": "Common",
 		"menuNamePhrases": "Common",
+		"directMenuGroup": "",
 		"menuShow": [ "tttttt" ],
 
 		"menuItems": [
-			[ "Request [Q N H;Cue Enn Ech]", "1" ],
+			[ "Request [Q N H;Cue Enn Ech;Altimeter Setting]", "1" ],
 			[ "Request [Q F E;Cue Eff Eee]", "2" ],
-			[ "Say Active Take Off Runway", "3" ],
-			[ "Say Active [Landing;] Runway", "4" ],
-			[ "Request Wind Check", "5" ]
+			[ "[Say;] [Active;] Take Off Runway ; [Say;] Runway for Take Off", "3" ],
+			[ "[Say;] [Active;] [Landing;] Runway ; [Say;] Runway In Use", "4" ],
+			[ "[Request;] Wind Check", "5" ]
 		]
 	},
 	{
@@ -517,17 +546,18 @@
 		"targetPhrases": "[Contact;] Carrier",
 		"menuName": "Carrier",
 		"menuNamePhrases": "Carrier",
+		"directMenuGroup": "",
 		"menuShow": [ "ttttttt" ],
 
 		"menuItems": [
-			[ "Inbound Mother", "1" ],
-			[ "Report See You", "2" ],
-			[ "Report Platform", "3" ],
-			[ "Call the Ball", "4" ],
-			[ "Report Overhead Break", "5" ],
-			[ "Abort", "6" ],
-			[ "Ready for Departure", "7" ],
-			[ "Report Airborne", "8" ]
+			[ "[Is;] Inbound [Mother;] [For Landing;]", "1" ],
+			[ "[Report;] See You", "2" ],
+			[ "[Report;] Platform", "3" ],
+			[ "[Call;] [The;] Ball", "4" ],
+			[ "[Is;] [In;] [the;] [Overhead;] Break ; [Report;Reporting] [Overhead;] Break", "5" ],
+			[ "Bolter ; [Is;] [Abort;Aborting] [the;] [Approach;]", "6" ],
+			[ "Ready [for;to;] [Departure;Launch]", "7" ],
+			[ "[Is;Report;] Airborne", "8" ]
 		]
 	},
 	{
@@ -537,11 +567,12 @@
 		"menuNamePhrases": "Contingencies",
 		"menuShow": [ "tttttttt" ],
 
+		"directMenuGroup": "",
 		"menuItems": [
-			[ "Report 1 Ground Abort", "1" ],
-			[ "Declare 2 Ground Abort", "2" ],
-			[ "Declare 3 Ground Abort", "3" ],
-			[ "Declare 4 Ground Abort", "4" ]
+			[ "[Request;Report;Declare;] [1 Ground Abort;Ground Abort 1]", "1" ],
+			[ "[Request;Report;Declare;] [2 Ground Abort;Ground Abort 2]", "2" ],
+			[ "[Request;Report;Declare;] [3 Ground Abort;Ground Abort 3]", "3" ],
+			[ "[Request;Report;Declare;] [4 Ground Abort;Ground Abort 4]", "4" ]
 		]
 	},
 	{
@@ -549,18 +580,19 @@
 		"targetPhrases": "A Wax",
 		"menuName": "Tactical",
 		"menuNamePhrases": "Tactical;Tacticals",
+		"directMenuGroup": "",
 		"menuShow": [ "q" ],
 
 		"menuItems": [
-			[ "Request Picture", "1" ],
-			[ "Declare", "2", "JBMS-QT1-DECLARE" ],
+			[ "[Request;Say;] [New;] Picture", "1" ],
+			[ "Declare [Bulls Eye;]", "2", "JBMS-QT1-DECLARE" ],
 			[ "Request Help", "3" ],
-			[ "Wilco", "4" ],
-			[ "Unable", "5" ],
-			[ "Check In", "6" ],
-			[ "Check Out", "7" ],
-			[ "Request Relief", "8" ],
-			[ "Request Rescue Chopper", "9" ]
+			[ "Wilco;Roger;Affirmative", "4" ],
+			[ "Unable;Negative", "5" ],
+			[ "[Check;Checking] In [as Fragged;]", "6" ],
+			[ "[Check;Checking] Out", "7" ],
+			[ "[Request;Need;] Relief", "8" ],
+			[ "[Request;Send;Need] [Rescue Chopper] ; Mayday Mayday Mayday", "9", "JBMS-QT1-MAYDAY" ]
 		]
 	},
 	{
@@ -568,17 +600,18 @@
 		"targetPhrases": "A Wax",
 		"menuName": "Vectors",
 		"menuNamePhrases": "Vector;Vectors",
+		"directMenuGroup": "",
 		"menuShow": [ "qq" ],
 
 		"menuItems": [
-			[ "Bogey Dope;[Request;] Vector to Nearest Air Threat", "1", "JBMS-QV1-BOGEY-DOPE" ],
+			[ "[Request;] Bogey Dope;[Request;] Vector to [Nearest;] [Air;] Threat", "1", "JBMS-QV1-BOGEY-DOPE" ],
 			[ "[Request;] Vector to Target", "2" ],
 			[ "[Request;] Vector to Package", "3" ],
-			[ "[Request;] Vector to Tanker", "4" ],
-			[ "[Request;] Vector to Nearest Tanker", "5" ],
-			[ "[Request;] Vector to Divert Field", "6" ],
-			[ "[Request;] Vector to Home Plate", "7" ],
-			[ "[Request;] Vector to Carrier Group", "8" ]
+			[ "[Request;] Vector [to;] Tanker", "4" ],
+			[ "[Request;] Vector [to;] Nearest Tanker", "5" ],
+			[ "[Request;Need] Vector to [Divert;Divert Field;Alternate]", "6" ],
+			[ "[Request;] [Vector;Heading] to Home Plate", "7" ],
+			[ "[Request;] Vector [to;] [Mother;Carrier;Carrier Group]", "8" ]
 		]
 	},
 	{
@@ -586,15 +619,16 @@
 		"targetPhrases": "[Contact;] Tanker",
 		"menuName": "Tanker",
 		"menuNamePhrases": "Tanker",
+		"directMenuGroup": "",
 		"menuShow": [ "y" ],
 
 		"menuItems": [
-			[ "Request [Air;] Flight [Refueling;Refuel];Approaching [for;to] Refuel", "1" ],
-			[ "[Back In;Ready] Precontact [Position;]", "2" ],
-			[ "Done Refueling", "3" ],
-			[ "Request [Air;] Individual [Refueling;Refuel]", "4" ],
+			[ "Request [Air;] [Flight;] [Refueling;Refuel];Approaching [for;to] [Refuel;Refueling]", "1" ],
+			[ "[Back;Back In;Ready;] Precontact [Position;]", "2" ],
+			[ "Done [Refueling;Fueling]", "3" ],
+			[ "Request [Air;] [Single;Individual] [Refueling;Refuel]", "4" ],
 			[ "Request [Air;] Element [Refueling;Refuel]", "5" ],
-			[ "Say Again", "6" ]
+			[ "Say Again;Repeat Message;Repeat Last", "6" ]
 		]
 	},
 	{
@@ -602,17 +636,18 @@
 		"targetPhrases": "[Contact;] Jay Tack",
 		"menuName": "JTAC",
 		"menuNamePhrases": "Jay Tack",
+		"directMenuGroup": "",
 		"menuShow": [ "yy" ],
 
 		"menuItems": [
-			[ "Initial Contact;[Initial;] Check In", "1" ],
-			[ "Ready for [9 Line;9 Liner;Echo Point]", "2" ],
-			[ "[I P;Eye Pea] [Inbound;Re-Attack];Ready to Attack", "3" ],
-			[ "Request Target Bulls Eye [Status;]", "4" ],
-			[ "Request [Laser Marking;Lasing]", "5" ],
-			[ "Request Smoke [Marking;]", "6" ],
-			[ "Check Out", "7" ],
-			[ "Say Again", "8" ]
+			[ "[At;] Initial [Contact;] [Point;] ; [Check;Checking] In", "1" ],
+			[ "Ready [for;] [9 Line;9 Liner;Echo Point]", "2" ],
+			[ "[I P;Eye Pea] Inbound [for;] [Re-Attack;] ; Ready [to;for] Attack", "3" ],
+			[ "[Request;] [Target Bulls Eye;Target Status;Status Target]", "4" ],
+			[ "[Request;] [Laser;Laser Marking;Lasing]", "5" ],
+			[ "[Request;] Smoke [Marking;]", "6" ],
+			[ "[Check;Checking] Out", "7" ],
+			[ "Say Again;Repeat Message;Repeat Last", "8" ]
 		]
 	}
 ]

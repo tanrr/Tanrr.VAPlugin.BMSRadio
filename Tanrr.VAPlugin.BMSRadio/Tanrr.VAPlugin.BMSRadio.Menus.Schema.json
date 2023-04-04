@@ -58,6 +58,12 @@
           { "maxLength": 100 }
         ]
       },
+      "directMenuGroup": {
+        "allOf": [
+          { "type": "string" },
+          { "maxLength": 50 }
+        ]
+      },
       "menuShow": {
         "allOf": [
           { "type": "array" },
@@ -82,7 +88,7 @@
               "items": {
                 "allOf": [
                   { "type": "string" },
-                  { "maxLength": 150 }
+                  { "maxLength": 300 }
                 ]
               }
             }
@@ -96,6 +102,7 @@
       "targetPhrases",
       "menuName",
       "menuNamePhrases",
+      "directMenuGroup",
       "menuShow",
       "menuItems"
     ]

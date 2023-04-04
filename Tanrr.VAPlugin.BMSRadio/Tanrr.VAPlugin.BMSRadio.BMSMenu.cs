@@ -11,49 +11,46 @@ namespace Tanrr.VAPlugin.BMSRadio
         // Single menu line item that has the phrases menuItem matches to, the keys/command to execute if selected
         // and an optional direct command that should cause this menuItem to be executed if called from the
 
-        public string _menuItemPhrases;              // Possibly multiple phrases
-        public string _menuItemExecute { get; set; }              // Execute as string can be chars to press or a named VA command to execute
-        public string _menuItemDirectCmd { get; set; }            // Has to be unique string, used by VA profile to call plugin to execute this menuItem
-        public string[] _extractedMenuItemPhrases { get; set; }   // Array of all possible versions of the phrases, extracted separately, lowercase
+        protected string _menuItemPhrases;                          // Possibly multiple phrases
+        protected string _menuItemExecute { get; set; }             // Execute as string can be chars to press or a named VA command to execute
+        protected string _menuItemDirectCmd { get; set; }           // Has to be unique string, used by VA profile to call plugin to execute this menuItem
+        protected string _containingMenuFullID;
+        protected string[] _extractedMenuItemPhrases { get; set; }  // Array of all possible versions of the phrases, extracted separately, lowercase
 
         public string MenuItemPhrases 
         { get => _menuItemPhrases; set => _menuItemPhrases = value; }              
         public string MenuItemExecute 
         { get => _menuItemExecute; set => _menuItemExecute = value; }              
         public string MenuItemDirectCmd 
-        { get => _menuItemDirectCmd; set => _menuItemDirectCmd = value; }            
+        { get => _menuItemDirectCmd; set => _menuItemDirectCmd = value; }    
+        public string ContainingMenuFullID
+        { get => _containingMenuFullID; set => _containingMenuFullID = value; }
         public string[] ExtractedMenuItemPhrases 
         { get => _extractedMenuItemPhrases; set => _extractedMenuItemPhrases = value; }
+        public int CountExtractedMenuItemPhrases
+        { get => _extractedMenuItemPhrases.Length; }
 
         public bool HasDirectCmd() { return !string.IsNullOrEmpty(MenuItemDirectCmd); }  
-        public MenuItemBMS(dynamic vaProxy, string itemPhrases, string itemExec, string directCmd = null)
+        public MenuItemBMS(dynamic vaProxy, string itemPhrases, string itemExec, string directCmd = null, string containgMenuFullID = null)
         {
 
             if (itemPhrases == null || itemExec == null)
-            {
-                SetEmpty();
-                return;
-            }
+            { SetEmpty(); return; }
 
             _menuItemPhrases = RemoveEmptyMatches(itemPhrases.ToLower());
             _menuItemExecute = itemExec;
             if (_menuItemPhrases.Length == 0 || _menuItemExecute.Length == 0)
-            {
-                SetEmpty();
-                return;
-            }
+            { SetEmpty(); return; }
 
             _extractedMenuItemPhrases = vaProxy.Utility.ExtractPhrases(_menuItemPhrases);
             if (_extractedMenuItemPhrases.Length == 0)
-            {
-                SetEmpty();
-                return;
-            }
+            {   SetEmpty(); return; }
 
             if (!string.IsNullOrEmpty(directCmd))
-            {
-                _menuItemDirectCmd = directCmd;
-            }
+            {   _menuItemDirectCmd = directCmd; }
+
+            if (!string.IsNullOrEmpty(containgMenuFullID))
+            {   _containingMenuFullID = containgMenuFullID; }
         }
 
         void SetEmpty()
@@ -61,16 +58,19 @@ namespace Tanrr.VAPlugin.BMSRadio
             _menuItemPhrases = string.Empty;
             _menuItemExecute = string.Empty;
             _menuItemDirectCmd = string.Empty;
+            _containingMenuFullID = string.Empty;
             _extractedMenuItemPhrases = new string[] { string.Empty };
         }
 
+        // TODO: Remove spaces around internal semicolons as well beforehand?  So "Foo [Join; Free;] ; Join Me ; " is changed to "Foo [Join;Free;];Join Me;" ??
         // Clear out starting, ending, or double ";" in strings - needed to avoid empty matches
         // Internal null matches allowed, but not a full match - "Attack [Air;AA;];Get Them" is fine, but "Attack [Air;AA;];Get Them;" is not
         private string RemoveEmptyMatches(string phrases)
         {
             if (phrases == null) return string.Empty;
 
-            phrases = phrases.Trim(';');  // Remove leading or trailing ; so that phrases can't match "" which matches all
+            phrases = phrases.Trim();       // Remove leading or trailing whitespace
+            phrases = phrases.Trim(';');    // Remove leading or trailing ; so that phrases can't match "" which matches all
 
             if (phrases.Length == 0) return string.Empty;
 
@@ -78,6 +78,20 @@ namespace Tanrr.VAPlugin.BMSRadio
         }
     }
 
+    public class MenuItemShort
+    {
+        protected string _containingMenuFullID;
+        protected string _menuItemExecute;
+
+        public string ContainingMenuFullID { get => _containingMenuFullID; }
+        public string MenuItemExecute { get => _menuItemExecute; }
+
+        public MenuItemShort(string containingMenuFullID, string menuItemExecute)
+        {
+            _containingMenuFullID = containingMenuFullID;
+            _menuItemExecute = menuItemExecute;
+        }   
+    }
     public class MenuBMS
     {
         // Main data class containing a single menu (menuTarget+menuName) and a list of that menu's menuItems
@@ -100,9 +114,24 @@ namespace Tanrr.VAPlugin.BMSRadio
         protected string _menuNamePhrases;  // "Combat [Management;] 3"
         protected string _menuShow;         // If this matches a VA phrase in the profile, execute that command, else presses chars passed
 
+        protected string _directMenuGroup;  // If not empty, name of directMenu this menu (and possibly others) is a member of
+                                            // A NEW menu will be generated containing all the menu items from any member menus with _displayingMenu = false and _isDirectMenu == true
+
+        protected string _directMenuTarget; // TODO
+        protected string _directMenuName;   // TODO
+
+        protected bool _isDirectMenu;       // Put menu up and listen for menu items, vs FIRST listening, then doing menu+item
+                                            // TODO: Expose to users if testing works out - only after tweak flight menus to work with this!
+
+        protected bool _isListingMenu;      // Controls whether this menu is shown when listing menus
+        protected bool _isGroupMenu;        // If true, handles direct input for a GROUP of menus
+
         protected string _allMenuItemPhrases;
 
         public MenuItemBMS[] MenuItemsBMS;
+
+        protected int _countAllExtractedMenuItemPhrases;
+        public int CountAllExtractedMenuItemPhrases { get => _countAllExtractedMenuItemPhrases; }
 
         // TODO - Make these get only, rename as protected members with _
 
@@ -116,7 +145,11 @@ namespace Tanrr.VAPlugin.BMSRadio
         public string MenuNameNorm { get => _menuNameNorm; }
         public string MenuNamePhrases { get => _menuNamePhrases; set => _menuNamePhrases = value; }
         public string MenuShow { get => _menuShow; set => _menuShow = value; }
-
+        public string DirectMenuGroup { get => _directMenuGroup; }
+        public string DirectMenuTarget { get => _directMenuTarget; }
+        public string DirectMenuName { get => _directMenuName; }
+        public bool IsDirectMenu { get => _isDirectMenu; set=> _isDirectMenu = value; }
+        public bool IsListingMenu { get => _isListingMenu; set => _isListingMenu = value; }
         public string AllMenuItemPhrases { get => _allMenuItemPhrases; set=> _allMenuItemPhrases = value; }
 
         static public string MakeFullID(string menuTarget, string menuName)
@@ -167,7 +200,81 @@ namespace Tanrr.VAPlugin.BMSRadio
             return _extractedNormMenuNamePhrases.Contains(menuNamePhrase);
         }
 
-        public MenuBMS(dynamic vaProxy, string tgt, string tgtPhrases, string name, string namePhrases, string show, MenuItemBMS[] items)
+        public bool AppendMenuItemsToGroupMenu(dynamic vaProxy, MenuBMS menuToAppend)
+        {
+            if (null == menuToAppend)
+            {
+                Logger.Error(vaProxy, "Empty menu passed to append");
+                return false; 
+            }
+            if (!_isGroupMenu || string.IsNullOrEmpty(menuToAppend.DirectMenuGroup) || !_directMenuGroup.Equals(menuToAppend.DirectMenuGroup))
+            {  
+                Logger.Warning(vaProxy, "AppendMenu attempted to {_menuFullID} but either this menu is not a group menu, or the appending menu does not match the group");
+                return false;
+            }
+
+
+            // menuItems passed should all have their ContainingMenuFullID set, since they're being added FROM an existing menu
+            // Similarly, the existing menu already has 
+
+            // Create a string with all lowercase commands, ; delimeted, to pass to Get User Input - Wait for Spoken Response 
+            // AND Fill in _extractedMenuItems dictionary with all possble phrases, mapped to their MenuItemExecute values
+            // ie "Weapons Free [Air;A A;]" separated into "weapons free air", "weapons free a a" and "weapons free"
+            // TODO _countAllExtractedMenuItemPhrases = 0;
+            foreach (MenuItemBMS menuItem in menuToAppend.MenuItemsBMS)
+            {
+                // Add all this items phrases to the list of ALL phrases for the group menu
+                _allMenuItemPhrases = _allMenuItemPhrases.Insert(_allMenuItemPhrases.Length, ";" + menuItem.MenuItemPhrases);
+                string[] menuItemPhrases = menuItem.ExtractedMenuItemPhrases;
+                string menuItemExecute = menuItem.MenuItemExecute;
+                // TODO - Fix up this count if we drop duplicates?
+                _countAllExtractedMenuItemPhrases += menuItem.CountExtractedMenuItemPhrases;
+
+                foreach (string menuItemPhrase in menuItem.ExtractedMenuItemPhrases)
+                {
+                    if (_extractedMenuItems.ContainsKey(menuItemPhrase))
+                    {
+                        // This is a duplicate - skip it, but log
+                        string DupedExecute = _extractedMenuItems[menuItemPhrase];
+                        string AddWarningMessage = $"Append of Duplicate Extracted Phrase {menuItemPhrase} Attempted to GROUP Menu {_menuName} from menu {menuToAppend.MenuFullID}";
+                        Logger.Warning(vaProxy, AddWarningMessage);
+                        continue;
+                    }
+                    else
+                    {
+                        try
+                        {
+                            // Add each extracted menu item phrase to our list --
+                            // TODO TODO TODO - BUT BUT BUT This doesn't add which menu we came from, so we need to expand the _extractedMenuItems to contain that too!!!!!
+                            _extractedMenuItems.Add(menuItemPhrase, menuItemExecute);
+                        }
+                        catch (ArgumentException e)
+                        {
+                            Logger.Error(vaProxy, "Unexpected failure to add append extracted menu items to group menu dictionary");
+                            string AddErrorMessage = $"MenuItemPhrase = {menuItemPhrase}, MenuItemExecute = {menuItemExecute}";
+                            Logger.Error(vaProxy, AddErrorMessage);
+                            Logger.Error(vaProxy, $"EXCEPTION THROWN: {e.Message}");
+                            // Letting the loop continue here, in case this was just a duplicate we failed to catch
+                        }
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        public MenuBMS(
+            dynamic vaProxy, 
+            string tgt, 
+            string tgtPhrases, 
+            string name, 
+            string namePhrases, 
+            string show, 
+            MenuItemBMS[] items, 
+            bool isDirectMenu = false, 
+            bool isListingMenu = true, 
+            bool isGroupMenu = false,
+            string directMenuGroup = "")
         {
             Logger.StructuresWrite(vaProxy, "In MenuBMS Constructor");
 
@@ -181,6 +288,28 @@ namespace Tanrr.VAPlugin.BMSRadio
             _menuNameNorm = namePhrases;
             _menuShow = show;
 
+            _isDirectMenu = isDirectMenu;
+            _isListingMenu = isListingMenu;
+
+            // Is this menu a member of a directMenuGroup (or a menu group itself)?
+            _directMenuGroup = string.IsNullOrEmpty(directMenuGroup) ? string.Empty : $"group_{directMenuGroup}";
+            // Is this menu representing multiple other menus?
+            _isGroupMenu = isGroupMenu;
+            if (_isGroupMenu)
+            {
+                _directMenuTarget = "group";
+                // TEMP: for now we just set this up so we'll get FullID = group_Approach or group_AWACS - consider more later
+                // Note that this is using the passed group name, so "Approach", not the member variable "group_Approach"
+                _directMenuName = directMenuGroup;  
+            }
+
+            if (isDirectMenu && !_isGroupMenu)
+            {
+                    Logger.Error(vaProxy, "Direct Menus that are not Group Menus not supported yet");
+                    _directMenuTarget = string.Empty;
+                    _directMenuName = string.Empty;
+            }
+
             MenuItemsBMS = items;
 
             _menuFullID = string.Empty; // Starts empty
@@ -189,7 +318,7 @@ namespace Tanrr.VAPlugin.BMSRadio
             // MakeFullID has its own error checks and will return string.Empty on error
             if (string.IsNullOrEmpty(_menuTarget) || string.IsNullOrEmpty(_targetPhrases)
                 || string.IsNullOrEmpty(_menuName) || string.IsNullOrEmpty(_menuNameNorm)
-                || string.IsNullOrEmpty(_menuShow)
+                || (string.IsNullOrEmpty(_menuShow) && !_isGroupMenu)
                 || items == null || items.Length == 0)
             {
                 Logger.Error(vaProxy, "Unexpected failure creating MenuBMS - Invalid Parameters passed to constructor");
@@ -252,13 +381,18 @@ namespace Tanrr.VAPlugin.BMSRadio
             // Create a string with all lowercase commands, ; delimeted, to pass to Get User Input - Wait for Spoken Response 
             // AND Fill in _extractedMenuItems dictionary with all possble phrases, mapped to their MenuItemExecute values
             // ie "Weapons Free [Air;A A;]" separated into "weapons free air", "weapons free a a" and "weapons free"
+            _countAllExtractedMenuItemPhrases = 0;
             foreach (MenuItemBMS menuItem in MenuItemsBMS)
             {
                 Logger.StructuresWrite(vaProxy, "menuItem " + menuItem.MenuItemPhrases + " : " + menuItem.MenuItemExecute);
 
+                // Store menu's FullID in EACH menuItem to allow groups of menus to map menu items back to associated menu
+                menuItem.ContainingMenuFullID = _menuFullID;
+
                 _allMenuItemPhrases = _allMenuItemPhrases.Insert(_allMenuItemPhrases.Length, menuItem.MenuItemPhrases + ";");
                 string[] MenuItemPhrases = menuItem.ExtractedMenuItemPhrases;
                 string MenuItemExecute = menuItem.MenuItemExecute;
+                _countAllExtractedMenuItemPhrases += menuItem.CountExtractedMenuItemPhrases;
 
                 Logger.StructuresWrite(vaProxy, "    Set MenuItemPhrases array of extracted phrases and MenuItemExecute");
 
@@ -290,7 +424,8 @@ namespace Tanrr.VAPlugin.BMSRadio
             }
             // Get rid of that last ";" so we don't allow matching an empty string
             _allMenuItemPhrases = _allMenuItemPhrases.TrimEnd(';');
-        }
+
+        } // MenuBMS constructor
 
     };
 

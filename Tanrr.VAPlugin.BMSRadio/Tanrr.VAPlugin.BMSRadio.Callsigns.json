@@ -1,6 +1,6 @@
 {
 	"version": {
-		"verPluginJSON": "v0.1.6",
+		"verPluginJSON": "v0.1.7",
 		"verBMSJSON": "4.37.2"
 	},
 	"flightInfo": {
@@ -10,9 +10,9 @@
 		"userField": "User can update this field with their own notes"
 	},
 
-	"awacsNames": [ "Darkstar;Magic;Overlord;Sentry" ],
+	"awacsNames": [ "Chalice;Darkstar;Dragnet;Magic;Overlord;Sentry" ],
 
-	"tankerNames": [ "Arco;Camel;Canteen;Shell;Texaco" ],
+	"tankerNames": [ "Arco;Camel;Canteen;Copper;Shell;Texaco" ],
 
 	"jtacNames": [ "Axeman;Badger;Darknight;Eyeball;Finger;Hammer;Whiplash" ],
 

@@ -1,6 +1,6 @@
 # Jeeves BMS Radio Menus (Tanrr.VAPlugin.BMSRadio) 
 
-v0.1.6 - tested with Falcon BMS 4.37.2 - (for BMS 4.37.1 use plugin v0.1.2)
+v0.1.7 - tested with Falcon BMS 4.37.2 - (for BMS 4.37.1 use plugin v0.1.2)
 
 Jeeves BMS Radio Menus is a simple but powerful plugin for VoiceAttack 
 to work with Falcon BMS radio menus. 
@@ -18,8 +18,8 @@ them to make their choices.
 Calls outside your flight are similar, but may not need the menu name. 
 For example, *"Tanker"* or *"Tower"* will just bring up the tanker or tower menu.
 
-As of v0.1.5 **you can now use over 150 callsigns for AWACS, tankers, JTAC and your own flight!** 
-Calls like *"Arco, Viper 2 - Request Flight Refueling"* just work. 
+**You can use over 150 callsigns for AWACS, tankers, JTAC and your own flight!** 
+Calls like *"Arco 3, Viper 2 - Request Flight Refueling"* just work. 
 You can change your own callsign on the fly by voice command.
 
 The system is designed for flexibility while remaining reasonably simple.
@@ -67,9 +67,9 @@ valid callsigns. An example of use is below:*
     Arco 3, Viper 1 - Request Flight Refueling
     Update Callsign Hunter 6
         <<Say your flight position in Hunter 6 or say 'Skip'>>
-    Three
-        <<New Callsign Hunter 6 3, Reinitializing Profile>>
-    Tower, Hunter 6 3 - Emergency!
+    One
+        <<New Callsign Hunter 6 1, Reinitializing Profile>>
+    Tower, Hunter 6, Two-Ship F16 - Request Landing Runway 2 6
     Axeman 2, Hunter 6 - Check In
 ```
 
@@ -93,7 +93,9 @@ The amount of time each menu is displayed when listing menus is adjustable in th
 quickly change between UHF and VHF presets.  You can also say 
 "Press [0..9]" to generate a keystroke for a number, or "Press Escape."*
 
-- *Logging levels can be set on the fly by voice with "Enable/Disable Menu/JSON/Struct/Verbose Logging"*
+- *Logging levels can be set by voice with "Enable/Disable Menu/JSON/Struct/Verbose Logging"*  
+  *Audible feedback can be set by voice with "Enable/Disable Audio Feedback"*  
+  *Require BMS to have focus for keystrokes to be sent with "Enable/Disable B M S Focus Only".*
 
 ## **INSTALLATION**:
 
@@ -176,6 +178,8 @@ The relevant sections are:
   For newer versions of BMS, or if you have modified the menu 
   by changing the BMS **Data/Art/CkptArt/menu.dat** file, 
   update the JSON file to match your changes.
+- Sound effects require VoiceAttack Settings, Audio tab to have 
+  *"Audio Output Type"* set to *"Integrated Components"*.
 - No callsigns for ATC/airports. A future possibility. 
 - Though flight/unit numbers are supported for JTACs, AWACS and tankers, position numbers 
   are not. *"Arco 2"* is okay but *"Arco 2-1"* is not.
@@ -215,6 +219,7 @@ A partial list of variables:
 \>JBMS_STRUCT_LOG     Boolean for logging of data structures manipulation
 \>JBMS_VERBOSE_LOG    Boolean for more verbose general logging
 
+\>JBMS_AUDIO_FEEDBACK    User set boolean to allow audible feedback for commands
 \>JBMS_KEYS_ONLY_TO_BMS  User set boolean to restrict keystrokes if BMS does not have focus
 \>JBMSI_FOCUS_BMS        Boolean usually set to true if BMS has focus
 
@@ -481,6 +486,18 @@ I have mine set very high, at 98, due to fan noise and a quiet voice.
 - Disable Acoustic Echo Cancellation: ON (but can effect other apps, and OFF is usually ok)
 - Reject Pending Speech: OFF
 
+## TROUBLESHOOTING
+
+- For general VoiceAttack recognition, see the VoiceAttack section above
+- For errors related to versions of Newtonsoft.Json see the **Install New Version** section
+- Menu comes up but menu item phrases aren't recognized: 
+    - Add short pause after menu phrase & before item, like:  
+    *"Tower, Viper 1 Two-Ship F16 \<PAUSE\> Request Landing Runway 2 6"*
+    - If that menu has many phrase combinations, edit the menu to reduce the number of phrases. 
+    For example, removing all the *"Runway Number Number"* phrases from the *Tower* menu.
+- For crashes or errors that this document hasn't been able to help with, 
+  please copy the VoiceAttack log (from its window) and open a bug report 
+  on the GitHub Issues page: https://github.com/tanrr/Tanrr.VAPlugin.BMSRadio/issues 
 
 **MENUTARGET & MENUNAME ABBREVIATIONS USED FOR DIRECT COMMANDS (NOT REQUIRED BUT HELPFUL):**
 ```

@@ -37,7 +37,7 @@ namespace Tanrr.VAPlugin.BMSRadio
     {
         // Jeeves BMS Radio VoiceAttack Plugin
 
-        protected static string s_version = "v0.1.6";
+        protected static string s_version = "v0.1.7";
         protected static string s_verPluginJSON = string.Empty;
         protected static string s_verBMSJSON = string.Empty;
         protected static string s_csVerPluginJSON = string.Empty;
@@ -50,10 +50,12 @@ namespace Tanrr.VAPlugin.BMSRadio
         protected static int s_indexMenuToList = -1;
 
         // VoiceAttack variables used/shared by plugin
-        protected const string JBMS_JsonLog = ">JBMS_JSON_LOG";             // Boolean for logging of JSON parsing
-        protected const string JBMS_MenuLog = ">JBMS_MENU_LOG";             // Boolean for logging of menu items(shows list of menu items in log)
-        protected const string JBMS_StructLog = ">JBMS_STRUCT_LOG";         // Boolean for logging of data structures manipulation
-        protected const string JBMS_VerboseLog = ">JBMS_VERBOSE_LOG";       // Boolean for more verbose general logging
+        protected const string JBMS_JsonLog =       ">JBMS_JSON_LOG";       // Boolean for logging of JSON parsing
+        protected const string JBMS_MenuLog =       ">JBMS_MENU_LOG";       // Boolean for logging of menu items(shows list of menu items in log)
+        protected const string JBMS_StructLog =     ">JBMS_STRUCT_LOG";     // Boolean for logging of data structures manipulation
+        protected const string JBMS_VerboseLog =    ">JBMS_VERBOSE_LOG";    // Boolean for more verbose general logging
+
+        protected const string JBMS_AudioFeedback = ">JBMS_AUDIO_FEEDBACK"; // Allows audible feedback to user
 
         protected const string JBMS_MenuTgt = ">JBMS_MENU_TGT";             // Holds menuTarget when plugin called w/ context "JBMS_SHOW_MENU"
         protected const string JBMS_MenuName = ">JBMS_MENU_NAME";           // Holds menuName when calling plugin w/ context "JBMS_SHOW_MENU"
@@ -95,6 +97,10 @@ namespace Tanrr.VAPlugin.BMSRadio
         protected const string CmdJBMS_SetCallsign =            "JBMS Set Callsign";
 
         protected const string JBMS_MenuTimeout = "_JBMS_MENU_TIMEOUT";     // Possible JBMSI_MenuResponse;
+
+        // Contexts passed to plugin's Invoke method
+        protected const string JBMS_ContextDoInit = "JBMS_DO_INIT";
+        protected const string JBMS_ContextReloadLogSettings =  "JBMS_RELOAD_LOG_SETTINGS";
 
         // TODO - Forcing string comps to ignore case till decide lowercase vs mixed
         protected const StringComparison s_strComp = StringComparison.OrdinalIgnoreCase;
@@ -737,11 +743,59 @@ namespace Tanrr.VAPlugin.BMSRadio
                 }
 
                 MenuBMS menu = new MenuBMS
-                (vaProxy, (string)menuJson["menuTarget"], (string)menuJson["targetPhrases"], (string)menuJson["menuName"], (string)menuJson["menuNamePhrases"], menuShow, menuItemsBMS);
+                    (vaProxy, 
+                    (string)menuJson["menuTarget"], 
+                    (string)menuJson["targetPhrases"], 
+                    (string)menuJson["menuName"], 
+                    (string)menuJson["menuNamePhrases"], 
+                    menuShow, 
+                    menuItemsBMS,
+                    isDirectMenu: false,
+                    isListingMenu: true,
+                    isGroupMenu: false,
+                    (string)menuJson["directMenuGroup"]);
 
                 // Store menu in Dictionary with MenuFullID as key
                 try
-                {   s_menusAll.Add(menu.MenuFullID, menu);    }
+                {   
+                    // Add the menu and verify its details
+                    s_menusAll.Add(menu.MenuFullID, menu);
+                    int countMenuExtractedPhrases = menu.CountAllExtractedMenuItemPhrases;
+                    if (countMenuExtractedPhrases > 500)
+                    { Logger.Error(vaProxy, $"MENU {menu.MenuFullID} HAS PHRASE COUNT {countMenuExtractedPhrases} - OVER 500 LIMIT; SOME MENU ITEMS WONT BE RECOGNIZED!"); }
+                    else if (countMenuExtractedPhrases >= 465)
+                    { Logger.Warning(vaProxy, $"MENU {menu.MenuFullID} HAS PHRASE COUNT {countMenuExtractedPhrases} - APPROACHING 500 LIMIT!"); }
+                    else
+                    { Logger.MenuWrite(vaProxy, $"MENU {menu.MenuFullID} loaded - Extracted Phrase Count: {countMenuExtractedPhrases}"); }
+
+                    // If this menu is part of a directMenuGroup, record it too
+                    if (!string.IsNullOrEmpty(menu.DirectMenuGroup))
+                    {
+                        MenuBMS menuGroup = s_menusAll[menu.DirectMenuGroup];
+                        if (null == menuGroup)
+                        {
+                            // We don't have a group menu for this menuGroup yet, so make one
+                            menuGroup = new MenuBMS
+                                (vaProxy,
+                                menu.DirectMenuTarget,
+                                menu.DirectMenuTarget,
+                                menu.DirectMenuName,
+                                menu.DirectMenuName,
+                                show: "",                   // No Show command for group menus 
+                                items: menuItemsBMS,        // Copy over our current list of menu items
+                                isDirectMenu: true,
+                                isListingMenu: false,
+                                isGroupMenu: true,
+                                (string)menuJson["directMenuGroup"]);
+                            s_menusAll.Add(menuGroup.MenuFullID, menuGroup);
+                        }
+                        else
+                        {
+                            // We have an existing group already, so just add our additional menuItems to it
+
+                        }
+                    }
+                }
                 catch (System.ArgumentException e)
                 {
                     Logger.Error(vaProxy, "Failed to add a menu with menuTarget_menuName of " + menu.MenuFullID);
@@ -749,10 +803,11 @@ namespace Tanrr.VAPlugin.BMSRadio
                     return false;
                 }
 
-                // Now that menu is fully validated, record map of its direct commmands to their matching dictionary and menuItem
                 // TODO: Move this into a container for the list of menus?
+                // Now that menu is fully validated, check it for direct commands
                 for (int i = 0; i < countMenuItems; i++)
                 {
+                    // Record map of matching dictionary and menuItem to any direct command
                     if (menuItemsBMS[i].HasDirectCmd())
                     {
                         string dirCmd = menuItemsBMS[i].MenuItemDirectCmd;
@@ -765,7 +820,11 @@ namespace Tanrr.VAPlugin.BMSRadio
                             // Don't fail for this - rest of system should be working
                         }
                     }
+
+
                 }
+
+
             }
 
             if (!OneTimeCallsignLoad(vaProxy))
@@ -968,7 +1027,8 @@ namespace Tanrr.VAPlugin.BMSRadio
                 ResetMenuStateNOKEYS(vaProxy, onlyUpAndErrors: true, killWaitForMenu: false);
             }
 
-            PressKeyComboList(vaProxy, Menu.MenuShow, /* waitForReturn */ true);
+            // Don't wait for all keypresses since want to listen for menu items as soon as possible (and user speech will take long enough)
+            PressKeyComboList(vaProxy, Menu.MenuShow, /* waitForReturn */ false);
             // Assume Success
             vaProxy.SetBoolean(JBMSI_MenuUp, true);
 
@@ -998,7 +1058,7 @@ namespace Tanrr.VAPlugin.BMSRadio
             vaProxy.Command.Execute(CmdJBMS_WaitForMenuResponse, WaitForReturn: false, AsSubcommand: false, PassedText: $@"""{AllMenuItemPhrases}""");
 
             return true;
-        }
+        } // ShowMenu
 
         public static void VA_Invoke1(dynamic vaProxy)
         {
@@ -1045,36 +1105,41 @@ namespace Tanrr.VAPlugin.BMSRadio
             // Our AppFocusChanged() is called by VA when active window changes, but it only polls every 1/4 second
             // AND if the user doesn't have VoiceAttack's "Auto Profile Switching" enabled no event polling is done
             // Thus better to do a focus check each time the plugin is called from the profile
-            string procActive = vaProxy.Utility.ActiveWindowProcessName();
-            bool procActiveBMS = false;
             bool keysOnlyToBMS = GetNonNullBool(vaProxy, JBMS_KeysOnlyToBMS);
-            if (!string.IsNullOrEmpty(procActive))
+            bool procActiveBMS = GetNonNullBool(vaProxy, JBMSI_FocusBMS);
+            if (keysOnlyToBMS || vaProxy.Context == "JBMS_CHECK_BMS_FOCUS")
             {
-                procActiveBMS = procActive.Equals(JBMS_ProcNameFalconBMS, s_strComp);
-                vaProxy.SetBoolean(JBMSI_FocusBMS, procActiveBMS);
-
-                if (vaProxy.Context == "JBMS_CHECK_BMS_FOCUS")
+                string procActive = vaProxy.Utility.ActiveWindowProcessName();
+                if (!string.IsNullOrEmpty(procActive))
                 {
-                    // We were only called to check if BMS had the focus, so return
-                    return;
-                }
+                    procActiveBMS = procActive.Equals(JBMS_ProcNameFalconBMS, s_strComp);
+                    vaProxy.SetBoolean(JBMSI_FocusBMS, procActiveBMS);
+
+                    if (vaProxy.Context == "JBMS_CHECK_BMS_FOCUS")
+                    {
+                        // We were only called to check if BMS had the focus, so return
+                        return;
+                    }
 
                     if (!procActiveBMS)
-                {   
-                    if (!procActiveBMS && keysOnlyToBMS)
                     {
-                        // Init is done on first call into invoke, above, so nothing to do and don't need to log a warning
-                        if (vaProxy.Context == "JBMS_DO_INIT")
-                        { return; }
+                        // Leave the duplicate check of !procActiveBMS below, as we might add other cases
+                        if (!procActiveBMS && keysOnlyToBMS)
+                        {
+                            // Init is done on first call into invoke, above, so nothing to do and don't need to log a warning
+                            if (vaProxy.Context == JBMS_ContextDoInit)
+                            { return; }
 
-                        // If BMS had focus but has now lost focus cleanup menu state and stop any listening
-                        // Note this could possibly muck up valid calls to the plugin,
-                        // but erring on side of cleaning up vs leaving plugin listening while other app has focus
-                        // TODO - Change to VerboseWrite before releasing
-                        Logger.Write(vaProxy, $"Plugin invoked with context=\"{vaProxy.Context}\" when Falcon BMS does not have focus and >JBMSI_KEYS_ONLY_TO_BMS true");
-                        Logger.Write(vaProxy, "Cleaning up any left over menu state and listing menu state and exiting");
-                        SafeCleanupWithoutFocus(vaProxy);
-                        return;
+                            // If BMS had focus but has now lost focus cleanup menu state and stop any listening
+                            // Note this could possibly muck up valid calls to the plugin,
+                            // but erring on side of cleaning up vs leaving plugin listening while other app has focus
+                            Logger.VerboseWrite(vaProxy, $"Plugin invoked with context=\"{vaProxy.Context}\" when Falcon BMS does not have focus and >JBMSI_KEYS_ONLY_TO_BMS true");
+                            Logger.VerboseWrite(vaProxy, "Cleaning up any left over menu state and listing menu state and exiting");
+                            SafeCleanupWithoutFocus(vaProxy);
+                            // Bail out, unless user is changing log settings (since user might be changing settings TO allow keystrokes outside BMS)
+                            if (vaProxy.Context != JBMS_ContextReloadLogSettings)
+                                return;
+                        }
                     }
                 }
             }
@@ -1089,7 +1154,7 @@ namespace Tanrr.VAPlugin.BMSRadio
 
             switch (vaProxy.Context)
             {
-                case "JBMS_DO_INIT":
+                case JBMS_ContextDoInit:
                     break;  // We init automatically on first call, so nothing to do
 
                 case "JBMS_RESET_MENU_STATE":
@@ -1104,7 +1169,7 @@ namespace Tanrr.VAPlugin.BMSRadio
                     ResetMenuStateNOKEYS(vaProxy, onlyUpAndErrors: false, killWaitForMenu: true);
                     break;
 
-                case "JBMS_RELOAD_LOG_SETTINGS":
+                case JBMS_ContextReloadLogSettings:
                     // User or profile initiated reload of logging parameters
                     Logger.Write(vaProxy, "Reloading logging settings");
                     Logger.Json = GetNonNullBool(vaProxy, JBMS_JsonLog);
@@ -1338,6 +1403,9 @@ namespace Tanrr.VAPlugin.BMSRadio
                     foreach ( KeyValuePair<string, MenuBMS> kvp in s_menusAll )
                     {
                         MenuBMS menu = kvp.Value;
+                        // Skip menus that don't want to be listed
+                        if (menu.IsListingMenu) { continue; }
+
                         if ( !foundTarget && (menu.ContainsNormMenuTargetPhrase(menuTargetPhrase) || menuTargetPhrase.Equals(menu.MenuTargetNorm, s_strComp)) )
                         {
                             menuTargetNorm = menu.MenuTargetNorm;

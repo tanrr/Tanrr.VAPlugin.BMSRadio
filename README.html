@@ -702,7 +702,7 @@
   <body>
     <article class="markdown-body">
       <h1 data-sourcepos="1:1-1:50">Jeeves BMS Radio Menus (Tanrr.VAPlugin.BMSRadio)</h1>
-<p data-sourcepos="3:1-3:75">v0.1.6 - tested with Falcon BMS 4.37.2 - (for BMS 4.37.1 use plugin v0.1.2)</p>
+<p data-sourcepos="3:1-3:75">v0.1.7 - tested with Falcon BMS 4.37.2 - (for BMS 4.37.1 use plugin v0.1.2)</p>
 <p data-sourcepos="5:1-6:37">Jeeves BMS Radio Menus is a simple but powerful plugin for VoiceAttack
 to work with Falcon BMS radio menus.</p>
 <p data-sourcepos="8:1-9:45">It is a flexible solution with more features than simpler VA profiles,
@@ -715,8 +715,8 @@ Thus users who are not familiar with the menus can look through
 them to make their choices.</p>
 <p data-sourcepos="18:1-19:81">Calls outside your flight are similar, but may not need the menu name.
 For example, <em>&quot;Tanker&quot;</em> or <em>&quot;Tower&quot;</em> will just bring up the tanker or tower menu.</p>
-<p data-sourcepos="21:1-23:61">As of v0.1.5 <strong>you can now use over 150 callsigns for AWACS, tankers, JTAC and your own flight!</strong>
-Calls like <em>&quot;Arco, Viper 2 - Request Flight Refueling&quot;</em> just work.
+<p data-sourcepos="21:1-23:61"><strong>You can use over 150 callsigns for AWACS, tankers, JTAC and your own flight!</strong>
+Calls like <em>&quot;Arco 3, Viper 2 - Request Flight Refueling&quot;</em> just work.
 You can change your own callsign on the fly by voice command.</p>
 <p data-sourcepos="25:1-30:69">The system is designed for flexibility while remaining reasonably simple.
 It is easy to update JBMS to match updates to the game,
@@ -767,12 +767,12 @@ valid callsigns. An example of use is below:</em></p>
 <pre data-sourcepos="66:1-74:3"><code>    Arco 3, Viper 1 - Request Flight Refueling
     Update Callsign Hunter 6
         &lt;&lt;Say your flight position in Hunter 6 or say 'Skip'&gt;&gt;
-    Three
-        &lt;&lt;New Callsign Hunter 6 3, Reinitializing Profile&gt;&gt;
-    Tower, Hunter 6 3 - Emergency!
+    One
+        &lt;&lt;New Callsign Hunter 6 1, Reinitializing Profile&gt;&gt;
+    Tower, Hunter 6, Two-Ship F16 - Request Landing Runway 2 6
     Axeman 2, Hunter 6 - Check In
 </code></pre>
-<ul data-sourcepos="76:1-97:0">
+<ul data-sourcepos="76:1-99:0">
 <li data-sourcepos="76:1-80:0">
 <p data-sourcepos="76:3-79:58"><em>JSON schemas are provided to validate the menu and callsign JSON files.
 This is done automatically on program load.  A better option, though,
@@ -797,117 +797,122 @@ The amount of time each menu is displayed when listing menus is adjustable in th
 quickly change between UHF and VHF presets.  You can also say
 &quot;Press [0..9]&quot; to generate a keystroke for a number, or &quot;Press Escape.&quot;</em></p>
 </li>
-<li data-sourcepos="96:1-97:0">
-<p data-sourcepos="96:3-96:104"><em>Logging levels can be set on the fly by voice with &quot;Enable/Disable Menu/JSON/Struct/Verbose Logging&quot;</em></p>
+<li data-sourcepos="96:1-99:0">
+<p data-sourcepos="96:3-98:95"><em>Logging levels can be set by voice with &quot;Enable/Disable Menu/JSON/Struct/Verbose Logging&quot;</em><br />
+<em>Audible feedback can be set by voice with &quot;Enable/Disable Audio Feedback&quot;</em><br />
+<em>Require BMS to have focus for keystrokes to be sent with &quot;Enable/Disable B M S Focus Only&quot;.</em></p>
 </li>
 </ul>
-<h2 data-sourcepos="98:1-98:20"><strong>INSTALLATION</strong>:</h2>
-<p data-sourcepos="100:1-103:79"><em>This plugin uses Newtonsoft.Json.dll version 13.0.2,
+<h2 data-sourcepos="100:1-100:20"><strong>INSTALLATION</strong>:</h2>
+<p data-sourcepos="102:1-105:79"><em>This plugin uses Newtonsoft.Json.dll version 13.0.2,
 and Newtonsoft.Json.Schema.dll version 3.0.14.<br />
 They are included, or you can download your own versions.
 Note that STEP 3 copies the Newtonsoft.Json.dll file to a different directory.</em></p>
-<h3 data-sourcepos="105:1-105:31">Remove Any Previous Install</h3>
-<ul data-sourcepos="107:1-114:0">
-<li data-sourcepos="107:1-108:87">Run VoiceAttack and delete or rename &quot;Jeeves BMS Radio Profile&quot;<br />
+<h3 data-sourcepos="107:1-107:31">Remove Any Previous Install</h3>
+<ul data-sourcepos="109:1-116:0">
+<li data-sourcepos="109:1-110:87">Run VoiceAttack and delete or rename &quot;Jeeves BMS Radio Profile&quot;<br />
 Rename if you customized the profile so you can copy command phrases to the new profile</li>
-<li data-sourcepos="109:1-110:47">If renaming, change the active profile so your old profile won't
+<li data-sourcepos="111:1-112:47">If renaming, change the active profile so your old profile won't
 initialize with the newer version of the plugin</li>
-<li data-sourcepos="111:1-111:23">Shut down VoiceAttack</li>
-<li data-sourcepos="112:1-112:82">Save a copy of the <strong>Tanrr.VAPlugin.Radio.Menus.json</strong> file if you customized it</li>
-<li data-sourcepos="113:1-114:0">Delete the <strong>Tanrr.VAPlugin.BMSRadio</strong> folder in <strong>..VoiceAttack\Apps</strong></li>
+<li data-sourcepos="113:1-113:23">Shut down VoiceAttack</li>
+<li data-sourcepos="114:1-114:82">Save a copy of the <strong>Tanrr.VAPlugin.Radio.Menus.json</strong> file if you customized it</li>
+<li data-sourcepos="115:1-116:0">Delete the <strong>Tanrr.VAPlugin.BMSRadio</strong> folder in <strong>..VoiceAttack\Apps</strong></li>
 </ul>
-<h3 data-sourcepos="115:1-115:23">Install New Version</h3>
-<ol data-sourcepos="117:1-140:0">
-<li data-sourcepos="117:1-118:80">Make sure that <em>&quot;Enable Plugin Support&quot;</em> is enabled
+<h3 data-sourcepos="117:1-117:23">Install New Version</h3>
+<ol data-sourcepos="119:1-142:0">
+<li data-sourcepos="119:1-120:80">Make sure that <em>&quot;Enable Plugin Support&quot;</em> is enabled
 (VoiceAttack Settings (Wrench icon) under &quot;General&quot;), then shut down VoiceAttack</li>
-<li data-sourcepos="119:1-121:54">Move the <strong>Tanrr.VAPlugin.BMSRadio</strong> folder into the folder
+<li data-sourcepos="121:1-123:54">Move the <strong>Tanrr.VAPlugin.BMSRadio</strong> folder into the folder
 <strong>..\VoiceAttack\Apps</strong>.  This should leave the dlls and related files
 under <strong>..\VoiceAttack\Apps\Tanrr.VAPlugin.BMSRadio</strong>.</li>
-<li data-sourcepos="122:1-127:52"><strong>IMPORTANT</strong>: From the <strong>Tanrr.VAPlugin.BMSRadio</strong> folder,
+<li data-sourcepos="124:1-129:52"><strong>IMPORTANT</strong>: From the <strong>Tanrr.VAPlugin.BMSRadio</strong> folder,
 <strong>COPY</strong> the <strong>Newtonsoft.Json.dll</strong> file into the
 <strong>..\VoiceAttack\Shared\Assemblies</strong> folder.<br />
 If you have different versions of <strong>Newtonsoft.Json.dll</strong> installed,
 you may need to also copy <strong>VoiceAttac.exe.config</strong> from the plugin
 folder to the folder that <strong>VoiceAttack.exe</strong> is in.</li>
-<li data-sourcepos="128:1-128:71">Launch VoiceAttack and import <strong>Jeeves BMS Radio Menus Profile.vap</strong></li>
-<li data-sourcepos="129:1-130:33">Shut down, then relaunch VoiceAttack, so the updated profile
+<li data-sourcepos="130:1-130:71">Launch VoiceAttack and import <strong>Jeeves BMS Radio Menus Profile.vap</strong></li>
+<li data-sourcepos="131:1-132:33">Shut down, then relaunch VoiceAttack, so the updated profile
 can initialize the updated plugin</li>
-<li data-sourcepos="131:1-132:75">If you had custom phrases in the JSON file, merge them by hand (usually easy to do).<br />
+<li data-sourcepos="133:1-134:75">If you had custom phrases in the JSON file, merge them by hand (usually easy to do).<br />
 If you had custom phrases in the VA profile, copy them to the new profile.</li>
-<li data-sourcepos="133:1-137:65"><em>HOTKEYS:</em> The VoiceAttack profile provided only sets a hotkey
+<li data-sourcepos="135:1-139:65"><em>HOTKEYS:</em> The VoiceAttack profile provided only sets a hotkey
 of F24 (hold to listen) for VoiceAttack. You will want to change
 the hotkeys to whatever keyboard keys or game controller buttons you use.
 Hotkeys can be set globally (VoiceAttack Settings, Hotkeys)
 or just for the profile (Edit Profile, Options, Profile Hotkeys).</li>
-<li data-sourcepos="138:1-140:0">Optionally restrict plugin from generating keystrokes if BMS does not have focus.
+<li data-sourcepos="140:1-142:0">Optionally restrict plugin from generating keystrokes if BMS does not have focus.
 See <em>Restricting Plugin when BMS Not Active</em></li>
 </ol>
-<p data-sourcepos="141:1-141:76">** <em>See recommended VoiceAttack settings at the end of this document</em> **</p>
-<h2 data-sourcepos="143:1-143:11">DETAILS:</h2>
-<h3 data-sourcepos="145:1-145:42">Restricting Plugin when BMS Not Active</h3>
-<p data-sourcepos="147:1-152:53">The plugin can listen for application focus changes so if you alt+tab away
+<p data-sourcepos="143:1-143:76">** <em>See recommended VoiceAttack settings at the end of this document</em> **</p>
+<h2 data-sourcepos="145:1-145:11">DETAILS:</h2>
+<h3 data-sourcepos="147:1-147:42">Restricting Plugin when BMS Not Active</h3>
+<p data-sourcepos="149:1-154:53">The plugin can listen for application focus changes so if you alt+tab away
 from BMS it can stop sending keystrokes until BMS has focus again. To allow
 the plugin to catch app focus changes, Select <strong>&quot;Enable Auto Profile Switching&quot;</strong>
 in VoiceAttack Settings, General Tab and set <strong>&gt;JBMS_KEYS_ONLY_TO_BMS</strong> to true
 in <em>JBMS Initial Load Init</em> in VA profile. You will need to restart VoiceAttack
 after this for the plugin to get focus change events.</p>
-<p data-sourcepos="154:1-155:36">You can change enable or disable the focus requirement with the voice command
+<p data-sourcepos="156:1-157:36">You can change enable or disable the focus requirement with the voice command
 <em>&quot;Enable/Disable B M S Focus Only&quot;</em>.</p>
-<p data-sourcepos="157:1-161:58">Note that this isn't a perfect solution, but it should avoid most problems.
+<p data-sourcepos="159:1-163:58">Note that this isn't a perfect solution, but it should avoid most problems.
 If a menu was up, or you were listing menus, when you alt-tabbed away
 the plugin will stop listening for menu items or iterating menus.
 You can still say <em>&quot;Press [0..9]&quot;</em> to choose a menu item for a menu that is up,
 or just say <em>&quot;Cancel&quot;</em> or <em>&quot;Reset Menu&quot;</em> to bring it down.</p>
-<h3 data-sourcepos="163:1-163:13">BMS Menus</h3>
-<p data-sourcepos="165:1-167:26">Details of the BMS Radio menus can be found <strong>BMS-Comms-Nav-Book.pdf</strong>
+<h3 data-sourcepos="165:1-165:13">BMS Menus</h3>
+<p data-sourcepos="167:1-169:26">Details of the BMS Radio menus can be found <strong>BMS-Comms-Nav-Book.pdf</strong>
 in which is in your BMS folder under <strong>Docs\00 BMS Manuals</strong>.
 The relevant sections are:</p>
-<ul data-sourcepos="169:1-172:0">
-<li data-sourcepos="169:1-169:73">1.1 AIRBASE COMM PLAN: (ATC) Just after the 1.1.7 Contingencies section</li>
-<li data-sourcepos="170:1-170:79">2.1.2 Your AI Wingmen/Element/Flight: The Wingman/Element &amp; Flight radio menu</li>
-<li data-sourcepos="171:1-172:0">2.2.1 Tactical Net: (AWACS) ; - * 2.2.2 Tanker ; - * 2.2.3 JTAC</li>
+<ul data-sourcepos="171:1-174:0">
+<li data-sourcepos="171:1-171:73">1.1 AIRBASE COMM PLAN: (ATC) Just after the 1.1.7 Contingencies section</li>
+<li data-sourcepos="172:1-172:79">2.1.2 Your AI Wingmen/Element/Flight: The Wingman/Element &amp; Flight radio menu</li>
+<li data-sourcepos="173:1-174:0">2.2.1 Tactical Net: (AWACS) ; - * 2.2.2 Tanker ; - * 2.2.3 JTAC</li>
 </ul>
-<h3 data-sourcepos="173:1-173:15">Limitations</h3>
-<ul data-sourcepos="175:1-197:0">
-<li data-sourcepos="175:1-178:45">Current menu data is for BMS 4.37.2 menus (use plugin v0.1.2 for BMS 4.37.1)
+<h3 data-sourcepos="175:1-175:15">Limitations</h3>
+<ul data-sourcepos="177:1-201:0">
+<li data-sourcepos="177:1-180:45">Current menu data is for BMS 4.37.2 menus (use plugin v0.1.2 for BMS 4.37.1)
 For newer versions of BMS, or if you have modified the menu
 by changing the BMS <strong>Data/Art/CkptArt/menu.dat</strong> file,
 update the JSON file to match your changes.</li>
-<li data-sourcepos="179:1-179:55">No callsigns for ATC/airports. A future possibility.</li>
-<li data-sourcepos="180:1-181:54">Though flight/unit numbers are supported for JTACs, AWACS and tankers, position numbers
+<li data-sourcepos="181:1-182:57">Sound effects require VoiceAttack Settings, Audio tab to have
+<em>&quot;Audio Output Type&quot;</em> set to <em>&quot;Integrated Components&quot;</em>.</li>
+<li data-sourcepos="183:1-183:55">No callsigns for ATC/airports. A future possibility.</li>
+<li data-sourcepos="184:1-185:54">Though flight/unit numbers are supported for JTACs, AWACS and tankers, position numbers
 are not. <em>&quot;Arco 2&quot;</em> is okay but <em>&quot;Arco 2-1&quot;</em> is not.</li>
-<li data-sourcepos="182:1-183:63">BMS menus, when disimissed, briefly display the first menu
+<li data-sourcepos="186:1-187:63">BMS menus, when disimissed, briefly display the first menu
 for their group before closing. This appears to be a BMS bug.</li>
-<li data-sourcepos="184:1-186:50">Plugin does not (yet) support comms menus being disabled with g_bDisableCommsMenu 1,
+<li data-sourcepos="188:1-190:50">Plugin does not (yet) support comms menus being disabled with g_bDisableCommsMenu 1,
 nor does it support switching off the comms menu with the new chatline dot command
 <strong>&quot;.commsmenu 0&quot;</strong>.  Support may be added later.</li>
-<li data-sourcepos="187:1-190:38">Plugin uses the default keys for BMS menus
+<li data-sourcepos="191:1-194:38">Plugin uses the default keys for BMS menus
 (T for ATC; W/E/R for Wingman/Element/Flight, Q for AWACS,
 Y for Tanker/JTAC).  If you have changed these shortcuts you should
 edit the JSON to use your shortcuts.</li>
-<li data-sourcepos="191:1-191:44">Plugin's JSON files DO NOT support UNICODE</li>
-<li data-sourcepos="192:1-197:0">The plugin manages state without calling into BMS or locking data.
+<li data-sourcepos="195:1-195:44">Plugin's JSON files DO NOT support UNICODE</li>
+<li data-sourcepos="196:1-201:0">The plugin manages state without calling into BMS or locking data.
 It does not get instant notification of window focus changes.
 This greatly simplifies the plugin, but it is possible for it to get out
 of sync. If it is incorrectly displaying a menu, or listing menus,
 just say <em>&quot;Reset Menu&quot;</em>, <em>&quot;Cancel Menu</em>&quot; or even just <em>&quot;Press Escape&quot;</em> to reset.</li>
 </ul>
-<h3 data-sourcepos="198:1-198:25">VoiceAttack Variables</h3>
-<p data-sourcepos="200:1-205:64"><strong>&gt;JBMS</strong> variables can be changed by the VA profile <strong>CAREFULLY</strong>,
+<h3 data-sourcepos="202:1-202:25">VoiceAttack Variables</h3>
+<p data-sourcepos="204:1-209:64"><strong>&gt;JBMS</strong> variables can be changed by the VA profile <strong>CAREFULLY</strong>,
 but should only be used in the same way (to pass info to the plugin,
 or check return states from the plugin).
 You can set the Boolean <strong>_LOG</strong> variables
 (initialized in <em>&quot;JBMS Initial Load Init&quot;</em>) to true
 for additional logging, or you can enable/disable them by voice.</p>
-<p data-sourcepos="207:1-209:46"><strong>&gt;JBMSI</strong> internal variables should NOT be changed by the VA profile,
+<p data-sourcepos="211:1-213:46"><strong>&gt;JBMSI</strong> internal variables should NOT be changed by the VA profile,
 <strong>EXCEPT</strong> for the provided methods provided that use them.
 Changes to them could easily break the plugin.</p>
-<p data-sourcepos="211:1-211:28">A partial list of variables:</p>
-<pre data-sourcepos="212:1-230:3"><code>\&gt;JBMS_JSON_LOG       Boolean for logging of JSON parsing
+<p data-sourcepos="215:1-215:28">A partial list of variables:</p>
+<pre data-sourcepos="216:1-235:3"><code>\&gt;JBMS_JSON_LOG       Boolean for logging of JSON parsing
 \&gt;JBMS_MENU_LOG       Boolean for logging of menu items (shows list of menu items in log)
 \&gt;JBMS_STRUCT_LOG     Boolean for logging of data structures manipulation
 \&gt;JBMS_VERBOSE_LOG    Boolean for more verbose general logging
 
+\&gt;JBMS_AUDIO_FEEDBACK    User set boolean to allow audible feedback for commands
 \&gt;JBMS_KEYS_ONLY_TO_BMS  User set boolean to restrict keystrokes if BMS does not have focus
 \&gt;JBMSI_FOCUS_BMS        Boolean usually set to true if BMS has focus
 
@@ -921,11 +926,11 @@ Changes to them could easily break the plugin.</p>
 &gt;&gt;JBMSI_CS_MATCH&quot;           READ-ONLY - (Phrase matching callsign with optional flight #: &quot;[Fiend;Fiend 3]&quot;)
 &gt;&gt;JBMSI_CS_MATCH_EMPTY_OK&quot;  READ-ONLY;  (Allows matching callsign or nothing: &quot;[Fiend;Fiend 3;]&quot;
 </code></pre>
-<h3 data-sourcepos="232:1-232:16">JSON FORMAT:</h3>
-<p data-sourcepos="234:1-235:53">The JSON menu file <strong>Tanrr.VAPlugin.BMSRadio.Menus.json</strong> is a top level
+<h3 data-sourcepos="237:1-237:16">JSON FORMAT:</h3>
+<p data-sourcepos="239:1-240:53">The JSON menu file <strong>Tanrr.VAPlugin.BMSRadio.Menus.json</strong> is a top level
 array of menus. Each menu has the format shown below.</p>
-<p data-sourcepos="237:1-237:22"><strong>EXAMPLE JSON MENU:</strong></p>
-<pre data-sourcepos="239:2-259:0"><code>{
+<p data-sourcepos="242:1-242:22"><strong>EXAMPLE JSON MENU:</strong></p>
+<pre data-sourcepos="244:2-264:0"><code>{
 	&quot;menuTarget&quot;: &quot;Flight&quot;,
 	&quot;targetPhrases&quot;: &quot;Flight&quot;,
 	&quot;menuName&quot;: &quot;Miscellaneous 1&quot;,
@@ -946,131 +951,131 @@ array of menus. Each menu has the format shown below.</p>
 	]
 },
 </code></pre>
-<p data-sourcepos="260:1-260:13"><strong>REQUIRED:</strong></p>
-<ul data-sourcepos="261:1-269:2">
-<li data-sourcepos="261:1-261:43">All values are text strings in <em>&quot;Quotes&quot;</em></li>
-<li data-sourcepos="262:1-262:81">The combination of menuTarget+menuName must be unique for all menus in the JSON</li>
-<li data-sourcepos="263:1-263:76">The menuShow array of keystrokes should use lowercase (details further on)</li>
-<li data-sourcepos="264:1-264:35">All named items must be non-empty</li>
-<li data-sourcepos="265:1-269:2">menuItems Array line includes multiple menuItem arrays:
-<ul data-sourcepos="266:3-269:2">
-<li data-sourcepos="266:3-266:59">First string: <em>menuItemPhrases</em> to match that menu item</li>
-<li data-sourcepos="267:3-267:79">Second string: <em>menuItemExecute</em> keys/command to execute for that menu item</li>
-<li data-sourcepos="268:3-269:2">Optional third string: <em>menuItemDirectCmd</em> identifier for the menu item so a VA command can call it directly</li>
+<p data-sourcepos="265:1-265:13"><strong>REQUIRED:</strong></p>
+<ul data-sourcepos="266:1-274:2">
+<li data-sourcepos="266:1-266:43">All values are text strings in <em>&quot;Quotes&quot;</em></li>
+<li data-sourcepos="267:1-267:81">The combination of menuTarget+menuName must be unique for all menus in the JSON</li>
+<li data-sourcepos="268:1-268:76">The menuShow array of keystrokes should use lowercase (details further on)</li>
+<li data-sourcepos="269:1-269:35">All named items must be non-empty</li>
+<li data-sourcepos="270:1-274:2">menuItems Array line includes multiple menuItem arrays:
+<ul data-sourcepos="271:3-274:2">
+<li data-sourcepos="271:3-271:59">First string: <em>menuItemPhrases</em> to match that menu item</li>
+<li data-sourcepos="272:3-272:79">Second string: <em>menuItemExecute</em> keys/command to execute for that menu item</li>
+<li data-sourcepos="273:3-274:2">Optional third string: <em>menuItemDirectCmd</em> identifier for the menu item so a VA command can call it directly</li>
 </ul>
 </li>
 </ul>
-<p data-sourcepos="270:1-270:10"><strong>NOTES:</strong></p>
-<ul data-sourcepos="271:3-276:0">
-<li data-sourcepos="271:3-276:0"><em>targetPhrases</em> and <em>menuNamePhrases</em> are used internally to list menus for
+<p data-sourcepos="275:1-275:10"><strong>NOTES:</strong></p>
+<ul data-sourcepos="276:3-281:0">
+<li data-sourcepos="276:3-281:0"><em>targetPhrases</em> and <em>menuNamePhrases</em> are used internally to list menus for
 the VA <em>&quot;List Wingman/ATC/All Combat/Formation Menus&quot;</em> command.
 Make sure they match the VA profile's prefix &amp; suffix phrases for menus.
 If you update the phrases in the VA profile, please update the matching
 phrases in the JSON and vs. vs.</li>
 </ul>
-<p data-sourcepos="277:1-282:55"><strong>CALLSIGN JSON:</strong>
+<p data-sourcepos="282:1-287:55"><strong>CALLSIGN JSON:</strong>
 The callsign JSON holds arrays of strings for AWACS, Tanker, JTAC, and pilot callsigns.
 Just follow the format of the config file. Strings containing multiple callsigns
 (no numbers or spaces allowed) are delimited by semicolons.  No semicolons allowed
 at beginning or end of strings and no double semicolons.
 Callsigns should not be duplicated between any groups.</p>
-<p data-sourcepos="284:1-288:95">Put your desired default callsignFlight, numberFlight, and posInFlight in the &quot;flightInfo&quot; section.
+<p data-sourcepos="289:1-293:95">Put your desired default callsignFlight, numberFlight, and posInFlight in the &quot;flightInfo&quot; section.
 &quot;callsignFlight&quot; can not be an empty string nor can it contain spaces or semicolons.
 numberFlight and PosInFlight can be empty strings, or can be a string holding a single digit,
 1-9 for number and 1-4 for position.
 You can change all these on the fly with a voice command &quot;Update Callsign Plasma 6&quot; or similar.</p>
-<p data-sourcepos="291:1-291:23"><strong>EDITING JSON FILES:</strong></p>
-<p data-sourcepos="293:1-296:76">The menu menu and callsign JSON and schema files are installed in
+<p data-sourcepos="296:1-296:23"><strong>EDITING JSON FILES:</strong></p>
+<p data-sourcepos="298:1-301:76">The menu menu and callsign JSON and schema files are installed in
 <strong>..\VoiceAttack\Apps\Tanrr.VAPlugin.BMSRadio</strong>. You can use an online
 JSON schema validator, like <a href="https://jsonmate.com/">https://jsonmate.com/</a> to validate changes you make to the
 JSON menu/callsign files against their matching schema while you work on it.</p>
-<p data-sourcepos="298:1-301:72">Menu JSON: <strong>Tanrr.VAPlugin.BMSRadio.Menus.json</strong><br />
+<p data-sourcepos="303:1-306:72">Menu JSON: <strong>Tanrr.VAPlugin.BMSRadio.Menus.json</strong><br />
 Menu Schema JSON: <strong>Tanrr.VAPlugin.BMSRadio.Menus.Schema.json</strong><br />
 Callsign JSON: <strong>Tanrr.VAPlugin.BMSRadio.Callsigns.json</strong><br />
 Callsign Schema JSON: <strong>Tanrr.VAPlugin.BMSRadio.Callsigns.Schema.json</strong></p>
-<p data-sourcepos="303:1-303:29">KEYSTROKES TO SHOW EACH MENU:</p>
-<p data-sourcepos="305:1-308:56"><em>menuShow</em> is an array of (possibly) multiple strings that contain
+<p data-sourcepos="308:1-308:29">KEYSTROKES TO SHOW EACH MENU:</p>
+<p data-sourcepos="310:1-313:56"><em>menuShow</em> is an array of (possibly) multiple strings that contain
 the keystrokes to bring up a menu.  The list of keystrokes is sent to
 the command <em>&quot;JBMS Press Key Combo List&quot;</em> in the VA profile.
 This gives good flexibility but has some restrictions.</p>
-<ul data-sourcepos="310:1-319:0">
-<li data-sourcepos="310:1-313:65">Multiple keypresses without modifiers or special keys can in a single string like
+<ul data-sourcepos="315:1-324:0">
+<li data-sourcepos="315:1-318:65">Multiple keypresses without modifiers or special keys can in a single string like
 <code>&quot;menuShow&quot;: [ &quot;rrrrrrr&quot; ],</code> but can <strong>NOT</strong> include capital letters
 or any key that requires SHIFT to be held down.
 These keystrokes are sent to VoiceAttack's &quot;Quick Input&quot; command.</li>
-<li data-sourcepos="314:1-319:0">Keypresses that include modifiers like [CTRL], [RSHIFT], [LWIN], or [ALT] or that use
+<li data-sourcepos="319:1-324:0">Keypresses that include modifiers like [CTRL], [RSHIFT], [LWIN], or [ALT] or that use
 &quot;special&quot; keys like [NUMENTER] (anything in brackets) must only include
 a <strong>SINGLE</strong> non-modifier keystroke.  Multiple keystrokes will <strong>NOT</strong> work as expected.
 So, <code>[ &quot;[LSHIFT][LALT]r&quot; ]</code> works, but <code>[ &quot;[LALT]rrr&quot; ]</code> does not.
 These strings are passed to VoiceAttack's &quot;Variable Input&quot; command.</li>
 </ul>
-<p data-sourcepos="320:1-321:80">A silly example would be if you ran the below <em>menuShow</em> with an empty Notepad active.<br />
+<p data-sourcepos="325:1-326:80">A silly example would be if you ran the below <em>menuShow</em> with an empty Notepad active.<br />
 It would type <em>Hello</em> then make the text larger and smaller before saying <em>bye</em>.</p>
-<p data-sourcepos="323:1-323:102"><code>&quot;menuShow&quot;: [ &quot;[SHIFT]H&quot;, &quot;ello&quot;, &quot;[LCTRL]=&quot;, &quot;[RCTRL]=&quot;, &quot;[CTRL]-&quot;, &quot;[CTRL]-&quot;, &quot;[LCTRL]A&quot;, &quot;bye&quot; ],</code></p>
-<p data-sourcepos="326:1-326:29">PHRASES TO SELECT MENU ITEMS:</p>
-<p data-sourcepos="328:1-333:33"><em>MenuItemPhrases</em> (1st text field in each array within <em>menuItems</em>) are
+<p data-sourcepos="328:1-328:102"><code>&quot;menuShow&quot;: [ &quot;[SHIFT]H&quot;, &quot;ello&quot;, &quot;[LCTRL]=&quot;, &quot;[RCTRL]=&quot;, &quot;[CTRL]-&quot;, &quot;[CTRL]-&quot;, &quot;[LCTRL]A&quot;, &quot;bye&quot; ],</code></p>
+<p data-sourcepos="331:1-331:29">PHRASES TO SELECT MENU ITEMS:</p>
+<p data-sourcepos="333:1-338:33"><em>MenuItemPhrases</em> (1st text field in each array within <em>menuItems</em>) are
 the VoiceAttack command phrases the plugin will listen for while this
 menu is up.  They are the same format as VoiceAttack commands:
 multiple options, separated by semi-colons, sub-sections specified by
 [brackets].  Note that sub-sections can match to nothing as well by
 having a ; with nothing after it.</p>
-<p data-sourcepos="335:1-335:79">For example: <em>&quot;[Switch;Push] [Flight;] Uniform&quot;</em> matches all these phrases:</p>
-<ul data-sourcepos="336:1-340:0">
-<li data-sourcepos="336:1-336:25">&quot;Switch Flight Uniform&quot;</li>
-<li data-sourcepos="337:1-337:23">&quot;Push Flight Uniform&quot;</li>
-<li data-sourcepos="338:1-338:18">&quot;Switch Uniform&quot;</li>
-<li data-sourcepos="339:1-340:0">&quot;Push Uniform&quot;</li>
+<p data-sourcepos="340:1-340:79">For example: <em>&quot;[Switch;Push] [Flight;] Uniform&quot;</em> matches all these phrases:</p>
+<ul data-sourcepos="341:1-345:0">
+<li data-sourcepos="341:1-341:25">&quot;Switch Flight Uniform&quot;</li>
+<li data-sourcepos="342:1-342:23">&quot;Push Flight Uniform&quot;</li>
+<li data-sourcepos="343:1-343:18">&quot;Switch Uniform&quot;</li>
+<li data-sourcepos="344:1-345:0">&quot;Push Uniform&quot;</li>
 </ul>
-<p data-sourcepos="341:1-345:45">The provided VA profile already includes the command &quot;Press [0..9]&quot;&quot;
+<p data-sourcepos="346:1-350:45">The provided VA profile already includes the command &quot;Press [0..9]&quot;&quot;
 which will press the number keys for you, and these work even if the
 menu is not up. DO NOT add the menu number as part of the recognition
 phrases.  It could interfere with other phrases - for example <em>&quot;2&quot;</em>
 and <em>&quot;3&quot;</em> are used as prefix <em>menuTargets</em>.</p>
-<p data-sourcepos="347:1-347:26">KEYSTROKES FOR MENU ITEMS:</p>
-<p data-sourcepos="349:1-355:53"><em>MenuItemExecute</em> (2nd text field in each array within <em>menuItems</em>) are
+<p data-sourcepos="352:1-352:26">KEYSTROKES FOR MENU ITEMS:</p>
+<p data-sourcepos="354:1-360:53"><em>MenuItemExecute</em> (2nd text field in each array within <em>menuItems</em>) are
 normally set to the keystroke(s) to press when that menu item is chosen.
 These keys will be passed to the the VA profile <em>&quot;JBMS Press Key Combo List&quot;</em>
 command and are handled like a single string of the <em>menuShow</em> field.
 This means you can have multiple simple non-shifted keys like <em>&quot;aaa&quot;</em>
 or a single keystroke or special key with modifiers, like <em>&quot;[LCTRL]a&quot;</em>.
 (Unless they match a VA command as described later.)</p>
-<p data-sourcepos="357:1-361:69">You can change the <em>&quot;JBMS Press Key Combo List&quot;</em> command in the VA profile to
+<p data-sourcepos="362:1-366:69">You can change the <em>&quot;JBMS Press Key Combo List&quot;</em> command in the VA profile to
 adjust keypress time and pause times - see the <em>&quot;Press variable keys&quot;</em> and <em>&quot;Quick Input&quot;</em>
 calls within the command. Those times are set somewhat conservatively
 long to work on all systems, so if you change the times make sure you
 test that they work for busy multiplayer servers and your own system.</p>
-<p data-sourcepos="363:1-364:46">See the <em>&quot;DC Push Flight Uniform&quot;</em> command in the VA profile as an
+<p data-sourcepos="368:1-369:46">See the <em>&quot;DC Push Flight Uniform&quot;</em> command in the VA profile as an
 example of using MenuItemExecute as a command.</p>
-<p data-sourcepos="366:1-366:51">MAPPING VOICEATTACK PHRASES DIRECTLY TO MENU ITEMS:</p>
-<p data-sourcepos="368:1-373:73">Direct Command Calls (to execute a menu item directly <em>from</em> a VA command
+<p data-sourcepos="371:1-371:51">MAPPING VOICEATTACK PHRASES DIRECTLY TO MENU ITEMS:</p>
+<p data-sourcepos="373:1-378:73">Direct Command Calls (to execute a menu item directly <em>from</em> a VA command
 phrase without leaving a menu up and waiting for a menu selection) are
 made possible by adding a third <em>menuItemDirectCmd</em> string to the array
 for that menu item in <em>menuItems</em>. These should be unique and preferably
 identify the <em>menuTarget</em>, <em>menuName</em>, and <em>menuItem</em> they're for,
 as described in the <em>menuTarget/menuName</em> abbreviations section later on.</p>
-<p data-sourcepos="375:1-377:64">To use this functionality, add your own command phrase to the VA profile,
+<p data-sourcepos="380:1-382:64">To use this functionality, add your own command phrase to the VA profile,
 and have it set the <strong>&gt;JBMS_DIRECT_CMD</strong> variable to the command name
 before calling the plugin with context set to <em>JBMS_DIRECT_CMD</em>.</p>
-<p data-sourcepos="379:1-379:50">The provided VA profile has some examples of this:</p>
-<ul data-sourcepos="381:1-385:0">
-<li data-sourcepos="381:1-381:84">&quot;Bogey Dope&quot; mapped to &quot;JBMS-QV1-BOGEY-DOPE&quot; (for &quot;AWACS - Vectors&quot;, &quot;Bogey Dope&quot;)</li>
-<li data-sourcepos="382:1-382:85">&quot;AWACS Declare&quot; mapped to &quot;JBMS-QV1-BOGEY-DOPE&quot; (for &quot;AWACS - Tactical&quot;, &quot;Declare&quot;)</li>
-<li data-sourcepos="383:1-383:89">&quot;Fence In&quot; mapped to the &quot;JBMS-FX1-FENCE-IN&quot; (for &quot;Flight - Miscellaneous&quot;, &quot;Fence In&quot;)</li>
-<li data-sourcepos="384:1-385:0">&quot;Attack My Target&quot; mapped to &quot;JBMS-WC1-ATTACK-TGT&quot; (for &quot;2 - Combat 1&quot;, &quot;Attack My Target&quot;)</li>
+<p data-sourcepos="384:1-384:50">The provided VA profile has some examples of this:</p>
+<ul data-sourcepos="386:1-390:0">
+<li data-sourcepos="386:1-386:84">&quot;Bogey Dope&quot; mapped to &quot;JBMS-QV1-BOGEY-DOPE&quot; (for &quot;AWACS - Vectors&quot;, &quot;Bogey Dope&quot;)</li>
+<li data-sourcepos="387:1-387:85">&quot;AWACS Declare&quot; mapped to &quot;JBMS-QV1-BOGEY-DOPE&quot; (for &quot;AWACS - Tactical&quot;, &quot;Declare&quot;)</li>
+<li data-sourcepos="388:1-388:89">&quot;Fence In&quot; mapped to the &quot;JBMS-FX1-FENCE-IN&quot; (for &quot;Flight - Miscellaneous&quot;, &quot;Fence In&quot;)</li>
+<li data-sourcepos="389:1-390:0">&quot;Attack My Target&quot; mapped to &quot;JBMS-WC1-ATTACK-TGT&quot; (for &quot;2 - Combat 1&quot;, &quot;Attack My Target&quot;)</li>
 </ul>
-<p data-sourcepos="386:1-389:85">Note that it is OKAY for your VA profile to use phrases that duplicate the phrases
+<p data-sourcepos="391:1-394:85">Note that it is OKAY for your VA profile to use phrases that duplicate the phrases
 for the various menu items, because (1) the menu item phrases are only listened
 for when the specific menu is up, and (2) duplicate phrases that call
 JBMS_DIRECT_CMD while a menu is up will be dropped as the menu phrases have priority.</p>
-<p data-sourcepos="391:1-391:47">MAPPING MENU ITEMS TO YOUR OWN CUSTOM COMMANDS:</p>
-<p data-sourcepos="393:1-399:41">If you set <em>menuItemExecute</em> (2nd text field in each array within <em>menuItems</em>)
+<p data-sourcepos="396:1-396:47">MAPPING MENU ITEMS TO YOUR OWN CUSTOM COMMANDS:</p>
+<p data-sourcepos="398:1-404:41">If you set <em>menuItemExecute</em> (2nd text field in each array within <em>menuItems</em>)
 to match the name of a <strong>unique</strong> command within the VA profile, the plugin will
 execute that command, instead of pressing keys matching the letters in the string.
 It is strongly recommended that you make such commands NOT callable by voice to
 avoid conflicting menu states.  Your implementation of such a VA command should
 NOT call back into the plugin with a &quot;JBMS_DIRECT_COMMAND&quot; for the same menu item
 as this would create a never-ending loop.</p>
-<p data-sourcepos="401:1-408:35">Your <em>menuItemExecute</em> VA command (if not keypresses) should not be long running
+<p data-sourcepos="406:1-413:35">Your <em>menuItemExecute</em> VA command (if not keypresses) should not be long running
 as the plugin will wait for it to return. Your command can look at the
 <strong>&gt;JBMS_MENU_TGT</strong> and <strong>&gt;JBMS_MENU_NAME</strong> variables which will still be valid
 till your command returns. Your command is responsible for making sure the menu
@@ -1078,81 +1083,97 @@ is dismissed, either by pressing a key to choose a menu item, or by executing
 <em>&quot;Dismiss Menu Only&quot;</em> command in the VA profile. Your command SHOULD NOT call
 the plugin with context <em>JBMS_RESET_MENU_STATE</em> as that will be done by the
 plugin after your command finishes.</p>
-<p data-sourcepos="410:1-410:35">CUSTOMIZING THE VOICEATTACK PROFILE</p>
-<p data-sourcepos="412:1-415:70">The profile command <em>&quot;JBMS Initial Load Init&quot;</em> sets default logging options.<br />
+<p data-sourcepos="415:1-415:35">CUSTOMIZING THE VOICEATTACK PROFILE</p>
+<p data-sourcepos="417:1-420:70">The profile command <em>&quot;JBMS Initial Load Init&quot;</em> sets default logging options.<br />
 You can change these to have more logging. You can also change log settings
 on the fly with the voice command
 <em>&quot;[Enable;Disable] [Jason;Menu;Struct;Struture;Verbose] Logging&quot;</em>.</p>
-<p data-sourcepos="417:1-420:36">The amount of time the profile waits for responses for a menu before dismissing
+<p data-sourcepos="422:1-425:36">The amount of time the profile waits for responses for a menu before dismissing
 it is set in <em>&quot;JBMS Wait For Menu Response&quot;</em> command, within the
 &quot;Wait for spoken response&quot; call. It is currently left at 15 seconds, which is pretty long.
 Change it to whatever works for you.</p>
-<p data-sourcepos="422:1-424:28">As mentioned earlier, you can change the timing for keypresses and pauses in the
+<p data-sourcepos="427:1-429:28">As mentioned earlier, you can change the timing for keypresses and pauses in the
 <em>&quot;JBMS Press Key Combo List&quot;</em> command.  Make sure you verify changes work for your system
 and the servers you play on.</p>
-<p data-sourcepos="426:1-431:100">Though you can add your own commands directly to this JBMS Radio profile,
+<p data-sourcepos="431:1-436:100">Though you can add your own commands directly to this JBMS Radio profile,
 it is probably better to make your own separate profile and include it from this profile.
 This can be done by editing the JBMS Radio profile, clicking OPTIONS, going to
 the <em>General</em> tab, and adding your profile to the *&quot;Include Commands from Other Profiles&quot; section.
 NOTE: This can strongly effect the accuracy of the VA profile by adding many or conflicting
 commands, so make sure your additional profile is lightweight and does not include tons of commands.</p>
-<p data-sourcepos="433:1-434:77">Note that Voice Attack commands that call the *&quot;Internal Reset Menu&quot; command need
+<p data-sourcepos="438:1-439:77">Note that Voice Attack commands that call the *&quot;Internal Reset Menu&quot; command need
 to have *&quot;Allow Other Commands to Execute While This One is Running&quot; checked.</p>
-<h2 data-sourcepos="437:1-437:44">VOICEATTACK BASICS &amp; RECOMMENDED SETTINGS</h2>
-<p data-sourcepos="439:1-439:11"><strong>BASICS:</strong></p>
-<ul data-sourcepos="440:1-450:0">
-<li data-sourcepos="440:1-441:39"><em>Only have VoiceAttack listen when you are holding down a key -
+<h2 data-sourcepos="442:1-442:44">VOICEATTACK BASICS &amp; RECOMMENDED SETTINGS</h2>
+<p data-sourcepos="444:1-444:11"><strong>BASICS:</strong></p>
+<ul data-sourcepos="445:1-455:0">
+<li data-sourcepos="445:1-446:39"><em>Only have VoiceAttack listen when you are holding down a key -
 don't leave it listening all the time.</em></li>
-<li data-sourcepos="442:1-443:85">Turn on &quot;Show Confidence Level&quot; in VA Settings (wrench), Recognition tab to see
+<li data-sourcepos="447:1-448:85">Turn on &quot;Show Confidence Level&quot; in VA Settings (wrench), Recognition tab to see
 how well/poorly VA is understanding you.  Turn this off once things are working well.</li>
-<li data-sourcepos="444:1-450:0">It is <em>VERY IMPORTANT</em> that you only have the spoken commands you actually
+<li data-sourcepos="449:1-455:0">It is <em>VERY IMPORTANT</em> that you only have the spoken commands you actually
 USE enabled for speech.  All commands that you only call into from other commands
 but don't say directly should have speech disabled.  Similarly, try to limit the
 number of phrases you add to VA profiles.  Otherwise you are making it much more
 difficult for VoiceAttack (and my plugin) to understand you.</li>
 </ul>
-<p data-sourcepos="451:1-451:25"><strong>RECOMMENDED SETTINGS:</strong></p>
-<p data-sourcepos="453:1-454:21"><em>VoiceAttack Settings, Recognition tab: See VA docs under &quot;Recognition Tab&quot; for
+<p data-sourcepos="456:1-456:25"><strong>RECOMMENDED SETTINGS:</strong></p>
+<p data-sourcepos="458:1-459:21"><em>VoiceAttack Settings, Recognition tab: See VA docs under &quot;Recognition Tab&quot; for
 deeper descriptions.</em></p>
-<ul data-sourcepos="456:1-484:0">
-<li data-sourcepos="456:1-458:0">
-<p data-sourcepos="456:3-457:40"><em>Recognized Speech Delay:</em> 10-30 - Helps VA differentiate between &quot;AWACS&quot; vs
+<ul data-sourcepos="461:1-488:0">
+<li data-sourcepos="461:1-463:0">
+<p data-sourcepos="461:3-462:40"><em>Recognized Speech Delay:</em> 10-30 - Helps VA differentiate between &quot;AWACS&quot; vs
 &quot;AWACS Vectors&quot; and combination phrases.</p>
 </li>
-<li data-sourcepos="459:1-460:0">
-<p data-sourcepos="459:3-459:32"><em>Unrecognized Speech Delay:</em> 0</p>
+<li data-sourcepos="464:1-465:0">
+<p data-sourcepos="464:3-464:32"><em>Unrecognized Speech Delay:</em> 0</p>
 </li>
-<li data-sourcepos="461:1-465:0">
-<p data-sourcepos="461:3-464:70"><em>Command Weight:</em> 80-98 - Higher values here tell VA to try to make whatever
+<li data-sourcepos="466:1-470:0">
+<p data-sourcepos="466:3-469:70"><em>Command Weight:</em> 80-98 - Higher values here tell VA to try to make whatever
 you are saying fit to one of the phrases in the profile.  If you set this
 to 100 it will ALWAYS pick the closest match it can, so be careful.
 I have mine set very high, at 98, due to fan noise and a quiet voice.</p>
 </li>
-<li data-sourcepos="466:1-476:0">
-<p data-sourcepos="466:3-466:35"><em>Minimum Confidence Level:</em> 30-70</p>
-<p data-sourcepos="468:4-469:164">The minimum confidence level needed for a match. VA might recognize &quot;Combat 1&quot;
+<li data-sourcepos="471:1-481:0">
+<p data-sourcepos="471:3-471:35"><em>Minimum Confidence Level:</em> 30-70</p>
+<p data-sourcepos="473:4-474:164">The minimum confidence level needed for a match. VA might recognize &quot;Combat 1&quot;
 but have a low confidence because you didn't say it clearly. Run VA with &quot;Show Confidence Level&quot; enabled to see if how you should adjust this. I have mine at 35.</p>
-<p data-sourcepos="471:4-471:104"><strong>NOTE 1:</strong> Minimum confidence level can also be set in a profiles options, or for a specific command</p>
-<p data-sourcepos="473:4-475:24"><strong>NOTE 2:</strong> <em>&quot;JBMS Wait For Menu Response&quot;</em> VA Command specifically sets this very low,
+<p data-sourcepos="476:4-476:104"><strong>NOTE 1:</strong> Minimum confidence level can also be set in a profiles options, or for a specific command</p>
+<p data-sourcepos="478:4-480:24"><strong>NOTE 2:</strong> <em>&quot;JBMS Wait For Menu Response&quot;</em> VA Command specifically sets this very low,
 as it is extremely likely, since you just called up a menu, that your next words will
 be items in the menu.</p>
 </li>
-<li data-sourcepos="477:1-479:0">
-<p data-sourcepos="477:3-478:83"><em>Min Unrecognized Confidence Level:</em> 30-60 - Higher numbers throw out more
+<li data-sourcepos="482:1-484:0">
+<p data-sourcepos="482:3-483:83"><em>Min Unrecognized Confidence Level:</em> 30-60 - Higher numbers throw out more
 &quot;unrecognized&quot; sounds.  Only need to turn this up if you're in a noisy environment.</p>
 </li>
-<li data-sourcepos="480:1-480:76">
-<p data-sourcepos="480:3-480:76">Disable Adaptive Recognition: OFF (unless VA seems to become unresponsive)</p>
+<li data-sourcepos="485:1-485:76">
+<p data-sourcepos="485:3-485:76">Disable Adaptive Recognition: OFF (unless VA seems to become unresponsive)</p>
 </li>
-<li data-sourcepos="481:1-481:91">
-<p data-sourcepos="481:3-481:91">Disable Acoustic Echo Cancellation: ON (but can effect other apps, and OFF is usually ok)</p>
+<li data-sourcepos="486:1-486:91">
+<p data-sourcepos="486:3-486:91">Disable Acoustic Echo Cancellation: ON (but can effect other apps, and OFF is usually ok)</p>
 </li>
-<li data-sourcepos="482:1-484:0">
-<p data-sourcepos="482:3-482:28">Reject Pending Speech: OFF</p>
+<li data-sourcepos="487:1-488:0">
+<p data-sourcepos="487:3-487:28">Reject Pending Speech: OFF</p>
 </li>
 </ul>
-<p data-sourcepos="485:1-485:92"><strong>MENUTARGET &amp; MENUNAME ABBREVIATIONS USED FOR DIRECT COMMANDS (NOT REQUIRED BUT HELPFUL):</strong></p>
-<pre data-sourcepos="486:1-515:5"><code>menuTarget abbreviations:
+<h2 data-sourcepos="489:1-489:18">TROUBLESHOOTING</h2>
+<ul data-sourcepos="491:1-501:0">
+<li data-sourcepos="491:1-491:72">For general VoiceAttack recognition, see the VoiceAttack section above</li>
+<li data-sourcepos="492:1-492:91">For errors related to versions of Newtonsoft.Json see the <strong>Install New Version</strong> section</li>
+<li data-sourcepos="493:1-497:89">Menu comes up but menu item phrases aren't recognized:
+<ul data-sourcepos="494:5-497:89">
+<li data-sourcepos="494:5-495:72">Add short pause after menu phrase &amp; before item, like:<br />
+<em>&quot;Tower, Viper 1 Two-Ship F16 &lt;PAUSE&gt; Request Landing Runway 2 6&quot;</em></li>
+<li data-sourcepos="496:5-497:89">If that menu has many phrase combinations, edit the menu to reduce the number of phrases.
+For example, removing all the <em>&quot;Runway Number Number&quot;</em> phrases from the <em>Tower</em> menu.</li>
+</ul>
+</li>
+<li data-sourcepos="498:1-501:0">For crashes or errors that this document hasn't been able to help with,
+please copy the VoiceAttack log (from its window) and open a bug report
+on the GitHub Issues page: <a href="https://github.com/tanrr/Tanrr.VAPlugin.BMSRadio/issues">https://github.com/tanrr/Tanrr.VAPlugin.BMSRadio/issues</a></li>
+</ul>
+<p data-sourcepos="502:1-502:92"><strong>MENUTARGET &amp; MENUNAME ABBREVIATIONS USED FOR DIRECT COMMANDS (NOT REQUIRED BUT HELPFUL):</strong></p>
+<pre data-sourcepos="503:1-532:5"><code>menuTarget abbreviations:
   W-ingman
   E-lement
   F-light
@@ -1181,7 +1202,7 @@ menuName abbreviations (followed by 1 or 2/3 etc. for multiples)
   T-Tanker (so YT)
   J-JTAC (so YJ)
 </code></pre>
-<p data-sourcepos="516:1-517:52">For example, Wingman, Combat 1 menu for Attack My Target
+<p data-sourcepos="533:1-534:52">For example, Wingman, Combat 1 menu for Attack My Target
 would be &quot;JBMS-WC1-ATTACK-TGT&quot; or something similar.</p>
 
     </article>
