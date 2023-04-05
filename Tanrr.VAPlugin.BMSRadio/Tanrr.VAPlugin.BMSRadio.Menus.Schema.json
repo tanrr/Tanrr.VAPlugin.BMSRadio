@@ -58,6 +58,11 @@
           { "maxLength": 100 }
         ]
       },
+      "isDirectMenu": {
+        "allOf": [
+          { "type": "boolean" }
+        ]
+      },
       "directMenuGroup": {
         "allOf": [
           { "type": "string" },
@@ -102,6 +107,7 @@
       "targetPhrases",
       "menuName",
       "menuNamePhrases",
+      "isDirectMenu",
       "directMenuGroup",
       "menuShow",
       "menuItems"

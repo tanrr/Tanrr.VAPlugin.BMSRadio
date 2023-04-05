@@ -9,6 +9,7 @@
 		"targetPhrases": "Wingman;2",
 		"menuName": "Combat 1",
 		"menuNamePhrases": "Combat [Management;] 1",
+		"isDirectMenu": false,
 		"directMenuGroup": "",
 		"menuShow": [ "w" ],
 
@@ -29,6 +30,7 @@
 		"targetPhrases": "Element;3",
 		"menuName": "Combat 1",
 		"menuNamePhrases": "Combat [Management;] 1",
+		"isDirectMenu": false,
 		"directMenuGroup": "",
 		"menuShow": [ "e" ],
 
@@ -49,6 +51,7 @@
 		"targetPhrases": "Flight",
 		"menuName": "Combat 1",
 		"menuNamePhrases": "Combat [Management;] 1",
+		"isDirectMenu": false,
 		"directMenuGroup": "",
 		"menuShow": [ "r" ],
 
@@ -69,6 +72,7 @@
 		"targetPhrases": "Wingman;2",
 		"menuName": "Combat 2",
 		"menuNamePhrases": "Combat [Management;] 2",
+		"isDirectMenu": false,
 		"directMenuGroup": "",
 		"menuShow": [ "ww" ],
 
@@ -87,6 +91,7 @@
 		"targetPhrases": "Element;3",
 		"menuName": "Combat 2",
 		"menuNamePhrases": "Combat [Management;] 2",
+		"isDirectMenu": false,
 		"directMenuGroup": "",
 		"menuShow": [ "ee" ],
 
@@ -101,6 +106,7 @@
 		"targetPhrases": "Flight",
 		"menuName": "Combat 2",
 		"menuNamePhrases": "Combat [Management;] 2",
+		"isDirectMenu": false,
 		"directMenuGroup": "",
 		"menuShow": [ "rr" ],
 
@@ -115,6 +121,7 @@
 		"targetPhrases": "Wingman;2",
 		"menuName": "Combat 3",
 		"menuNamePhrases": "Combat [Management;] 3",
+		"isDirectMenu": false,
 		"directMenuGroup": "",
 		"menuShow": [ "www" ],
 
@@ -134,6 +141,7 @@
 		"targetPhrases": "Element;3",
 		"menuName": "Combat 3",
 		"menuNamePhrases": "Combat [Management;] 3",
+		"isDirectMenu": false,
 		"directMenuGroup": "",
 		"menuShow": [ "eee" ],
 
@@ -153,6 +161,7 @@
 		"targetPhrases": "Wingman;2",
 		"menuName": "Mission",
 		"menuNamePhrases": "Mission [Management;] [1;]",
+		"isDirectMenu": false,
 		"directMenuGroup": "",
 		"menuShow": [ "wwww" ],
 
@@ -174,6 +183,7 @@
 		"targetPhrases": "Element;3",
 		"menuName": "Mission",
 		"menuNamePhrases": "Mission [Management;] [1;]",
+		"isDirectMenu": false,
 		"directMenuGroup": "",
 		"menuShow": [ "eeee" ],
 
@@ -194,6 +204,7 @@
 		"targetPhrases": "Flight",
 		"menuName": "Mission",
 		"menuNamePhrases": "Mission [Management;] [1;]",
+		"isDirectMenu": false,
 		"directMenuGroup": "",
 		"menuShow": [ "rrr" ],
 
@@ -214,6 +225,7 @@
 		"targetPhrases": "Wingman;2",
 		"menuName": "Formation 1",
 		"menuNamePhrases": "Formation [Management;] 1",
+		"isDirectMenu": false,
 		"directMenuGroup": "",
 		"menuShow": [ "wwwww" ],
 
@@ -235,6 +247,7 @@
 		"targetPhrases": "Element;3",
 		"menuName": "Formation 1",
 		"menuNamePhrases": "Formation [Management;] 1",
+		"isDirectMenu": false,
 		"directMenuGroup": "",
 		"menuShow": [ "eeeee" ],
 
@@ -256,6 +269,7 @@
 		"targetPhrases": "Flight",
 		"menuName": "Formation 1",
 		"menuNamePhrases": "Formation [Management;] 1",
+		"isDirectMenu": false,
 		"directMenuGroup": "",
 		"menuShow": [ "rrrr" ],
 
@@ -277,6 +291,7 @@
 		"targetPhrases": "Wingman;2",
 		"menuName": "Formation 2",
 		"menuNamePhrases": "Formation [Management;] 2",
+		"isDirectMenu": false,
 		"directMenuGroup": "",
 		"menuShow": [ "wwwwww" ],
 
@@ -297,6 +312,7 @@
 		"targetPhrases": "Element;3",
 		"menuName": "Formation 2",
 		"menuNamePhrases": "Formation [Management;] 2",
+		"isDirectMenu": false,
 		"directMenuGroup": "",
 		"menuShow": [ "eeeeee" ],
 
@@ -317,6 +333,7 @@
 		"targetPhrases": "Flight",
 		"menuName": "Formation 2",
 		"menuNamePhrases": "Formation [Management;] 2",
+		"isDirectMenu": false,
 		"directMenuGroup": "",
 		"menuShow": [ "rrrrr" ],
 
@@ -337,6 +354,7 @@
 		"targetPhrases": "Flight",
 		"menuName": "Formation 3",
 		"menuNamePhrases": "Formation [Management;] 3",
+		"isDirectMenu": false,
 		"directMenuGroup": "",
 		"menuShow": [ "rrrrrr" ],
 
@@ -356,6 +374,7 @@
 		"targetPhrases": "Wingman;2",
 		"menuName": "Miscellaneous",
 		"menuNamePhrases": "[Miscellaneous;Misk] [1;]",
+		"isDirectMenu": false,
 		"directMenuGroup": "",
 		"menuShow": [ "wwwwwww" ],
 
@@ -377,6 +396,7 @@
 		"targetPhrases": "Element;3",
 		"menuName": "Miscellaneous",
 		"menuNamePhrases": "[Miscellaneous;Misk] [1;]",
+		"isDirectMenu": false,
 		"directMenuGroup": "",
 		"menuShow": [ "eeeeeee" ],
 
@@ -398,6 +418,7 @@
 		"targetPhrases": "Flight",
 		"menuName": "Miscellaneous",
 		"menuNamePhrases": "[Miscellaneous;Misk] [1;]",
+		"isDirectMenu": false,
 		"directMenuGroup": "",
 		"menuShow": [ "rrrrrrr" ],
 
@@ -419,6 +440,7 @@
 		"targetPhrases": "Wingman;2",
 		"menuName": "Runway",
 		"menuNamePhrases": "Runway [Line Up;]",
+		"isDirectMenu": false,
 		"directMenuGroup": "",
 		"menuShow": [ "wwwwwwww" ],
 
@@ -432,6 +454,7 @@
 		"targetPhrases": "Flight",
 		"menuName": "Runway",
 		"menuNamePhrases": "Runway [Line Up;]",
+		"isDirectMenu": false,
 		"directMenuGroup": "",
 		"menuShow": [ "rrrrrrrr" ],
 
@@ -448,6 +471,7 @@
 		"targetPhrases": "[Contact;] Ground",
 		"menuName": "Ground",
 		"menuNamePhrases": "Ground;Chief",
+		"isDirectMenu": false,
 		"directMenuGroup": "",
 		"menuShow": [ "t" ],
 
@@ -466,6 +490,7 @@
 		"targetPhrases": "[Contact;] Tower",
 		"menuName": "Tower",
 		"menuNamePhrases": "Tower;Traffic",
+		"isDirectMenu": false,
 		"directMenuGroup": "",
 		"menuShow": [ "tt" ],
 
@@ -485,6 +510,7 @@
 		"targetPhrases": "[Contact;] Approach 1",
 		"menuName": "Approach 1",
 		"menuNamePhrases": "[Contact;] Approach 1",
+		"isDirectMenu": false,
 		"directMenuGroup": "Approach",
 		"menuShow": [ "ttt" ],
 
@@ -503,6 +529,7 @@
 		"targetPhrases": "[Contact;] Approach 2",
 		"menuName": "Approach 2",
 		"menuNamePhrases": "[Contact;] Approach 2",
+		"isDirectMenu": false,
 		"directMenuGroup": "Approach",
 		"menuShow": [ "tttt" ],
 
@@ -518,6 +545,7 @@
 		"targetPhrases": "[Contact;] Departure",
 		"menuName": "Departure",
 		"menuNamePhrases": "Departure",
+		"isDirectMenu": false,
 		"directMenuGroup": "",
 		"menuShow": [ "ttttt" ],
 
@@ -530,6 +558,7 @@
 		"targetPhrases": "[Contact;] Common",
 		"menuName": "Common",
 		"menuNamePhrases": "Common",
+		"isDirectMenu": false,
 		"directMenuGroup": "",
 		"menuShow": [ "tttttt" ],
 
@@ -546,6 +575,7 @@
 		"targetPhrases": "[Contact;] Carrier",
 		"menuName": "Carrier",
 		"menuNamePhrases": "Carrier",
+		"isDirectMenu": false,
 		"directMenuGroup": "",
 		"menuShow": [ "ttttttt" ],
 
@@ -565,9 +595,9 @@
 		"targetPhrases": "[Contact;] Contingencies",
 		"menuName": "Contingencies",
 		"menuNamePhrases": "Contingencies",
-		"menuShow": [ "tttttttt" ],
-
+		"isDirectMenu": false,
 		"directMenuGroup": "",
+		"menuShow": [ "tttttttt" ],
 		"menuItems": [
 			[ "[Request;Report;Declare;] [1 Ground Abort;Ground Abort 1]", "1" ],
 			[ "[Request;Report;Declare;] [2 Ground Abort;Ground Abort 2]", "2" ],
@@ -580,7 +610,8 @@
 		"targetPhrases": "A Wax",
 		"menuName": "Tactical",
 		"menuNamePhrases": "Tactical;Tacticals",
-		"directMenuGroup": "",
+		"isDirectMenu": false,
+		"directMenuGroup": "AWACS",
 		"menuShow": [ "q" ],
 
 		"menuItems": [
@@ -600,7 +631,8 @@
 		"targetPhrases": "A Wax",
 		"menuName": "Vectors",
 		"menuNamePhrases": "Vector;Vectors",
-		"directMenuGroup": "",
+		"isDirectMenu": false,
+		"directMenuGroup": "AWACS",
 		"menuShow": [ "qq" ],
 
 		"menuItems": [
@@ -619,6 +651,7 @@
 		"targetPhrases": "[Contact;] Tanker",
 		"menuName": "Tanker",
 		"menuNamePhrases": "Tanker",
+		"isDirectMenu": true,
 		"directMenuGroup": "",
 		"menuShow": [ "y" ],
 
@@ -636,6 +669,7 @@
 		"targetPhrases": "[Contact;] Jay Tack",
 		"menuName": "JTAC",
 		"menuNamePhrases": "Jay Tack",
+		"isDirectMenu": false,
 		"directMenuGroup": "",
 		"menuShow": [ "yy" ],
 
