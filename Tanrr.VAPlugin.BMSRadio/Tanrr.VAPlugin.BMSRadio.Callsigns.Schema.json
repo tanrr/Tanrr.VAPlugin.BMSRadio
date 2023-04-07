@@ -48,6 +48,12 @@
             { "maxLength": 10 }
           ]
         },
+        "aircraftType": {
+          "allOf": [
+            { "type": "string" },
+            { "maxLength": 10 }
+          ]
+        },
         "userField": {
           "allOf": [
             { "type": "string" },
@@ -59,7 +65,24 @@
       "required": [
         "callsignFlight",
         "numberFlight",
-        "posInFlight"
+        "posInFlight",
+        "aircraftType"
+      ]
+    },
+
+    "aircraftTypes": {
+      "allOf": [
+        { "type": "array" },
+        { "minItems": 1 },
+        { "maxItems": 3 },
+        {
+          "items": {
+            "allOf": [
+              { "type": "string" },
+              { "maxLength": 200 }
+            ]
+          }
+        }
       ]
     },
 

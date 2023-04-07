@@ -1,14 +1,17 @@
 {
 	"version": {
-		"verPluginJSON": "v0.1.7",
+		"verPluginJSON": "v0.2.0",
 		"verBMSJSON": "4.37.2"
 	},
 	"flightInfo": {
 		"callsignFlight": "Viper",
 		"numberFlight": "1",
 		"posInFlight": "1",
+		"aircraftType": "Ef 16",
 		"userField": "User can update this field with their own notes"
 	},
+
+	"aircraftTypes": [ "Ef 16;Ef 18;Harrier" ],
 
 	"awacsNames": [ "Chalice;Darkstar;Dragnet;Magic;Overlord;Sentry" ],
 

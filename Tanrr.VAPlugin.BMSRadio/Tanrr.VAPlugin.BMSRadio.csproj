@@ -63,6 +63,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <None Include="packages.config" />
+    <Content Include="tanr-click.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Tanrr.VAPlugin.BMSRadio.Menus.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

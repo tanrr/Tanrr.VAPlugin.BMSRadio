@@ -1,17 +1,16 @@
 # Jeeves BMS Radio Menus (Tanrr.VAPlugin.BMSRadio) 
 
-v0.1.7 - tested with Falcon BMS 4.37.2 - (for BMS 4.37.1 use plugin v0.1.2)
+v0.2.0 - tested with Falcon BMS 4.37.2 - (for BMS 4.37.1 use plugin v0.1.2)
 
-Jeeves BMS Radio Menus is a simple but powerful plugin for VoiceAttack 
-to work with Falcon BMS radio menus. 
+Jeeves BMS Radio Menus is a powerful plugin for VoiceAttack 
+to work with Falcon BMS radio menus. It is flexible, with 
+a number of features, while being relatively fast and light weight. 
+The plugin is designed to work well for new users learning the radio menus, 
+but has features supporting advanced users who know most of the menus.
 
-It is a flexible solution with more features than simpler VA profiles, 
-while being relatively fast and light weight.
-
-Users can easily call up radio menus by saying a menuTarget 
-such as *"2"* or *"Flight"* followed by an appropriate menuName, 
-such as *"Combat 3"*.  While the menu is displayed the plugin 
-listens for phrases that match its menu items.
+Users call up radio menus by saying a menuTarget such as *"2"* or *"Flight"* 
+followed by an appropriate menuName, such as *"Combat 3"*. 
+While the menu is displayed the plugin listens for phrases matching menu items.
 Thus users who are not familiar with the menus can look through 
 them to make their choices.
 
@@ -19,13 +18,19 @@ Calls outside your flight are similar, but may not need the menu name.
 For example, *"Tanker"* or *"Tower"* will just bring up the tanker or tower menu.
 
 **You can use over 150 callsigns for AWACS, tankers, JTAC and your own flight!** 
-Calls like *"Arco 3, Viper 2 - Request Flight Refueling"* just work. 
-You can change your own callsign on the fly by voice command.
+Calls like *"Arco 3, Viper 2, Two-Ship F16 - Request Flight Refueling"* just work. 
+You can change your own callsign or aircraft type on the fly by voice command. 
+Many variations of phrases are also supported.
 
-The system is designed for flexibility while remaining reasonably simple.
-It is easy to update JBMS to match updates to the game, 
-to change the recognition phrases for menuTargets, menuNames, 
-and menuItems to work for you.  Additional ease of use features include 
+It is easy to update JBMS to match updates to the game, and 
+to change recognition phrases for menuTargets, menuNames, 
+and menuItems to work for you.  
+
+**New for v0.2.0** is the ability to set specific menus to not display 
+while waiting for a response and to add multiple menus to a group menu. 
+See later sections *"Direct Menus"* and *"Group Menus"* for details.
+
+Additional ease of use features include 
 adding direct commands that don't leave menus up, as well as the ability 
 to have menu items call your own methods in the VoiceAttack profile. 
 
@@ -43,6 +48,12 @@ It's easy to update to match changes to menu items,
 or add new menus as needed. 
 The VoiceAttack profile is relatively simple to modify.*
 
+- **New for v0.2.0** *: The ability to set specific menus to not display 
+while waiting for a response and to add multiple menus to a group menu. 
+This lets an advanced user mark which menus they don't need/want displayed, 
+while letting other menus they don't have memorized still display normally. 
+See later sections "Direct Menus" and "Group Menus" for details.*
+
 - *Menu items can be configured to do keypresses or to call your 
 own named command in VA.* 
 
@@ -55,14 +66,18 @@ For example, the VA profile can match the direct phrase "Attack My Target"
 to execute the menu item for "Wingman, Combat Management 1" without 
 it causing problems for the "Attack My Target" menu items for Element or Flight.*
 
-- *MULTIPLE CALLSIGNS for pilots, AWACS, JTAC, and tankers are included 
-in a human readable JSON file. Any AWACS, JTAC, or tanker callsign will 
-match automatically and can be used with numbers (but not position number), 
-though you can still just say "Tanker" or "JTAC". 
-The default pilot callsign, flight number, and position in flight is set 
-and will be matched, but is not required. **You can change your callsign, 
-flight number, and position on the fly by voice** picking from the list of
-valid callsigns. An example of use is below:*
+- *MULTIPLE CALLSIGNS for pilots, AWACS, JTAC, and tankers, along with different 
+aircraft types, are included in a human readable JSON file. 
+Any AWACS, JTAC, or tanker callsign will match automatically and can be used 
+with numbers (but not position number), though you can still just say "Tanker" or "JTAC". 
+The default pilot callsign, flight number, position in flight, and aircraft type is set 
+from the JSON and will be matched, but is not required for phrase completion. 
+**You can change your callsign, flight number, and position on the fly by voice** 
+picking from the list of valid callsigns. 
+**You can also change your aircraft type on the fly by voice too.** 
+In some menus you can specify how many are in your flight and 
+and what runway you're going to. (Basis for this from the excelent UOAF profile.) 
+Examples of use is below:*
 ```
     Arco 3, Viper 1 - Request Flight Refueling
     Update Callsign Hunter 6
@@ -70,7 +85,10 @@ valid callsigns. An example of use is below:*
     One
         <<New Callsign Hunter 6 1, Reinitializing Profile>>
     Tower, Hunter 6, Two-Ship F16 - Request Landing Runway 2 6
-    Axeman 2, Hunter 6 - Check In
+    Axeman 2, Hunter 6 1 - Check In
+    Update Aircraft Type F18
+        <<New Aircraft Type F18, Reinitializing Profile>>
+    Tower, Hunter 6, Two-Ship F18 - Request Formation Landing
 ```
 
 - *JSON schemas are provided to validate the menu and callsign JSON files. 
@@ -94,8 +112,9 @@ quickly change between UHF and VHF presets.  You can also say
 "Press [0..9]" to generate a keystroke for a number, or "Press Escape."*
 
 - *Logging levels can be set by voice with "Enable/Disable Menu/JSON/Struct/Verbose Logging"*  
-  *Audible feedback can be set by voice with "Enable/Disable Audio Feedback"*  
-  *Require BMS to have focus for keystrokes to be sent with "Enable/Disable B M S Focus Only".*
+  *Require BMS to have focus for keystrokes to be sent with "Enable/Disable B M S Focus Only".*  
+  *Audible feedback (for LISTENING, ON, OFF, ERROR/NO MATCH) can be set by voice with   
+  "Enable/Disable Audio Feedback"* 
 
 ## **INSTALLATION**:
 
@@ -172,21 +191,64 @@ The relevant sections are:
 - 2.1.2 Your AI Wingmen/Element/Flight: The Wingman/Element & Flight radio menu
 - 2.2.1 Tactical Net: (AWACS) ; - * 2.2.2 Tanker ; - * 2.2.3 JTAC
 
+### Direct Menus
+
+Specific menus can be marked in the JSON with *"isDirectMenu": true*. 
+A user can make the same calls for these menus, but the menu is not displayed 
+while the VoiceAttack listens for menu item choices. 
+This lets a user mark which menus they don't need displayed, 
+since they use them all the time and know them well, 
+while letting other menus they don't have memorized still display normally. 
+
+For example, when making the previous a call to "Tower" the plugin would wait 
+till the user had made the full call, including "Request Landing", 
+then it would pop up the menu (briefly) before sending the keystrokes 
+for the "Request Landing" menu item.  
+
+NOTE: There will be a slight delay (less than 1/4 second) after the part of the call 
+that brings the menu up, before the system can listen for the menu item - the 
+audible feedback let's you know when the system is listening. 
+Note that single Direct Menus (vs Group Menus) are still a work in progress.
+
+### Group Menus
+
+Specific menus can set *"directMenuGroup"* to a group name in the JSON to allow 
+grouping multiple menus together that listen (like a Direct Menu) for any menu 
+items from all menus in the group without having a menu up. 
+
+This is quite useful and *STILL ALLOWS NORMAL USE OF THOSE MENUS*. 
+Two groups are already set in the JSON, the *"Approach"* group for Approach 1 & Approach 2 
+and the *"AWACS"* group for AWACS Tactical & AWACS Vectors. 
+You can still pull up the specific menu by saying *"Approach 1/2"* or 
+*"AWACS/Overlord Tactical/Vectors"*. Examples using the groups: 
+```
+"Tower, Viper 1, Two-Ship F16 - Request Visual Approach"
+"Darkstar, Hunter 6, Four-Ship F16 - Request Vector to Tanker"
+```
+
+Note when grouping menus that there is a limit of 500 distinct phrases 
+that can be matched (see Limitations).
+
 ### Limitations
 
 - Current menu data is for BMS 4.37.2 menus (use plugin v0.1.2 for BMS 4.37.1)
   For newer versions of BMS, or if you have modified the menu 
   by changing the BMS **Data/Art/CkptArt/menu.dat** file, 
   update the JSON file to match your changes.
+- Maximum of 500 distinct phrases for menu items in any single menu (or group menu). 
+  The plugin will warn if all extracted phrases for a menu 
+  exceed this limit. Be careful how many phrases you generate. For example:   
+  *"[Request;Need;Want;] Help at position [0..9] [0..9]"* generates **400 PHRASES!**.
 - Sound effects require VoiceAttack Settings, Audio tab to have 
-  *"Audio Output Type"* set to *"Integrated Components"*.
-- No callsigns for ATC/airports. A future possibility. 
-- Though flight/unit numbers are supported for JTACs, AWACS and tankers, position numbers 
-  are not. *"Arco 2"* is okay but *"Arco 2-1"* is not.
+  *"Audio Output Type"* set to *"Integrated Components"*, otherwise 
+  text-to-speech or .wav files are used but will play slower.
+- No callsigns for ATC/airports.
+- Flight/unit supported for JTACs, AWACS & tanker, but not position numbers. 
+  *"Arco 2"* is okay but *"Arco 2-1"* is not.
 - BMS menus, when disimissed, briefly display the first menu 
   for their group before closing. This appears to be a BMS bug.
-- Plugin does not (yet) support comms menus being disabled with g_bDisableCommsMenu 1,
-  nor does it support switching off the comms menu with the new chatline dot command 
+- Plugin has not (yet) been tested with comms menus disabled by g_bDisableCommsMenu 1,
+  nor with switching off the comms menu with chatline dot command 
   **".commsmenu 0"**.  Support may be added later.
 - Plugin uses the default keys for BMS menus 
   (T for ATC; W/E/R for Wingman/Element/Flight, Q for AWACS, 
@@ -246,6 +308,8 @@ array of menus. Each menu has the format shown below.
 		"targetPhrases": "Flight",
 		"menuName": "Miscellaneous 1",
 		"menuNamePhrases": "[Miscellaneous;Misk] [1;]",
+		"isDirectMenu": false,
+		"directMenuGroup": "",
 		"menuShow": [ "rrrrrrr" ],
 
 		"menuItems": [
@@ -263,8 +327,10 @@ array of menus. Each menu has the format shown below.
 	},
 
 **REQUIRED:**
-- All values are text strings in *"Quotes"*
+- All values are text strings in *"Quotes"*, except for *isDirectMenu* which must be true or false
 - The combination of menuTarget+menuName must be unique for all menus in the JSON
+- *isDirectMenu* if *true* specifies menu should NOT display while listening - see "Direct Menus"
+- *directMenuGroup*, if not *""*, specifies a group this menu should be added to - see "Group Menus"
 - The menuShow array of keystrokes should use lowercase (details further on)
 - All named items must be non-empty
 - menuItems Array line includes multiple menuItem arrays:
@@ -366,7 +432,8 @@ long to work on all systems, so if you change the times make sure you
 test that they work for busy multiplayer servers and your own system.
 
 See the *"DC Push Flight Uniform"* command in the VA profile as an 
-example of using MenuItemExecute as a command.
+example of how to use MenuItemExecute as a command.  The profile 
+command includes comments on how to edit the menu JSON to call it.
 
 MAPPING VOICEATTACK PHRASES DIRECTLY TO MENU ITEMS:
 

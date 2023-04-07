@@ -1,6 +1,6 @@
 [
 	{
-		"verPluginJSON": "v0.1.7",
+		"verPluginJSON": "v0.2.0",
 		"verBMSJSON": "4.37.2",
 		"userField": "User can update this field with their own notes"
 	},
@@ -430,7 +430,7 @@
 			[ "[E C M;Music] Off", "5" ],
 			[ "[Turn;] Smoke On", "6" ],
 			[ "[Turn;] Smoke Off", "7" ],
-			[ "[Switch;Push] [Flight;] Uniform", "DC Push Flight Uniform" ],
+			[ "[Switch;Push] [Flight;] Uniform", "8" ],
 			[ "[Switch;Push] [Flight;] Victor", "9" ],
 			[ "Set Bingo", "0" ]
 		]
@@ -651,7 +651,7 @@
 		"targetPhrases": "[Contact;] Tanker",
 		"menuName": "Tanker",
 		"menuNamePhrases": "Tanker",
-		"isDirectMenu": true,
+		"isDirectMenu": false,
 		"directMenuGroup": "",
 		"menuShow": [ "y" ],
 

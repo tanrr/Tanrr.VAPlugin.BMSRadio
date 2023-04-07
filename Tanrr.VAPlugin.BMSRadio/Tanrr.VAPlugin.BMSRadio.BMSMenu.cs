@@ -136,7 +136,7 @@ namespace Tanrr.VAPlugin.BMSRadio
 
         protected string _allMenuItemPhrases;
 
-        public MenuItemBMS[] MenuItemsBMS;
+        public List<MenuItemBMS> MenuItemsBMS;
 
         protected int _countAllExtractedMenuItemPhrases;
         public int CountAllExtractedMenuItemPhrases { get => _countAllExtractedMenuItemPhrases; }
@@ -230,16 +230,21 @@ namespace Tanrr.VAPlugin.BMSRadio
             return _extractedNormMenuNamePhrases.Contains(menuNamePhrase);
         }
 
-        public bool AppendMenuItemsToGroupMenu(dynamic vaProxy, MenuBMS menuToAppend)
+        public bool AddMenuItemsToGroupMenu(dynamic vaProxy, MenuBMS menuToAdd)
         {
-            if (null == menuToAppend)
+            if (null == menuToAdd)
             {
                 Logger.Error(vaProxy, "Empty menu passed to append");
                 return false; 
             }
-            if (!_isGroupMenu || string.IsNullOrEmpty(menuToAppend.DirectMenuGroup) || !_directMenuGroup.Equals(menuToAppend.DirectMenuGroup))
+            if (!_isGroupMenu || string.IsNullOrEmpty(menuToAdd.DirectMenuGroup) || !_directMenuGroup.Equals(menuToAdd.DirectMenuGroup))
             {  
-                Logger.Warning(vaProxy, "AppendMenu attempted to {_menuFullID} but either this menu is not a group menu, or the appending menu does not match the group");
+                Logger.Warning(vaProxy, $"AddMenu attempted to {_menuFullID} but either this menu is not a group menu, or the menu being added does not match the group");
+                return false;
+            }
+            if ( _countAllExtractedMenuItemPhrases <= 0 || string.IsNullOrEmpty(_allMenuItemPhrases))
+            {
+                Logger.Warning(vaProxy, $"AddMenu attempted to {_menuFullID} but it has no menu item phrases");
                 return false;
             }
 
@@ -248,28 +253,26 @@ namespace Tanrr.VAPlugin.BMSRadio
             // Create a string with all lowercase commands, ; delimeted, to pass to Get User Input - Wait for Spoken Response 
             // AND Fill in _extractedMenuItems dictionary with all possble phrases, mapped to their MenuItemExecute values
             // ie "Weapons Free [Air;A A;]" separated into "weapons free air", "weapons free a a" and "weapons free"
-            // TODO _countAllExtractedMenuItemPhrases = 0;
 
-            // Menu we're appending has already set up its own full allMenuItemPhrases
-            _allMenuItemPhrases = _allMenuItemPhrases.Insert(_allMenuItemPhrases.Length, ";" + menuToAppend.AllMenuItemPhrases);
+            // Menu we're adding has already set up its own full allMenuItemPhrases
+            _allMenuItemPhrases = _allMenuItemPhrases.Insert(_allMenuItemPhrases.Length, ";" + menuToAdd.AllMenuItemPhrases);
 
-            foreach (MenuItemBMS menuItemToAppend in menuToAppend.MenuItemsBMS)
+            foreach (MenuItemBMS menuItemToAdd in menuToAdd.MenuItemsBMS)
             {
                 // Add all this items phrases to the list of ALL phrases for the group menu
-                //  TEMP TEST - SEE ABOVE - _allMenuItemPhrases = _allMenuItemPhrases.Insert(_allMenuItemPhrases.Length, ";" + menuItem.MenuItemPhrases);
-                // TODO - Fix up this count if we drop duplicates?  If not fixing up could just add menuToAppend.CountAllExtractedMenuItemPhrases above
-                _countAllExtractedMenuItemPhrases += menuItemToAppend.CountExtractedMenuItemPhrases;
-                // Add the actual MenuItemBMS tou our own array as well
-                MenuItemsBMS.Append(menuItemToAppend);
+                // TODO - In the (rare) case where all the phrases for a menuItem are dropped as duplicates this could be off - consider the cases
+                _countAllExtractedMenuItemPhrases += menuItemToAdd.CountExtractedMenuItemPhrases;
+                // Add the actual MenuItemBMS to our own list as well
+                MenuItemsBMS.Add(menuItemToAdd);
 
-                foreach (string menuItemPhraseToAppend in menuItemToAppend.ExtractedMenuItemPhrases)
+                foreach (string menuItemPhraseToAppend in menuItemToAdd.ExtractedMenuItemPhrases)
                 {
-                    string menuItemExecuteToAppend = menuItemToAppend.MenuItemExecute;
+                    string menuItemExecuteToAdd = menuItemToAdd.MenuItemExecute;
                     if (_extractedMenuItems.ContainsKey(menuItemPhraseToAppend))
                     {
                         // This is a duplicate - skip it, but log
                         string DupedExecute = _extractedMenuItems[menuItemPhraseToAppend].MenuItemExecute;
-                        string AddWarningMessage = $"Append of Duplicate Extracted Phrase {menuItemPhraseToAppend} Attempted to GROUP Menu {_menuName} from menu {menuToAppend.MenuFullID}";
+                        string AddWarningMessage = $"Append of Duplicate Extracted Phrase {menuItemPhraseToAppend} Attempted to GROUP Menu {_menuName} from menu {menuToAdd.MenuFullID}";
                         Logger.Warning(vaProxy, AddWarningMessage);
                         continue;
                     }
@@ -278,12 +281,12 @@ namespace Tanrr.VAPlugin.BMSRadio
                         try
                         {
                             // Add each extracted menu item phrase to our list, with the matching ContainingMenuFullID
-                            _extractedMenuItems.Add(menuItemPhraseToAppend, new MenuItemShort(menuItemToAppend.ContainingMenuFullID, menuItemToAppend.ContainingMenuShow, menuItemExecuteToAppend));
+                            _extractedMenuItems.Add(menuItemPhraseToAppend, new MenuItemShort(menuItemToAdd.ContainingMenuFullID, menuItemToAdd.ContainingMenuShow, menuItemExecuteToAdd));
                         }
                         catch (ArgumentException e)
                         {
                             Logger.Error(vaProxy, "Unexpected failure to add append extracted menu items to group menu dictionary");
-                            string AddErrorMessage = $"MenuItemPhrase = {menuItemPhraseToAppend}, MenuItemExecute = {menuItemExecuteToAppend}";
+                            string AddErrorMessage = $"MenuItemPhrase = {menuItemPhraseToAppend}, MenuItemExecute = {menuItemExecuteToAdd}";
                             Logger.Error(vaProxy, AddErrorMessage);
                             Logger.Error(vaProxy, $"EXCEPTION THROWN: {e.Message}");
                             // Letting the loop continue here, in case this was just a duplicate we failed to catch
@@ -302,7 +305,7 @@ namespace Tanrr.VAPlugin.BMSRadio
             string name, 
             string namePhrases, 
             string show, 
-            MenuItemBMS[] items, 
+            List<MenuItemBMS> items, 
             bool isDirectMenu = false, 
             bool isListingMenu = true, 
             bool isGroupMenu = false,
@@ -335,14 +338,28 @@ namespace Tanrr.VAPlugin.BMSRadio
                     _isDirectMenu = true;
                 }
 
-                // TEMP - Target should have been "group" as well, but setting just in case
-                _menuTarget = "group";
-                // TEMP: for now we just set this up so we'll get FullID = group_Approach or group_AWACS - consider more later
-                // 
-                _menuName = directMenuGroup;  
-            }
+                if (!_menuTarget.Equals("group"))
+                {
+                    Logger.Warning(vaProxy, "Group Menu created without menuTarget set as \"group\"");
+                    // TODO - This should be a failure, but for now set it and continue for testing methods
+                    _menuTarget = "group";
+                }
 
-            MenuItemsBMS = items;
+                if (!_menuName.Equals(directMenuGroup))
+                {
+                    Logger.Warning(vaProxy, $"Group Menu created with menuName=\"{_menuName}\" not equal to directMenuGroup=\"{_directMenuGroup}\"");
+                    // TODO: for now we just set this up so we'll get FullID = group_Approach or group_AWACS - consider more later
+                    _menuName = _directMenuGroup;
+                }
+
+                // If we're a Group menu, we are a COPY of another menu, so need to COPY MenuItems List (not editing them internally, so no need for deep copy)
+                MenuItemsBMS = items.ToList();
+            }
+            else
+            {
+                // If we're not a group menu, no need to duplicate the list
+                MenuItemsBMS = items;
+            }
 
             _menuFullID = string.Empty; // Starts empty
             _allMenuItemPhrases = string.Empty;
@@ -351,7 +368,7 @@ namespace Tanrr.VAPlugin.BMSRadio
             if (string.IsNullOrEmpty(_menuTarget) || string.IsNullOrEmpty(_targetPhrases)
                 || string.IsNullOrEmpty(_menuName) || string.IsNullOrEmpty(_menuNameNorm)
                 || (string.IsNullOrEmpty(_menuShow) && !_isGroupMenu)
-                || items == null || items.Length == 0)
+                || items == null || items.Count == 0)
             {
                 Logger.Error(vaProxy, "Unexpected failure creating MenuBMS - Invalid Parameters passed to constructor");
                 return;
@@ -425,7 +442,16 @@ namespace Tanrr.VAPlugin.BMSRadio
                 Logger.StructuresWrite(vaProxy, "menuItem " + menuItem.MenuItemPhrases + " : " + menuItem.MenuItemExecute);
 
                 // Store menu's FullID in EACH menuItem to allow groups of menus to map menu items back to associated menu
-                menuItem.ContainingMenuFullID = _menuFullID;
+                if (_isGroupMenu)
+                {
+                    // GroupMenu is passed menuItems from existing Menu that have ContainingMenumenuFullID set 
+                    if (string.IsNullOrEmpty(menuItem.ContainingMenuFullID) || menuItem.ContainingMenuFullID.StartsWith("group"))
+                    {   Logger.Warning(vaProxy, "New Group menu created but passed MenuItems without ContainingMenuFullID set correctly"); }
+                }
+                else // !_isGroupMenu
+                {
+                    menuItem.ContainingMenuFullID = _menuFullID;
+                }
 
                 _allMenuItemPhrases = _allMenuItemPhrases.Insert(_allMenuItemPhrases.Length, menuItem.MenuItemPhrases + ";");
                 string[] MenuItemPhrases = menuItem.ExtractedMenuItemPhrases;
@@ -448,7 +474,7 @@ namespace Tanrr.VAPlugin.BMSRadio
                     {
                         try
                         {
-                            _extractedMenuItems.Add(MenuItemPhrase, new MenuItemShort(MenuFullID, menuItem.ContainingMenuShow, MenuItemExecute));
+                            _extractedMenuItems.Add(MenuItemPhrase, new MenuItemShort(menuItem.ContainingMenuFullID, menuItem.ContainingMenuShow, MenuItemExecute));
                         }
                         catch (ArgumentException e)
                         {
