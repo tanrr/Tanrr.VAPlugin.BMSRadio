@@ -84,7 +84,7 @@ Examples of use is below:*
         <<Say your flight position in Hunter 6 or say 'Skip'>>
     One
         <<New Callsign Hunter 6 1, Reinitializing Profile>>
-    Tower, Hunter 6, Two-Ship F16 - Request Landing Runway 2 6
+    Tower, Hunter 6, Two-Ship F16 - On Final Runway 2 6
     Axeman 2, Hunter 6 1 - Check In
     Update Aircraft Type F18
         <<New Aircraft Type F18, Reinitializing Profile>>
@@ -225,6 +225,11 @@ You can still pull up the specific menu by saying *"Approach 1/2"* or
 "Tower, Viper 1, Two-Ship F16 - Request Visual Approach"
 "Darkstar, Hunter 6, Four-Ship F16 - Request Vector to Tanker"
 ```
+
+Group menus dynamically create a new menu you can call up from the
+VoiceAttack profile.  To do this, set \>JBMS_MENU_TGT to "group" and \>JBMS_MENU_NAME 
+to the *"directMenuGroup"* name, then execute the profile command *JBMS Direct Listen Start*. 
+Just duplicate the "Approach" or "AWACS" profile commands to make your own version. 
 
 Note when grouping menus that there is a limit of 500 distinct phrases 
 that can be matched (see Limitations).
